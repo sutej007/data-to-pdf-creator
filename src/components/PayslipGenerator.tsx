@@ -54,6 +54,7 @@ const PayslipGenerator = () => {
   const [columnMapping, setColumnMapping] = useState<{[key: string]: string}>({});
   const [isMobile, setIsMobile] = useState(false);
   const [installPrompt, setInstallPrompt] = useState<any>(null);
+  const [logoLoaded, setLogoLoaded] = useState(false);
   const payslipRef = useRef<HTMLDivElement>(null);
 
   // Function to convert number to words
@@ -207,6 +208,15 @@ const PayslipGenerator = () => {
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    // Preload the logo image
+    const img = new Image();
+    img.onload = () => setLogoLoaded(true);
+    img.onerror = () => {
+      console.error('Failed to load logo image');
+      setLogoLoaded(false);
+    };
+    img.src = '/WhatsApp Image 2025-06-28 at 23.24.54 copy copy.jpeg';
 
     return () => {
       window.removeEventListener('resize', checkMobile);
@@ -668,8 +678,13 @@ const PayslipGenerator = () => {
                     <div className="font-medium text-green-600">Net Pay: {formatCurrency(selectedEmployee['NET PAY'])}</div>
                   </div>
                   <div className="text-xs text-blue-600 mt-3">
-                    PDF will be generated with professional formatting
+                    PDF will be generated with professional formatting and company logo
                   </div>
+                  {!logoLoaded && (
+                    <div className="text-xs text-orange-600 mt-2">
+                      ⚠️ Company logo is loading...
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="text-center py-8 md:py-12 text-gray-500">
@@ -682,7 +697,7 @@ const PayslipGenerator = () => {
           </Card>
         </div>
 
-        {/* Hidden Professional Payslip Template - Updated with Nava Chetana Logo in Left Corner */}
+        {/* Hidden Professional Payslip Template - Updated with Better Logo Handling */}
         <div
           ref={payslipRef}
           data-payslip-template
@@ -705,14 +720,38 @@ const PayslipGenerator = () => {
               <div className="flex items-start justify-between mb-6 pb-4" style={{ borderBottom: '2px solid #1e40af' }}>
                 {/* Left Side - Logo and Company Info */}
                 <div className="flex items-start gap-4">
-                  {/* Company Logo in Left Corner */}
-                  <div className="w-16 h-16 flex-shrink-0">
-                    <img 
-                      src="/WhatsApp Image 2025-06-28 at 23.24.54 copy copy.jpeg" 
-                      alt="Nava Chetana Logo" 
-                      className="w-full h-full object-contain"
-                      style={{ maxWidth: '64px', maxHeight: '64px' }}
-                    />
+                  {/* Company Logo in Left Corner - Fixed with better error handling */}
+                  <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center" style={{ border: '1px solid #e5e7eb' }}>
+                    {logoLoaded ? (
+                      <img 
+                        src="/WhatsApp Image 2025-06-28 at 23.24.54 copy copy.jpeg" 
+                        alt="Nava Chetana Logo" 
+                        style={{ 
+                          width: '60px', 
+                          height: '60px', 
+                          objectFit: 'contain',
+                          display: 'block'
+                        }}
+                        onError={(e) => {
+                          console.error('Logo failed to load in payslip');
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div style={{ 
+                        width: '60px', 
+                        height: '60px', 
+                        backgroundColor: '#f3f4f6',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '8px',
+                        color: '#6b7280',
+                        textAlign: 'center'
+                      }}>
+                        LOGO
+                      </div>
+                    )}
                   </div>
                   
                   {/* Company Details */}
