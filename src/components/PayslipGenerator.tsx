@@ -10,10 +10,30 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
 interface EmployeeData {
-  'SL NO': number;
-  'EMPLOYEE ID': string;
+  [key: string]: any;
   'EMPLOYEE NAME': string;
-  'STATUS': string;
+  'EMPLOYEE ID': string;
+  'NET PAY': number;
+  'GROSS SALARY': number;
+  'TOTAL DEDUCTIONS': number;
+  'EARNED BASIC': number;
+  'HRA': number;
+  'LOCAN CONVEY': number;
+  'MEDICAL ALLOW': number;
+  'CITY COMPENSATORY ALLOWANCE (CCA)': number;
+  'CHILDREN EDUCATION ALLOWANCE (CEA)': number;
+  'OTHER ALLOWANCE': number;
+  'INCENTIVE': number;
+  'PF': number;
+  'ESI': number;
+  'TDS': number;
+  'PT': number;
+  'STAFF WELFARE': number;
+  'SALARY ADVANCE': number;
+  'TOTAL DAYS': number;
+  'PRESENT DAYS': number;
+  'SALARY DAYS': number;
+  'LOP': number;
   'DESIGNATION': string;
   'DEPARTMENT': string;
   'BRANCH': string;
@@ -22,41 +42,7 @@ interface EmployeeData {
   'UAN': string;
   'DOJ': string;
   'AS ON': string;
-  'NO OF DAYS': number;
-  'TOTAL DAYS': number;
-  'PRESENT DAYS': number;
-  'SH': number;
-  'CL': number;
-  'SL': number;
-  'EL': number;
-  'LD': number;
-  'ML': number;
-  'LOP': number;
-  'SALARY DAYS': number;
-  'BASIC': number;
-  'EARNED BASIC': number;
-  'HRA': number;
-  'LOCAN CONVEY': number;
-  'MEDICAL ALLOW': number;
-  'CITY COMPENSATORY ALLOWANCE (CCA)': number;
-  'CHILDREN EDUCATION ALLOWANCE (CEA)': number;
-  'COMPOSITE ALLOWANCE': number;
-  'OTHER ALLOWANCE': number;
-  'TRAVELLING ALLOWANCE': number;
-  'Total Additions': number;
-  'INCENTIVE': number;
-  'GROSS SALARY': number;
-  'ESI': number;
-  'PF': number;
-  'TDS': number;
-  'PT': number;
-  'SSD': number;
-  'STAFF WELFARE': number;
-  'STAFF RD': number;
-  'NVSSN LOAN': number;
-  'SALARY ADVANCE': number;
-  'TOTAL DEDUCTIONS': number;
-  'NET PAY': number;
+  'STATUS': string;
 }
 
 const PayslipGenerator = () => {
@@ -66,7 +52,62 @@ const PayslipGenerator = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [currentProgress, setCurrentProgress] = useState(0);
   const [debugInfo, setDebugInfo] = useState<string>('');
+  const [columnMapping, setColumnMapping] = useState<{[key: string]: string}>({});
   const payslipRef = useRef<HTMLDivElement>(null);
+
+  // Function to find the best matching column for a given field
+  const findBestMatch = (headers: string[], patterns: string[]): string | null => {
+    for (const pattern of patterns) {
+      const exactMatch = headers.find(h => h.toLowerCase() === pattern.toLowerCase());
+      if (exactMatch) return exactMatch;
+    }
+    
+    for (const pattern of patterns) {
+      const partialMatch = headers.find(h => 
+        h.toLowerCase().includes(pattern.toLowerCase()) || 
+        pattern.toLowerCase().includes(h.toLowerCase())
+      );
+      if (partialMatch) return partialMatch;
+    }
+    
+    return null;
+  };
+
+  // Define field mapping patterns
+  const fieldMappings = {
+    'EMPLOYEE NAME': ['employee name', 'emp name', 'name', 'employee_name', 'empname', 'full name', 'worker name'],
+    'EMPLOYEE ID': ['employee id', 'emp id', 'id', 'employee_id', 'empid', 'staff id', 'worker id', 'employee code'],
+    'NET PAY': ['net pay', 'netpay', 'net salary', 'take home', 'net amount', 'final pay'],
+    'GROSS SALARY': ['gross salary', 'gross pay', 'gross', 'total salary', 'gross amount'],
+    'TOTAL DEDUCTIONS': ['total deductions', 'deductions', 'total deduction', 'deduction total'],
+    'EARNED BASIC': ['earned basic', 'basic salary', 'basic pay', 'basic', 'base salary'],
+    'HRA': ['hra', 'house rent allowance', 'house rent', 'rent allowance'],
+    'LOCAN CONVEY': ['conveyance', 'conveyance allowance', 'transport allowance', 'travel allowance', 'locan convey'],
+    'MEDICAL ALLOW': ['medical allowance', 'medical', 'health allowance', 'medical allow'],
+    'CITY COMPENSATORY ALLOWANCE (CCA)': ['cca', 'city compensatory allowance', 'city allowance'],
+    'CHILDREN EDUCATION ALLOWANCE (CEA)': ['cea', 'children education allowance', 'education allowance'],
+    'OTHER ALLOWANCE': ['other allowance', 'other', 'miscellaneous allowance', 'misc allowance'],
+    'INCENTIVE': ['incentive', 'bonus', 'performance bonus', 'incentive pay'],
+    'PF': ['pf', 'provident fund', 'pf deduction', 'epf'],
+    'ESI': ['esi', 'employee state insurance', 'esic'],
+    'TDS': ['tds', 'tax deducted at source', 'income tax', 'tax'],
+    'PT': ['pt', 'professional tax', 'prof tax'],
+    'STAFF WELFARE': ['staff welfare', 'welfare', 'staff welfare fund'],
+    'SALARY ADVANCE': ['salary advance', 'advance', 'salary loan', 'advance salary'],
+    'TOTAL DAYS': ['total days', 'calendar days', 'month days'],
+    'PRESENT DAYS': ['present days', 'working days', 'attended days', 'days worked'],
+    'SALARY DAYS': ['salary days', 'paid days', 'payable days'],
+    'LOP': ['lop', 'loss of pay', 'unpaid days', 'absent days'],
+    'DESIGNATION': ['designation', 'position', 'job title', 'role', 'post'],
+    'DEPARTMENT': ['department', 'dept', 'division', 'section'],
+    'BRANCH': ['branch', 'location', 'office', 'site'],
+    'PF NO': ['pf no', 'pf number', 'provident fund number', 'pf_no'],
+    'ESI NO': ['esi no', 'esi number', 'esic number', 'esi_no'],
+    'UAN': ['uan', 'uan number', 'universal account number'],
+    'DOJ': ['doj', 'date of joining', 'joining date', 'join date'],
+    'AS ON': ['as on', 'month', 'period', 'salary month', 'pay period'],
+    'STATUS': ['status', 'employment status', 'emp status', 'employee status']
+  };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -81,79 +122,83 @@ const PayslipGenerator = () => {
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet) as any[];
         
-        // Debug: Log the raw data and column headers
         console.log('Raw Excel data:', jsonData);
         
-        if (jsonData.length > 0) {
-          const firstRow = jsonData[0];
-          const columnHeaders = Object.keys(firstRow);
-          console.log('Column headers found:', columnHeaders);
-          setDebugInfo(`Column headers: ${columnHeaders.join(', ')}`);
-          
-          // Check for employee name variations
-          const nameColumns = columnHeaders.filter(header => 
-            header.toLowerCase().includes('name') || 
-            header.toLowerCase().includes('employee')
-          );
-          console.log('Name-related columns:', nameColumns);
+        if (jsonData.length === 0) {
+          toast.error('Excel file appears to be empty');
+          return;
         }
+
+        // Get column headers from the first row
+        const firstRow = jsonData[0];
+        const excelHeaders = Object.keys(firstRow);
+        console.log('Excel column headers:', excelHeaders);
         
-        // Process the data to ensure numeric fields are properly converted
-        const processedData = jsonData.map((emp, index) => {
-          console.log(`Row ${index + 1} data:`, emp);
-          
-          // Try to find the employee name field with different possible variations
-          let employeeName = emp['EMPLOYEE NAME'] || 
-                           emp['Employee Name'] || 
-                           emp['NAME'] || 
-                           emp['Name'] || 
-                           emp['EMPNAME'] || 
-                           emp['EMP_NAME'] ||
-                           emp['Employee_Name'] ||
-                           'Unknown Employee';
-          
-          console.log(`Employee ${index + 1} name:`, employeeName);
-          
-          return {
-            ...emp,
-            'EMPLOYEE NAME': employeeName,
-            'NET PAY': Number(emp['NET PAY'] || emp['Net Pay'] || emp['NETPAY'] || 0),
-            'GROSS SALARY': Number(emp['GROSS SALARY'] || emp['Gross Salary'] || emp['GROSS'] || 0),
-            'TOTAL DEDUCTIONS': Number(emp['TOTAL DEDUCTIONS'] || emp['Total Deductions'] || emp['DEDUCTIONS'] || 0),
-            'EARNED BASIC': Number(emp['EARNED BASIC'] || emp['Earned Basic'] || emp['BASIC'] || 0),
-            'HRA': Number(emp['HRA'] || 0),
-            'LOCAN CONVEY': Number(emp['LOCAN CONVEY'] || emp['Conveyance'] || emp['CONVEYANCE'] || 0),
-            'MEDICAL ALLOW': Number(emp['MEDICAL ALLOW'] || emp['Medical Allowance'] || emp['MEDICAL'] || 0),
-            'CITY COMPENSATORY ALLOWANCE (CCA)': Number(emp['CITY COMPENSATORY ALLOWANCE (CCA)'] || emp['CCA'] || 0),
-            'CHILDREN EDUCATION ALLOWANCE (CEA)': Number(emp['CHILDREN EDUCATION ALLOWANCE (CEA)'] || emp['CEA'] || 0),
-            'OTHER ALLOWANCE': Number(emp['OTHER ALLOWANCE'] || emp['Other Allowance'] || 0),
-            'INCENTIVE': Number(emp['INCENTIVE'] || emp['Incentive'] || 0),
-            'PF': Number(emp['PF'] || emp['Provident Fund'] || 0),
-            'ESI': Number(emp['ESI'] || emp['Employee State Insurance'] || 0),
-            'TDS': Number(emp['TDS'] || emp['Tax Deducted at Source'] || 0),
-            'PT': Number(emp['PT'] || emp['Professional Tax'] || 0),
-            'STAFF WELFARE': Number(emp['STAFF WELFARE'] || emp['Staff Welfare'] || 0),
-            'SALARY ADVANCE': Number(emp['SALARY ADVANCE'] || emp['Salary Advance'] || 0),
-            'TOTAL DAYS': Number(emp['TOTAL DAYS'] || emp['Total Days'] || 0),
-            'PRESENT DAYS': Number(emp['PRESENT DAYS'] || emp['Present Days'] || 0),
-            'SALARY DAYS': Number(emp['SALARY DAYS'] || emp['Salary Days'] || 0),
-            'LOP': Number(emp['LOP'] || emp['Loss of Pay'] || 0),
-            'EMPLOYEE ID': emp['EMPLOYEE ID'] || emp['Employee ID'] || emp['EMP ID'] || emp['ID'] || `EMP${index + 1}`,
-            'DESIGNATION': emp['DESIGNATION'] || emp['Designation'] || emp['Position'] || 'Employee',
-            'DEPARTMENT': emp['DEPARTMENT'] || emp['Department'] || emp['Dept'] || 'General',
-            'BRANCH': emp['BRANCH'] || emp['Branch'] || emp['Location'] || 'Main',
-            'PF NO': emp['PF NO'] || emp['PF Number'] || emp['PF_NO'] || '',
-            'ESI NO': emp['ESI NO'] || emp['ESI Number'] || emp['ESI_NO'] || '',
-            'UAN': emp['UAN'] || emp['UAN Number'] || '',
-            'DOJ': emp['DOJ'] || emp['Date of Joining'] || emp['Joining Date'] || '',
-            'AS ON': emp['AS ON'] || emp['Month'] || emp['Period'] || new Date().toLocaleDateString(),
-            'STATUS': emp['STATUS'] || emp['Status'] || emp['Employment Status'] || 'Active',
-          };
+        // Create column mapping
+        const mapping: {[key: string]: string} = {};
+        const mappingResults: string[] = [];
+        
+        Object.entries(fieldMappings).forEach(([standardField, patterns]) => {
+          const matchedColumn = findBestMatch(excelHeaders, patterns);
+          if (matchedColumn) {
+            mapping[standardField] = matchedColumn;
+            mappingResults.push(`${standardField} → ${matchedColumn}`);
+          } else {
+            mappingResults.push(`${standardField} → NOT FOUND`);
+          }
         });
         
-        console.log('Processed employee data:', processedData);
+        setColumnMapping(mapping);
+        setDebugInfo(`Column Mapping:\n${mappingResults.join('\n')}`);
+        console.log('Column mapping:', mapping);
+        
+        // Process the data using the mapping
+        const processedData = jsonData.map((row, index) => {
+          const processedRow: any = {};
+          
+          // Map each field using the column mapping
+          Object.entries(fieldMappings).forEach(([standardField]) => {
+            const excelColumn = mapping[standardField];
+            if (excelColumn && row[excelColumn] !== undefined) {
+              let value = row[excelColumn];
+              
+              // Convert numeric fields
+              if (['NET PAY', 'GROSS SALARY', 'TOTAL DEDUCTIONS', 'EARNED BASIC', 'HRA', 
+                   'LOCAN CONVEY', 'MEDICAL ALLOW', 'CITY COMPENSATORY ALLOWANCE (CCA)', 
+                   'CHILDREN EDUCATION ALLOWANCE (CEA)', 'OTHER ALLOWANCE', 'INCENTIVE', 
+                   'PF', 'ESI', 'TDS', 'PT', 'STAFF WELFARE', 'SALARY ADVANCE', 
+                   'TOTAL DAYS', 'PRESENT DAYS', 'SALARY DAYS', 'LOP'].includes(standardField)) {
+                value = Number(value) || 0;
+              } else {
+                value = String(value || '');
+              }
+              
+              processedRow[standardField] = value;
+            } else {
+              // Set default values for missing fields
+              if (['NET PAY', 'GROSS SALARY', 'TOTAL DEDUCTIONS', 'EARNED BASIC', 'HRA', 
+                   'LOCAN CONVEY', 'MEDICAL ALLOW', 'CITY COMPENSATORY ALLOWANCE (CCA)', 
+                   'CHILDREN EDUCATION ALLOWANCE (CEA)', 'OTHER ALLOWANCE', 'INCENTIVE', 
+                   'PF', 'ESI', 'TDS', 'PT', 'STAFF WELFARE', 'SALARY ADVANCE', 
+                   'TOTAL DAYS', 'PRESENT DAYS', 'SALARY DAYS', 'LOP'].includes(standardField)) {
+                processedRow[standardField] = 0;
+              } else {
+                processedRow[standardField] = standardField === 'EMPLOYEE NAME' ? `Employee ${index + 1}` :
+                                           standardField === 'EMPLOYEE ID' ? `EMP${String(index + 1).padStart(3, '0')}` :
+                                           standardField === 'AS ON' ? new Date().toLocaleDateString('en-IN') :
+                                           '';
+              }
+            }
+          });
+          
+          console.log(`Processed row ${index + 1}:`, processedRow);
+          return processedRow;
+        });
+        
+        console.log('Final processed data:', processedData);
         setEmployees(processedData);
         toast.success(`Successfully loaded ${processedData.length} employee records`);
+        
       } catch (error) {
         toast.error('Error reading Excel file. Please check the format.');
         console.error('Excel parsing error:', error);
@@ -187,7 +232,7 @@ const PayslipGenerator = () => {
         backgroundColor: '#ffffff',
         width: 794,
         height: 1123,
-        logging: true,
+        logging: false,
       });
 
       const imgData = canvas.toDataURL('image/png');
@@ -292,15 +337,17 @@ const PayslipGenerator = () => {
                   className="mt-2"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Supports Excel files with standard payroll headers
+                  Excel file should have headers in the first row
                 </p>
               </div>
 
               {/* Debug Information */}
               {debugInfo && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
-                  <div className="text-sm font-medium text-yellow-800 mb-1">Debug Info:</div>
-                  <div className="text-xs text-yellow-700">{debugInfo}</div>
+                <div className="bg-blue-50 border border-blue-200 rounded p-3">
+                  <div className="text-sm font-medium text-blue-800 mb-2">Column Mapping Results:</div>
+                  <div className="text-xs text-blue-700 whitespace-pre-line max-h-40 overflow-y-auto">
+                    {debugInfo}
+                  </div>
                 </div>
               )}
 
@@ -344,8 +391,8 @@ const PayslipGenerator = () => {
                       <tbody>
                         {employees.map((emp, index) => (
                           <tr key={index} className="border-t hover:bg-gray-50">
-                            <td className="p-2 font-medium">{emp['EMPLOYEE NAME'] || 'No Name Found'}</td>
-                            <td className="p-2 text-gray-600">{emp['EMPLOYEE ID'] || 'No ID'}</td>
+                            <td className="p-2 font-medium">{emp['EMPLOYEE NAME']}</td>
+                            <td className="p-2 text-gray-600">{emp['EMPLOYEE ID']}</td>
                             <td className="p-2 text-green-600 font-medium">{formatCurrency(emp['NET PAY'])}</td>
                             <td className="p-2">
                               <Button
@@ -400,7 +447,7 @@ const PayslipGenerator = () => {
           </Card>
         </div>
 
-        {/* Hidden Professional Payslip Template - Always rendered */}
+        {/* Hidden Professional Payslip Template */}
         <div
           ref={payslipRef}
           data-payslip-template
