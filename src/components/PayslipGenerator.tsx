@@ -96,13 +96,14 @@ const PayslipGenerator = () => {
     setSelectedEmployee(employee);
 
     // Wait for the component to render
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise(resolve => setTimeout(resolve, 200));
 
     try {
       const canvas = await html2canvas(payslipRef.current, {
         scale: 2,
         useCORS: true,
         allowTaint: true,
+        backgroundColor: '#ffffff',
       });
 
       const imgData = canvas.toDataURL('image/png');
@@ -151,8 +152,8 @@ const PayslipGenerator = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Payslip Generator</h1>
-          <p className="text-lg text-gray-600">Convert Excel data to professional PDF payslips</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Professional Payslip Generator</h1>
+          <p className="text-lg text-gray-600">Convert Excel employee data to professional PDF payslips</p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
@@ -166,7 +167,7 @@ const PayslipGenerator = () => {
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <Label htmlFor="excel-upload">Select Excel file with employee data</Label>
+                <Label htmlFor="excel-upload">Select Excel file with employee salary data</Label>
                 <Input
                   id="excel-upload"
                   type="file"
@@ -174,13 +175,16 @@ const PayslipGenerator = () => {
                   onChange={handleFileUpload}
                   className="mt-2"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Supports Excel files with standard payroll headers
+                </p>
               </div>
 
               {employees.length > 0 && (
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-green-600">
                     <Users className="h-5 w-5" />
-                    <span className="font-medium">{employees.length} employees loaded</span>
+                    <span className="font-medium">{employees.length} employees loaded successfully</span>
                   </div>
 
                   <div className="grid gap-2">
@@ -190,24 +194,26 @@ const PayslipGenerator = () => {
                       className="w-full bg-blue-600 hover:bg-blue-700"
                     >
                       <Download className="h-4 w-4 mr-2" />
-                      {isGenerating ? 'Generating PDFs...' : 'Generate All PDFs'}
+                      {isGenerating ? 'Generating PDFs...' : `Generate All ${employees.length} PDFs`}
                     </Button>
                   </div>
 
                   <div className="max-h-60 overflow-y-auto border rounded-lg">
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-gray-50 sticky top-0">
                         <tr>
-                          <th className="p-2 text-left">Name</th>
-                          <th className="p-2 text-left">ID</th>
-                          <th className="p-2 text-left">Action</th>
+                          <th className="p-2 text-left font-medium">Employee Name</th>
+                          <th className="p-2 text-left font-medium">ID</th>
+                          <th className="p-2 text-left font-medium">Net Pay</th>
+                          <th className="p-2 text-left font-medium">Action</th>
                         </tr>
                       </thead>
                       <tbody>
                         {employees.map((emp, index) => (
                           <tr key={index} className="border-t hover:bg-gray-50">
-                            <td className="p-2">{emp['EMPLOYEE NAME']}</td>
-                            <td className="p-2">{emp['EMPLOYEE ID']}</td>
+                            <td className="p-2 font-medium">{emp['EMPLOYEE NAME']}</td>
+                            <td className="p-2 text-gray-600">{emp['EMPLOYEE ID']}</td>
+                            <td className="p-2 text-green-600 font-medium">{formatCurrency(emp['NET PAY'])}</td>
                             <td className="p-2">
                               <Button
                                 size="sm"
@@ -236,164 +242,228 @@ const PayslipGenerator = () => {
             </CardHeader>
             <CardContent>
               {selectedEmployee ? (
-                <div className="text-sm text-gray-600">
-                  Preview will be generated when creating PDF for {selectedEmployee['EMPLOYEE NAME']}
+                <div className="space-y-2">
+                  <div className="text-sm font-medium text-gray-900">
+                    Preview for: {selectedEmployee['EMPLOYEE NAME']}
+                  </div>
+                  <div className="text-xs text-gray-600 space-y-1">
+                    <div>Employee ID: {selectedEmployee['EMPLOYEE ID']}</div>
+                    <div>Department: {selectedEmployee['DEPARTMENT']}</div>
+                    <div>Period: {selectedEmployee['AS ON']}</div>
+                    <div className="font-medium text-green-600">Net Pay: {formatCurrency(selectedEmployee['NET PAY'])}</div>
+                  </div>
+                  <div className="text-xs text-blue-600 mt-3">
+                    PDF will be generated with professional formatting
+                  </div>
                 </div>
               ) : (
                 <div className="text-center py-12 text-gray-500">
                   <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Upload Excel file and select an employee to preview payslip</p>
+                  <p className="text-sm">Upload Excel file to see employee data</p>
+                  <p className="text-xs text-gray-400 mt-1">Individual PDFs will be generated for each employee</p>
                 </div>
               )}
             </CardContent>
           </Card>
         </div>
 
-        {/* Hidden Payslip Template for PDF Generation */}
+        {/* Hidden Professional Payslip Template */}
         {selectedEmployee && (
           <div
             ref={payslipRef}
-            className="fixed -left-full -top-full bg-white p-8"
-            style={{ width: '794px', fontSize: '12px', lineHeight: '1.4' }}
+            className="fixed -left-full -top-full bg-white"
+            style={{ width: '794px', fontSize: '11px', lineHeight: '1.4', fontFamily: 'Arial, sans-serif' }}
           >
-            <div className="border-2 border-blue-600">
-              {/* Header */}
-              <div className="bg-blue-600 text-white p-4 text-center">
-                <h1 className="text-xl font-bold">PAYSLIP</h1>
-                <p className="text-sm">For the month of {selectedEmployee['AS ON']}</p>
+            <div className="p-8 border-2 border-gray-300">
+              {/* Company Header */}
+              <div className="text-center mb-8 pb-4 border-b-2 border-blue-600">
+                <div className="text-2xl font-bold text-blue-800 mb-2">PAYSLIP</div>
+                <div className="text-sm text-gray-600">For the month of {selectedEmployee['AS ON']}</div>
               </div>
 
-              {/* Employee Details */}
-              <div className="p-4 border-b">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h3 className="font-bold text-blue-600 mb-2">EMPLOYEE DETAILS</h3>
-                    <div className="space-y-1">
-                      <div><strong>Name:</strong> {selectedEmployee['EMPLOYEE NAME']}</div>
-                      <div><strong>Employee ID:</strong> {selectedEmployee['EMPLOYEE ID']}</div>
-                      <div><strong>Designation:</strong> {selectedEmployee['DESIGNATION']}</div>
-                      <div><strong>Department:</strong> {selectedEmployee['DEPARTMENT']}</div>
-                      <div><strong>Branch:</strong> {selectedEmployee['BRANCH']}</div>
+              {/* Employee Information */}
+              <div className="grid grid-cols-2 gap-8 mb-6">
+                <div>
+                  <div className="text-sm font-bold text-blue-700 mb-3 pb-1 border-b border-blue-200">EMPLOYEE DETAILS</div>
+                  <div className="space-y-1.5 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 w-32">Name:</span>
+                      <span className="font-medium flex-1">{selectedEmployee['EMPLOYEE NAME']}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 w-32">Employee ID:</span>
+                      <span className="font-medium flex-1">{selectedEmployee['EMPLOYEE ID']}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 w-32">Designation:</span>
+                      <span className="font-medium flex-1">{selectedEmployee['DESIGNATION']}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 w-32">Department:</span>
+                      <span className="font-medium flex-1">{selectedEmployee['DEPARTMENT']}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 w-32">Branch:</span>
+                      <span className="font-medium flex-1">{selectedEmployee['BRANCH']}</span>
                     </div>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-blue-600 mb-2">EMPLOYMENT INFO</h3>
-                    <div className="space-y-1">
-                      <div><strong>Date of Joining:</strong> {selectedEmployee['DOJ']}</div>
-                      <div><strong>PF No:</strong> {selectedEmployee['PF NO']}</div>
-                      <div><strong>ESI No:</strong> {selectedEmployee['ESI NO']}</div>
-                      <div><strong>UAN:</strong> {selectedEmployee['UAN']}</div>
-                      <div><strong>Status:</strong> {selectedEmployee['STATUS']}</div>
+                </div>
+                
+                <div>
+                  <div className="text-sm font-bold text-blue-700 mb-3 pb-1 border-b border-blue-200">STATUTORY INFO</div>
+                  <div className="space-y-1.5 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 w-32">Date of Joining:</span>
+                      <span className="font-medium flex-1">{selectedEmployee['DOJ']}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 w-32">PF Number:</span>
+                      <span className="font-medium flex-1">{selectedEmployee['PF NO']}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 w-32">ESI Number:</span>
+                      <span className="font-medium flex-1">{selectedEmployee['ESI NO']}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 w-32">UAN:</span>
+                      <span className="font-medium flex-1">{selectedEmployee['UAN']}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 w-32">Status:</span>
+                      <span className="font-medium flex-1">{selectedEmployee['STATUS']}</span>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Attendance */}
-              <div className="p-4 border-b">
-                <h3 className="font-bold text-blue-600 mb-2">ATTENDANCE DETAILS</h3>
+              <div className="mb-6">
+                <div className="text-sm font-bold text-blue-700 mb-3 pb-1 border-b border-blue-200">ATTENDANCE SUMMARY</div>
                 <div className="grid grid-cols-4 gap-4 text-xs">
-                  <div><strong>Total Days:</strong> {selectedEmployee['TOTAL DAYS']}</div>
-                  <div><strong>Present Days:</strong> {selectedEmployee['PRESENT DAYS']}</div>
-                  <div><strong>Salary Days:</strong> {selectedEmployee['SALARY DAYS']}</div>
-                  <div><strong>LOP:</strong> {selectedEmployee['LOP']}</div>
+                  <div className="text-center p-2 bg-gray-50 rounded border">
+                    <div className="font-bold text-blue-600 text-sm">{selectedEmployee['TOTAL DAYS']}</div>
+                    <div className="text-gray-600 text-xs">Total Days</div>
+                  </div>
+                  <div className="text-center p-2 bg-gray-50 rounded border">
+                    <div className="font-bold text-green-600 text-sm">{selectedEmployee['PRESENT DAYS']}</div>
+                    <div className="text-gray-600 text-xs">Present Days</div>
+                  </div>
+                  <div className="text-center p-2 bg-gray-50 rounded border">
+                    <div className="font-bold text-blue-600 text-sm">{selectedEmployee['SALARY DAYS']}</div>
+                    <div className="text-gray-600 text-xs">Paid Days</div>
+                  </div>
+                  <div className="text-center p-2 bg-gray-50 rounded border">
+                    <div className="font-bold text-red-600 text-sm">{selectedEmployee['LOP']}</div>
+                    <div className="text-gray-600 text-xs">LOP Days</div>
+                  </div>
                 </div>
               </div>
 
               {/* Salary Details */}
-              <div className="grid grid-cols-2">
+              <div className="grid grid-cols-2 gap-8 mb-6">
                 {/* Earnings */}
-                <div className="p-4 border-r">
-                  <h3 className="font-bold text-green-600 mb-2">EARNINGS</h3>
-                  <div className="space-y-1">
+                <div className="border border-green-200 p-4 rounded">
+                  <div className="text-sm font-bold text-green-700 mb-3 pb-1 border-b border-green-300">EARNINGS</div>
+                  <div className="space-y-1.5 text-xs">
                     <div className="flex justify-between">
-                      <span>Basic Salary:</span>
-                      <span>{formatCurrency(selectedEmployee['EARNED BASIC'])}</span>
+                      <span>Basic Salary</span>
+                      <span className="font-medium">{formatCurrency(selectedEmployee['EARNED BASIC'])}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>HRA:</span>
-                      <span>{formatCurrency(selectedEmployee['HRA'])}</span>
+                      <span>House Rent Allowance</span>
+                      <span className="font-medium">{formatCurrency(selectedEmployee['HRA'])}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Conveyance:</span>
-                      <span>{formatCurrency(selectedEmployee['LOCAN CONVEY'])}</span>
+                      <span>Conveyance Allowance</span>
+                      <span className="font-medium">{formatCurrency(selectedEmployee['LOCAN CONVEY'])}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Medical Allowance:</span>
-                      <span>{formatCurrency(selectedEmployee['MEDICAL ALLOW'])}</span>
+                      <span>Medical Allowance</span>
+                      <span className="font-medium">{formatCurrency(selectedEmployee['MEDICAL ALLOW'])}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>CCA:</span>
-                      <span>{formatCurrency(selectedEmployee['CITY COMPENSATORY ALLOWANCE (CCA)'])}</span>
+                      <span>City Compensatory Allow.</span>
+                      <span className="font-medium">{formatCurrency(selectedEmployee['CITY COMPENSATORY ALLOWANCE (CCA)'])}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Other Allowances:</span>
-                      <span>{formatCurrency(selectedEmployee['OTHER ALLOWANCE'])}</span>
-                    </div>
-                    {selectedEmployee['INCENTIVE'] > 0 && (
+                    {selectedEmployee['CHILDREN EDUCATION ALLOWANCE (CEA)'] > 0 && (
                       <div className="flex justify-between">
-                        <span>Incentive:</span>
-                        <span>{formatCurrency(selectedEmployee['INCENTIVE'])}</span>
+                        <span>Children Education Allow.</span>
+                        <span className="font-medium">{formatCurrency(selectedEmployee['CHILDREN EDUCATION ALLOWANCE (CEA)'])}</span>
                       </div>
                     )}
-                    <div className="border-t pt-1 mt-2 font-bold flex justify-between">
-                      <span>Gross Salary:</span>
+                    {selectedEmployee['OTHER ALLOWANCE'] > 0 && (
+                      <div className="flex justify-between">
+                        <span>Other Allowances</span>
+                        <span className="font-medium">{formatCurrency(selectedEmployee['OTHER ALLOWANCE'])}</span>
+                      </div>
+                    )}
+                    {selectedEmployee['INCENTIVE'] > 0 && (
+                      <div className="flex justify-between">
+                        <span>Incentive</span>
+                        <span className="font-medium">{formatCurrency(selectedEmployee['INCENTIVE'])}</span>
+                      </div>
+                    )}
+                    <div className="border-t border-green-300 pt-2 mt-2 flex justify-between font-bold text-green-700">
+                      <span>GROSS SALARY</span>
                       <span>{formatCurrency(selectedEmployee['GROSS SALARY'])}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Deductions */}
-                <div className="p-4">
-                  <h3 className="font-bold text-red-600 mb-2">DEDUCTIONS</h3>
-                  <div className="space-y-1">
+                <div className="border border-red-200 p-4 rounded">
+                  <div className="text-sm font-bold text-red-700 mb-3 pb-1 border-b border-red-300">DEDUCTIONS</div>
+                  <div className="space-y-1.5 text-xs">
                     <div className="flex justify-between">
-                      <span>PF:</span>
-                      <span>{formatCurrency(selectedEmployee['PF'])}</span>
+                      <span>Provident Fund</span>
+                      <span className="font-medium">{formatCurrency(selectedEmployee['PF'])}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>ESI:</span>
-                      <span>{formatCurrency(selectedEmployee['ESI'])}</span>
+                      <span>Employee State Insurance</span>
+                      <span className="font-medium">{formatCurrency(selectedEmployee['ESI'])}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>TDS:</span>
-                      <span>{formatCurrency(selectedEmployee['TDS'])}</span>
+                      <span>Tax Deducted at Source</span>
+                      <span className="font-medium">{formatCurrency(selectedEmployee['TDS'])}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>PT:</span>
-                      <span>{formatCurrency(selectedEmployee['PT'])}</span>
+                      <span>Professional Tax</span>
+                      <span className="font-medium">{formatCurrency(selectedEmployee['PT'])}</span>
                     </div>
                     {selectedEmployee['STAFF WELFARE'] > 0 && (
                       <div className="flex justify-between">
-                        <span>Staff Welfare:</span>
-                        <span>{formatCurrency(selectedEmployee['STAFF WELFARE'])}</span>
+                        <span>Staff Welfare</span>
+                        <span className="font-medium">{formatCurrency(selectedEmployee['STAFF WELFARE'])}</span>
                       </div>
                     )}
                     {selectedEmployee['SALARY ADVANCE'] > 0 && (
                       <div className="flex justify-between">
-                        <span>Salary Advance:</span>
-                        <span>{formatCurrency(selectedEmployee['SALARY ADVANCE'])}</span>
+                        <span>Salary Advance</span>
+                        <span className="font-medium">{formatCurrency(selectedEmployee['SALARY ADVANCE'])}</span>
                       </div>
                     )}
-                    <div className="border-t pt-1 mt-2 font-bold flex justify-between">
-                      <span>Total Deductions:</span>
+                    <div className="border-t border-red-300 pt-2 mt-2 flex justify-between font-bold text-red-700">
+                      <span>TOTAL DEDUCTIONS</span>
                       <span>{formatCurrency(selectedEmployee['TOTAL DEDUCTIONS'])}</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Net Pay */}
-              <div className="bg-green-50 p-4 text-center border-t-2 border-green-500">
+              {/* Net Pay Section */}
+              <div className="bg-green-50 border-2 border-green-500 p-4 rounded text-center mb-6">
                 <div className="text-lg font-bold text-green-700">
                   NET PAY: {formatCurrency(selectedEmployee['NET PAY'])}
+                </div>
+                <div className="text-xs text-green-600 mt-1">
+                  (Gross Salary - Total Deductions)
                 </div>
               </div>
 
               {/* Footer */}
-              <div className="p-4 text-center text-xs text-gray-600 border-t">
-                <p>This is a computer generated payslip and does not require signature.</p>
-                <p>Generated on: {new Date().toLocaleDateString()}</p>
+              <div className="text-center text-xs text-gray-600 border-t pt-4">
+                <p className="mb-1">This is a computer generated payslip and does not require signature.</p>
+                <p>Generated on: {new Date().toLocaleDateString('en-IN')}</p>
               </div>
             </div>
           </div>
