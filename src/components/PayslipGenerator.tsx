@@ -79,9 +79,35 @@ const PayslipGenerator = () => {
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet) as EmployeeData[];
         
-        console.log('Loaded employee data:', jsonData);
-        setEmployees(jsonData);
-        toast.success(`Successfully loaded ${jsonData.length} employee records`);
+        // Process the data to ensure numeric fields are properly converted
+        const processedData = jsonData.map(emp => ({
+          ...emp,
+          'NET PAY': Number(emp['NET PAY']) || 0,
+          'GROSS SALARY': Number(emp['GROSS SALARY']) || 0,
+          'TOTAL DEDUCTIONS': Number(emp['TOTAL DEDUCTIONS']) || 0,
+          'EARNED BASIC': Number(emp['EARNED BASIC']) || 0,
+          'HRA': Number(emp['HRA']) || 0,
+          'LOCAN CONVEY': Number(emp['LOCAN CONVEY']) || 0,
+          'MEDICAL ALLOW': Number(emp['MEDICAL ALLOW']) || 0,
+          'CITY COMPENSATORY ALLOWANCE (CCA)': Number(emp['CITY COMPENSATORY ALLOWANCE (CCA)']) || 0,
+          'CHILDREN EDUCATION ALLOWANCE (CEA)': Number(emp['CHILDREN EDUCATION ALLOWANCE (CEA)']) || 0,
+          'OTHER ALLOWANCE': Number(emp['OTHER ALLOWANCE']) || 0,
+          'INCENTIVE': Number(emp['INCENTIVE']) || 0,
+          'PF': Number(emp['PF']) || 0,
+          'ESI': Number(emp['ESI']) || 0,
+          'TDS': Number(emp['TDS']) || 0,
+          'PT': Number(emp['PT']) || 0,
+          'STAFF WELFARE': Number(emp['STAFF WELFARE']) || 0,
+          'SALARY ADVANCE': Number(emp['SALARY ADVANCE']) || 0,
+          'TOTAL DAYS': Number(emp['TOTAL DAYS']) || 0,
+          'PRESENT DAYS': Number(emp['PRESENT DAYS']) || 0,
+          'SALARY DAYS': Number(emp['SALARY DAYS']) || 0,
+          'LOP': Number(emp['LOP']) || 0,
+        }));
+        
+        console.log('Loaded and processed employee data:', processedData);
+        setEmployees(processedData);
+        toast.success(`Successfully loaded ${processedData.length} employee records`);
       } catch (error) {
         toast.error('Error reading Excel file. Please check the format.');
         console.error('Excel parsing error:', error);
@@ -100,9 +126,9 @@ const PayslipGenerator = () => {
       setSelectedEmployee(employee);
       
       // Wait for the component to render with new data
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      console.log('Generating PDF for:', employee['EMPLOYEE NAME']);
+      console.log('Generating PDF for:', employee['EMPLOYEE NAME'], 'Net Pay:', employee['NET PAY']);
 
       const canvas = await html2canvas(payslipRef.current, {
         scale: 2,
@@ -111,7 +137,17 @@ const PayslipGenerator = () => {
         backgroundColor: '#ffffff',
         width: 794,
         height: 1123,
-        logging: false,
+        logging: true,
+        onclone: (clonedDoc) => {
+          // Make the cloned element visible for capturing
+          const clonedElement = clonedDoc.querySelector('[data-payslip-template]') as HTMLElement;
+          if (clonedElement) {
+            clonedElement.style.visibility = 'visible';
+            clonedElement.style.position = 'relative';
+            clonedElement.style.top = '0';
+            clonedElement.style.left = '0';
+          }
+        }
       });
 
       const imgData = canvas.toDataURL('image/png');
@@ -164,7 +200,7 @@ const PayslipGenerator = () => {
       }
       
       // Small delay between generations to prevent browser freezing
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
     }
 
     setIsGenerating(false);
@@ -313,10 +349,11 @@ const PayslipGenerator = () => {
           </Card>
         </div>
 
-        {/* Hidden Professional Payslip Template - Always rendered but content is conditional */}
+        {/* Hidden Professional Payslip Template - Always rendered but positioned off-screen */}
         <div
           ref={payslipRef}
-          className="absolute top-[-9999px] left-[-9999px] bg-white"
+          data-payslip-template
+          className="fixed top-[-9999px] left-[-9999px] bg-white"
           style={{ 
             width: '794px', 
             height: '1123px',
