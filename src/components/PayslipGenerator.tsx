@@ -643,7 +643,7 @@ const PayslipGenerator = () => {
           </Card>
         </div>
 
-        {/* Hidden Professional Payslip Template - Updated with Company Logo */}
+        {/* Hidden Professional Payslip Template - Updated with Nava Chetana Logo */}
         <div
           ref={payslipRef}
           data-payslip-template
@@ -669,7 +669,7 @@ const PayslipGenerator = () => {
                   {/* Company Logo */}
                   <div className="w-20 h-20 flex-shrink-0">
                     <img 
-                      src="/WhatsApp Image 2025-06-28 at 23.24.54.jpeg" 
+                      src="/WhatsApp Image 2025-06-28 at 23.24.54 copy.jpeg" 
                       alt="Nava Chetana Logo" 
                       className="w-full h-full object-contain"
                       style={{ maxWidth: '80px', maxHeight: '80px' }}
