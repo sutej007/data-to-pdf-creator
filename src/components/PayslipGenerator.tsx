@@ -1,9 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, Download, FileText, Users, Loader2 } from "lucide-react";
+import { Upload, Download, FileText, Users, Loader2, Smartphone } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
@@ -52,7 +52,43 @@ const PayslipGenerator = () => {
   const [currentProgress, setCurrentProgress] = useState(0);
   const [debugInfo, setDebugInfo] = useState<string>('');
   const [columnMapping, setColumnMapping] = useState<{[key: string]: string}>({});
+  const [isMobile, setIsMobile] = useState(false);
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
   const payslipRef = useRef<HTMLDivElement>(null);
+
+  // Check if device is mobile and handle PWA install prompt
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    // Handle PWA install prompt
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault();
+      setInstallPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallPWA = async () => {
+    if (installPrompt) {
+      installPrompt.prompt();
+      const { outcome } = await installPrompt.userChoice;
+      if (outcome === 'accepted') {
+        toast.success('App installed successfully!');
+      }
+      setInstallPrompt(null);
+    }
+  };
 
   // Function to find the best matching column for a given field
   const findBestMatch = (headers: string[], patterns: string[]): string | null => {
@@ -245,7 +281,7 @@ const PayslipGenerator = () => {
       element.style.zIndex = '9999';
 
       const canvas = await html2canvas(element, {
-        scale: 2,
+        scale: isMobile ? 1.5 : 2, // Reduce scale on mobile for performance
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
@@ -329,7 +365,7 @@ const PayslipGenerator = () => {
       }
       
       // Small delay between generations to prevent browser freezing
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, isMobile ? 2000 : 1000));
     }
 
     setIsGenerating(false);
@@ -351,31 +387,51 @@ const PayslipGenerator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-2 md:p-4">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Professional Payslip Generator</h1>
-          <p className="text-lg text-gray-600">Convert Excel employee data to professional PDF payslips</p>
+        <div className="text-center mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2">Professional Payslip Generator</h1>
+          <p className="text-sm md:text-lg text-gray-600">Convert Excel employee data to professional PDF payslips</p>
+          
+          {/* PWA Install Button */}
+          {installPrompt && (
+            <div className="mt-4">
+              <Button
+                onClick={handleInstallPWA}
+                className="bg-green-600 hover:bg-green-700 text-white"
+                size="sm"
+              >
+                <Smartphone className="h-4 w-4 mr-2" />
+                Install App on Phone
+              </Button>
+            </div>
+          )}
+          
+          {isMobile && (
+            <div className="mt-2 text-xs text-blue-600 bg-blue-50 p-2 rounded">
+              📱 Mobile optimized! Add to home screen for best experience.
+            </div>
+          )}
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className={`grid ${isMobile ? 'grid-cols-1' : 'lg:grid-cols-2'} gap-4 md:gap-8`}>
           {/* Upload and Controls */}
           <Card className="shadow-lg">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Upload className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+                <Upload className="h-4 w-4 md:h-5 md:w-5" />
                 Upload Excel File
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4 md:space-y-6">
               <div>
-                <Label htmlFor="excel-upload">Select Excel file with employee salary data</Label>
+                <Label htmlFor="excel-upload" className="text-sm">Select Excel file with employee salary data</Label>
                 <Input
                   id="excel-upload"
                   type="file"
                   accept=".xlsx,.xls"
                   onChange={handleFileUpload}
-                  className="mt-2"
+                  className="mt-2 text-sm"
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   Excel file should have headers in the first row
@@ -386,7 +442,7 @@ const PayslipGenerator = () => {
               {debugInfo && (
                 <div className="bg-blue-50 border border-blue-200 rounded p-3">
                   <div className="text-sm font-medium text-blue-800 mb-2">Column Mapping Results:</div>
-                  <div className="text-xs text-blue-700 whitespace-pre-line max-h-40 overflow-y-auto">
+                  <div className="text-xs text-blue-700 whitespace-pre-line max-h-32 md:max-h-40 overflow-y-auto">
                     {debugInfo}
                   </div>
                 </div>
@@ -395,15 +451,15 @@ const PayslipGenerator = () => {
               {employees.length > 0 && (
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-green-600">
-                    <Users className="h-5 w-5" />
-                    <span className="font-medium">{employees.length} employees loaded successfully</span>
+                    <Users className="h-4 w-4 md:h-5 md:w-5" />
+                    <span className="font-medium text-sm md:text-base">{employees.length} employees loaded successfully</span>
                   </div>
 
                   <div className="grid gap-2">
                     <Button
                       onClick={generateAllPDFs}
                       disabled={isGenerating}
-                      className="w-full bg-blue-600 hover:bg-blue-700"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-sm md:text-base"
                     >
                       {isGenerating ? (
                         <>
@@ -419,28 +475,29 @@ const PayslipGenerator = () => {
                     </Button>
                   </div>
 
-                  <div className="max-h-60 overflow-y-auto border rounded-lg">
-                    <table className="w-full text-sm">
+                  <div className="max-h-48 md:max-h-60 overflow-y-auto border rounded-lg">
+                    <table className="w-full text-xs md:text-sm">
                       <thead className="bg-gray-50 sticky top-0">
                         <tr>
-                          <th className="p-2 text-left font-medium">Employee Name</th>
-                          <th className="p-2 text-left font-medium">ID</th>
-                          <th className="p-2 text-left font-medium">Net Pay</th>
-                          <th className="p-2 text-left font-medium">Action</th>
+                          <th className="p-1 md:p-2 text-left font-medium">Employee Name</th>
+                          <th className="p-1 md:p-2 text-left font-medium">ID</th>
+                          <th className="p-1 md:p-2 text-left font-medium">Net Pay</th>
+                          <th className="p-1 md:p-2 text-left font-medium">Action</th>
                         </tr>
                       </thead>
                       <tbody>
                         {employees.map((emp, index) => (
                           <tr key={index} className="border-t hover:bg-gray-50">
-                            <td className="p-2 font-medium">{emp['EMPLOYEE NAME']}</td>
-                            <td className="p-2 text-gray-600">{emp['EMPLOYEE ID']}</td>
-                            <td className="p-2 text-green-600 font-medium">{formatCurrency(emp['NET PAY'])}</td>
-                            <td className="p-2">
+                            <td className="p-1 md:p-2 font-medium">{emp['EMPLOYEE NAME']}</td>
+                            <td className="p-1 md:p-2 text-gray-600">{emp['EMPLOYEE ID']}</td>
+                            <td className="p-1 md:p-2 text-green-600 font-medium">{formatCurrency(emp['NET PAY'])}</td>
+                            <td className="p-1 md:p-2">
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => generatePDF(emp)}
                                 disabled={isGenerating}
+                                className="text-xs"
                               >
                                 <FileText className="h-3 w-3 mr-1" />
                                 PDF
@@ -459,7 +516,7 @@ const PayslipGenerator = () => {
           {/* Preview */}
           <Card className="shadow-lg">
             <CardHeader>
-              <CardTitle>Payslip Preview</CardTitle>
+              <CardTitle className="text-lg md:text-xl">Payslip Preview</CardTitle>
             </CardHeader>
             <CardContent>
               {selectedEmployee ? (
@@ -478,8 +535,8 @@ const PayslipGenerator = () => {
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-12 text-gray-500">
-                  <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <div className="text-center py-8 md:py-12 text-gray-500">
+                  <FileText className="h-8 w-8 md:h-12 md:w-12 mx-auto mb-4 opacity-50" />
                   <p className="text-sm">Upload Excel file to see employee data</p>
                   <p className="text-xs text-gray-400 mt-1">Individual PDFs will be generated for each employee</p>
                 </div>
