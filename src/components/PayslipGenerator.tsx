@@ -430,50 +430,229 @@ const PayslipGenerator = () => {
   };
 
   const generatePDF = async (employee: EmployeeData, showToast: boolean = true) => {
-    if (!payslipRef.current) {
-      console.error('Payslip ref not found');
-      return false;
-    }
-
     try {
-      console.log('Generating PDF for employee:', employee);
-      console.log('Employee name:', employee['EMPLOYEE NAME']);
-      console.log('Net pay:', employee['NET PAY']);
-      console.log('Logo loaded:', logoLoaded);
+      console.log('Starting PDF generation for:', employee['EMPLOYEE NAME']);
       
-      // Set the employee data for the template and force re-render
-      setSelectedEmployee(employee);
+      // Create a temporary container for the payslip
+      const tempContainer = document.createElement('div');
+      tempContainer.style.position = 'absolute';
+      tempContainer.style.top = '0px';
+      tempContainer.style.left = '0px';
+      tempContainer.style.width = '794px';
+      tempContainer.style.height = '1123px';
+      tempContainer.style.backgroundColor = 'white';
+      tempContainer.style.fontFamily = 'Arial, sans-serif';
+      tempContainer.style.fontSize = '11px';
+      tempContainer.style.lineHeight = '1.4';
+      tempContainer.style.zIndex = '10000';
       
-      // Wait for the component to render with new data
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Create the payslip HTML content
+      tempContainer.innerHTML = `
+        <div style="padding: 24px; height: 100%; background: white; border: 2px solid #e5e7eb;">
+          <!-- Company Header with Logo -->
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #1e40af;">
+            <!-- Left Side - Logo and Company Info -->
+            <div style="display: flex; align-items: flex-start; gap: 16px;">
+              <!-- Company Logo -->
+              <div style="width: 64px; height: 64px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 1px solid #e5e7eb; background-color: #f9fafb;">
+                ${logoLoaded && logoDataUrl ? 
+                  `<img src="${logoDataUrl}" alt="Nava Chetana Logo" style="width: 60px; height: 60px; object-fit: contain; display: block; max-width: 100%; max-height: 100%;" />` :
+                  `<div style="width: 60px; height: 60px; background-color: #e5e7eb; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #6b7280; text-align: center; font-weight: bold;">NAVA<br/>CHETANA<br/>LOGO</div>`
+                }
+              </div>
+              
+              <!-- Company Details -->
+              <div>
+                <h1 style="font-size: 14px; line-height: 1.2; font-weight: bold; color: #1e40af; margin-bottom: 4px;">
+                  NAVACHETANA VIVIDODDESHA SOUHARDA SAHAKARI NIYAMIT
+                </h1>
+                <div style="font-size: 10px; color: #374151; line-height: 1.3;">
+                  <div>HITAISHI PALACE, SHIRUR GROUP BUILDING P B ROAD, HAVERI</div>
+                  <div>HAVERI - 581110, KARNATAKA</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Right Side - Payslip Title and Month -->
+            <div style="text-align: right;">
+              <div style="font-size: 16px; font-weight: bold; color: #1e40af; margin-bottom: 4px;">PAYSLIP</div>
+              <div style="font-size: 12px; color: #6b7280;">Payslip for ${employee['AS ON']}</div>
+            </div>
+          </div>
 
-      // Verify the element has content before capturing
-      const element = payslipRef.current;
-      if (!element) {
-        throw new Error('Payslip element not found');
-      }
+          <!-- Employee Information Grid -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <!-- Left Column - Employee Details -->
+            <div>
+              <div style="font-size: 12px; font-weight: bold; color: #1e40af; margin-bottom: 12px; padding-bottom: 4px; border-bottom: 1px solid #bfdbfe;">
+                EMPLOYEE DETAILS
+              </div>
+              <div style="font-size: 10px; line-height: 1.5;">
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-bottom: 6px;">
+                  <span style="color: #6b7280;">Employee Code:</span>
+                  <span style="font-weight: 500;">${employee['EMPLOYEE ID']}</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-bottom: 6px;">
+                  <span style="color: #6b7280;">Name:</span>
+                  <span style="font-weight: 500;">${employee['EMPLOYEE NAME']}</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-bottom: 6px;">
+                  <span style="color: #6b7280;">Designation:</span>
+                  <span style="font-weight: 500;">${employee['DESIGNATION']}</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-bottom: 6px;">
+                  <span style="color: #6b7280;">Department:</span>
+                  <span style="font-weight: 500;">${employee['DEPARTMENT']}</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-bottom: 6px;">
+                  <span style="color: #6b7280;">Gender:</span>
+                  <span style="font-weight: 500;">Male</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-bottom: 6px;">
+                  <span style="color: #6b7280;">Date of Birth:</span>
+                  <span style="font-weight: 500;">02-Jul-1992</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-bottom: 6px;">
+                  <span style="color: #6b7280;">Date of Joining:</span>
+                  <span style="font-weight: 500;">${formatDate(employee['DOJ'])}</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-bottom: 6px;">
+                  <span style="color: #6b7280;">Attendance:</span>
+                  <span style="font-weight: 500;">Base,Elig: ${employee['PRESENT DAYS']}.00, ${employee['TOTAL DAYS']}.00</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Right Column - Bank & Statutory Details -->
+            <div>
+              <div style="font-size: 12px; font-weight: bold; color: #1e40af; margin-bottom: 12px; padding-bottom: 4px; border-bottom: 1px solid #bfdbfe;">
+                BANK & STATUTORY INFO
+              </div>
+              <div style="font-size: 10px; line-height: 1.5;">
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-bottom: 6px;">
+                  <span style="color: #6b7280;">Bank:</span>
+                  <span style="font-weight: 500;">UJJIVAN SMALL FINANCE BANK</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-bottom: 6px;">
+                  <span style="color: #6b7280;">Bank A/C No.:</span>
+                  <span style="font-weight: 500;">113111008005138</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-bottom: 6px;">
+                  <span style="color: #6b7280;">Location:</span>
+                  <span style="font-weight: 500;">${employee['BRANCH']}</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-bottom: 6px;">
+                  <span style="color: #6b7280;">PAN:</span>
+                  <span style="font-weight: 500;">DZXPM7034M</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-bottom: 6px;">
+                  <span style="color: #6b7280;">UAN:</span>
+                  <span style="font-weight: 500;">${employee['UAN']}</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-bottom: 6px;">
+                  <span style="color: #6b7280;">PF A/C No.:</span>
+                  <span style="font-weight: 500;">${employee['PF NO']}</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-bottom: 6px;">
+                  <span style="color: #6b7280;">ESI No.:</span>
+                  <span style="font-weight: 500;">${employee['ESI NO']}</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-bottom: 6px;">
+                  <span style="color: #6b7280;">Previous Period LOP:</span>
+                  <span style="font-weight: 500;">LOP Reversal Days: 0.0, 0.0</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      console.log('Element content before capture:', element.innerHTML.length);
+          <!-- Earnings and Deductions Table -->
+          <div style="margin-bottom: 24px;">
+            <table style="width: 100%; font-size: 10px; border-collapse: collapse; border: 1px solid #d1d5db;">
+              <thead>
+                <tr style="background-color: #059669;">
+                  <th style="padding: 8px; text-align: left; color: white; font-weight: bold; border: 1px solid #d1d5db;">Earnings</th>
+                  <th style="padding: 8px; text-align: center; color: white; font-weight: bold; border: 1px solid #d1d5db;">Fixed Amount</th>
+                  <th style="padding: 8px; text-align: center; color: white; font-weight: bold; border: 1px solid #d1d5db;">Earning Amount</th>
+                  <th style="padding: 8px; text-align: left; color: white; font-weight: bold; border: 1px solid #d1d5db;">Deductions</th>
+                  <th style="padding: 8px; text-align: center; color: white; font-weight: bold; border: 1px solid #d1d5db;">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding: 8px; border: 1px solid #d1d5db;">Basic</td>
+                  <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">${employee['EARNED BASIC'].toFixed(2)}</td>
+                  <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">${employee['EARNED BASIC'].toFixed(2)}</td>
+                  <td style="padding: 8px; border: 1px solid #d1d5db;">Employees StateInsurance</td>
+                  <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">${employee['ESI'].toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px; border: 1px solid #d1d5db;">HouseRentAllowance</td>
+                  <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">${employee['HRA'].toFixed(2)}</td>
+                  <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">${employee['HRA'].toFixed(2)}</td>
+                  <td style="padding: 8px; border: 1px solid #d1d5db;">Staff Welfare Fund</td>
+                  <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">${employee['STAFF WELFARE'].toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px; border: 1px solid #d1d5db;">LocalConveyanceAllowance</td>
+                  <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">${employee['LOCAN CONVEY'].toFixed(2)}</td>
+                  <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">${employee['LOCAN CONVEY'].toFixed(2)}</td>
+                  <td style="padding: 8px; border: 1px solid #d1d5db;">Staff Security Deposit</td>
+                  <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">200.00</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px; border: 1px solid #d1d5db;">MedicalAllowance</td>
+                  <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">${employee['MEDICAL ALLOW'].toFixed(2)}</td>
+                  <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">${employee['MEDICAL ALLOW'].toFixed(2)}</td>
+                  <td style="padding: 8px; border: 1px solid #d1d5db;">ProfessionalTax</td>
+                  <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">${employee['PT'].toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px; border: 1px solid #d1d5db;">Incentive Pay</td>
+                  <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;"></td>
+                  <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">${employee['INCENTIVE'].toFixed(2)}</td>
+                  <td style="padding: 8px; border: 1px solid #d1d5db;">ProvidentFund</td>
+                  <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">${employee['PF'].toFixed(2)}</td>
+                </tr>
+                <tr style="background-color: #059669;">
+                  <td style="padding: 8px; font-weight: bold; color: white; border: 1px solid #d1d5db;">Total Earnings</td>
+                  <td style="padding: 8px; text-align: right; font-weight: bold; color: white; border: 1px solid #d1d5db;">${(employee['EARNED BASIC'] + employee['HRA'] + employee['LOCAN CONVEY'] + employee['MEDICAL ALLOW']).toFixed(2)}</td>
+                  <td style="padding: 8px; text-align: right; font-weight: bold; color: white; border: 1px solid #d1d5db;">${employee['GROSS SALARY'].toFixed(2)}</td>
+                  <td style="padding: 8px; font-weight: bold; color: white; border: 1px solid #d1d5db;">Total Deductions</td>
+                  <td style="padding: 8px; text-align: right; font-weight: bold; color: white; border: 1px solid #d1d5db;">${employee['TOTAL DEDUCTIONS'].toFixed(2)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Net Salary -->
+          <div style="text-align: center; margin-bottom: 24px; padding: 12px; background-color: #f0f9ff; border: 2px solid #0ea5e9;">
+            <div style="font-size: 14px; font-weight: bold; color: #1e40af;">
+              Net Salary: ₹${employee['NET PAY'].toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (Rupees ${convertNumberToWords(employee['NET PAY'])})
+            </div>
+          </div>
+
+          <!-- Footer Note -->
+          <div style="text-align: center; font-size: 10px; color: #6b7280; border-top: 1px solid #d1d5db; padding-top: 12px;">
+            <p style="margin-bottom: 4px;">
+              <strong>Note:</strong> This is system generated payslip signature or company seal not required, your salary is confidential and should not be shared with other colleague.
+            </p>
+            <div style="display: flex; justify-content: space-between; margin-top: 12px;">
+              <span>Page 1 of 1</span>
+              <span>Downloaded On ${new Date().toLocaleDateString('en-GB')} ${new Date().toLocaleTimeString('en-US', { hour12: true })}</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Add to document temporarily
+      document.body.appendChild(tempContainer);
+
+      // Wait for images to load
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      console.log('Capturing element with html2canvas...');
       
-      // Make the element visible temporarily for capture with better positioning
-      const originalStyles = {
-        position: element.style.position,
-        top: element.style.top,
-        left: element.style.left,
-        visibility: element.style.visibility,
-        zIndex: element.style.zIndex
-      };
-
-      element.style.position = 'absolute';
-      element.style.top = '0px';
-      element.style.left = '0px';
-      element.style.visibility = 'visible';
-      element.style.zIndex = '10000';
-
-      // Wait a bit more for images to load
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      const canvas = await html2canvas(element, {
+      const canvas = await html2canvas(tempContainer, {
         scale: isMobile ? 1.5 : 2,
         useCORS: true,
         allowTaint: false,
@@ -482,28 +661,12 @@ const PayslipGenerator = () => {
         height: 1123,
         logging: false,
         imageTimeout: 15000,
-        removeContainer: true,
-        foreignObjectRendering: true,
-        onclone: (clonedDoc) => {
-          const clonedElement = clonedDoc.querySelector('[data-payslip-template]') as HTMLElement;
-          if (clonedElement) {
-            clonedElement.style.visibility = 'visible';
-            clonedElement.style.position = 'static';
-            clonedElement.style.transform = 'none';
-            
-            // Ensure logo is visible in cloned document
-            const logoImg = clonedElement.querySelector('img[alt="Nava Chetana Logo"]') as HTMLImageElement;
-            if (logoImg && logoDataUrl) {
-              logoImg.src = logoDataUrl;
-              logoImg.style.display = 'block';
-              logoImg.style.visibility = 'visible';
-            }
-          }
-        }
+        removeContainer: false,
+        foreignObjectRendering: true
       });
 
-      // Restore original styles
-      Object.assign(element.style, originalStyles);
+      // Remove temporary container
+      document.body.removeChild(tempContainer);
 
       console.log('Canvas dimensions:', canvas.width, 'x', canvas.height);
 
@@ -750,251 +913,12 @@ const PayslipGenerator = () => {
           </Card>
         </div>
 
-        {/* Hidden Professional Payslip Template - Fixed Logo Display */}
+        {/* Hidden payslip template for reference only */}
         <div
           ref={payslipRef}
-          data-payslip-template
-          className="fixed"
-          style={{ 
-            top: '-9999px',
-            left: '-9999px',
-            width: '794px', 
-            height: '1123px',
-            fontSize: '11px', 
-            lineHeight: '1.4', 
-            fontFamily: 'Arial, sans-serif',
-            visibility: 'hidden',
-            backgroundColor: 'white',
-            zIndex: '-1'
-          }}
+          style={{ display: 'none' }}
         >
-          {selectedEmployee && (
-            <div className="p-6 h-full bg-white" style={{ border: '2px solid #e5e7eb' }}>
-              {/* Company Header with Logo in Left Corner */}
-              <div className="flex items-start justify-between mb-6 pb-4" style={{ borderBottom: '2px solid #1e40af' }}>
-                {/* Left Side - Logo and Company Info */}
-                <div className="flex items-start gap-4">
-                  {/* Company Logo in Left Corner - Fixed with data URL */}
-                  <div 
-                    className="w-16 h-16 flex-shrink-0 flex items-center justify-center" 
-                    style={{ 
-                      border: '1px solid #e5e7eb',
-                      backgroundColor: '#f9fafb'
-                    }}
-                  >
-                    {logoLoaded && logoDataUrl ? (
-                      <img 
-                        src={logoDataUrl}
-                        alt="Nava Chetana Logo" 
-                        style={{ 
-                          width: '60px', 
-                          height: '60px', 
-                          objectFit: 'contain',
-                          display: 'block',
-                          maxWidth: '100%',
-                          maxHeight: '100%'
-                        }}
-                      />
-                    ) : (
-                      <div style={{ 
-                        width: '60px', 
-                        height: '60px', 
-                        backgroundColor: '#e5e7eb',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '8px',
-                        color: '#6b7280',
-                        textAlign: 'center',
-                        fontWeight: 'bold'
-                      }}>
-                        NAVA<br/>CHETANA<br/>LOGO
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Company Details */}
-                  <div>
-                    <h1 className="text-lg font-bold text-blue-800 mb-1" style={{ fontSize: '14px', lineHeight: '1.2' }}>
-                      NAVACHETANA VIVIDODDESHA SOUHARDA SAHAKARI NIYAMIT
-                    </h1>
-                    <div className="text-xs text-gray-700 space-y-0.5">
-                      <div>HITAISHI PALACE, SHIRUR GROUP BUILDING P B ROAD, HAVERI</div>
-                      <div>HAVERI - 581110, KARNATAKA</div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Right Side - Payslip Title and Month */}
-                <div className="text-right">
-                  <div className="text-xl font-bold text-blue-800 mb-1">PAYSLIP</div>
-                  <div className="text-sm text-gray-600">Payslip for {selectedEmployee['AS ON']}</div>
-                </div>
-              </div>
-
-              {/* Employee Information Grid */}
-              <div className="grid grid-cols-2 gap-6 mb-6">
-                {/* Left Column - Employee Details */}
-                <div>
-                  <div className="text-sm font-bold text-blue-700 mb-3 pb-1" style={{ borderBottom: '1px solid #bfdbfe' }}>
-                    EMPLOYEE DETAILS
-                  </div>
-                  <div className="space-y-1.5 text-xs">
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-gray-600">Employee Code:</span>
-                      <span className="font-medium col-span-2">{selectedEmployee['EMPLOYEE ID']}</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-gray-600">Name:</span>
-                      <span className="font-medium col-span-2">{selectedEmployee['EMPLOYEE NAME']}</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-gray-600">Designation:</span>
-                      <span className="font-medium col-span-2">{selectedEmployee['DESIGNATION']}</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-gray-600">Department:</span>
-                      <span className="font-medium col-span-2">{selectedEmployee['DEPARTMENT']}</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-gray-600">Gender:</span>
-                      <span className="font-medium col-span-2">Male</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-gray-600">Date of Birth:</span>
-                      <span className="font-medium col-span-2">02-Jul-1992</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-gray-600">Date of Joining:</span>
-                      <span className="font-medium col-span-2">{formatDate(selectedEmployee['DOJ'])}</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-gray-600">Attendance:</span>
-                      <span className="font-medium col-span-2">Base,Elig: {selectedEmployee['PRESENT DAYS']}.00, {selectedEmployee['TOTAL DAYS']}.00</span>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Right Column - Bank & Statutory Details */}
-                <div>
-                  <div className="text-sm font-bold text-blue-700 mb-3 pb-1" style={{ borderBottom: '1px solid #bfdbfe' }}>
-                    BANK & STATUTORY INFO
-                  </div>
-                  <div className="space-y-1.5 text-xs">
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-gray-600">Bank:</span>
-                      <span className="font-medium col-span-2">UJJIVAN SMALL FINANCE BANK</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-gray-600">Bank A/C No.:</span>
-                      <span className="font-medium col-span-2">113111008005138</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-gray-600">Location:</span>
-                      <span className="font-medium col-span-2">{selectedEmployee['BRANCH']}</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-gray-600">PAN:</span>
-                      <span className="font-medium col-span-2">DZXPM7034M</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-gray-600">UAN:</span>
-                      <span className="font-medium col-span-2">{selectedEmployee['UAN']}</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-gray-600">PF A/C No.:</span>
-                      <span className="font-medium col-span-2">{selectedEmployee['PF NO']}</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-gray-600">ESI No.:</span>
-                      <span className="font-medium col-span-2">{selectedEmployee['ESI NO']}</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <span className="text-gray-600">Previous Period LOP:</span>
-                      <span className="font-medium col-span-2">LOP Reversal Days: 0.0, 0.0</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Earnings and Deductions Table */}
-              <div className="mb-6">
-                <table className="w-full text-xs border-collapse" style={{ border: '1px solid #d1d5db' }}>
-                  <thead>
-                    <tr style={{ backgroundColor: '#059669' }}>
-                      <th className="p-2 text-left text-white font-bold" style={{ border: '1px solid #d1d5db' }}>Earnings</th>
-                      <th className="p-2 text-center text-white font-bold" style={{ border: '1px solid #d1d5db' }}>Fixed Amount</th>
-                      <th className="p-2 text-center text-white font-bold" style={{ border: '1px solid #d1d5db' }}>Earning Amount</th>
-                      <th className="p-2 text-left text-white font-bold" style={{ border: '1px solid #d1d5db' }}>Deductions</th>
-                      <th className="p-2 text-center text-white font-bold" style={{ border: '1px solid #d1d5db' }}>Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="p-2" style={{ border: '1px solid #d1d5db' }}>Basic</td>
-                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['EARNED BASIC'].toFixed(2)}</td>
-                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['EARNED BASIC'].toFixed(2)}</td>
-                      <td className="p-2" style={{ border: '1px solid #d1d5db' }}>Employees StateInsurance</td>
-                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['ESI'].toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                      <td className="p-2" style={{ border: '1px solid #d1d5db' }}>HouseRentAllowance</td>
-                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['HRA'].toFixed(2)}</td>
-                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['HRA'].toFixed(2)}</td>
-                      <td className="p-2" style={{ border: '1px solid #d1d5db' }}>Staff Welfare Fund</td>
-                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['STAFF WELFARE'].toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                      <td className="p-2" style={{ border: '1px solid #d1d5db' }}>LocalConveyanceAllowance</td>
-                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['LOCAN CONVEY'].toFixed(2)}</td>
-                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['LOCAN CONVEY'].toFixed(2)}</td>
-                      <td className="p-2" style={{ border: '1px solid #d1d5db' }}>Staff Security Deposit</td>
-                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>200.00</td>
-                    </tr>
-                    <tr>
-                      <td className="p-2" style={{ border: '1px solid #d1d5db' }}>MedicalAllowance</td>
-                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['MEDICAL ALLOW'].toFixed(2)}</td>
-                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['MEDICAL ALLOW'].toFixed(2)}</td>
-                      <td className="p-2" style={{ border: '1px solid #d1d5db' }}>ProfessionalTax</td>
-                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['PT'].toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                      <td className="p-2" style={{ border: '1px solid #d1d5db' }}>Incentive Pay</td>
-                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}></td>
-                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['INCENTIVE'].toFixed(2)}</td>
-                      <td className="p-2" style={{ border: '1px solid #d1d5db' }}>ProvidentFund</td>
-                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['PF'].toFixed(2)}</td>
-                    </tr>
-                    <tr style={{ backgroundColor: '#059669' }}>
-                      <td className="p-2 font-bold text-white" style={{ border: '1px solid #d1d5db' }}>Total Earnings</td>
-                      <td className="p-2 text-right font-bold text-white" style={{ border: '1px solid #d1d5db' }}>{(selectedEmployee['EARNED BASIC'] + selectedEmployee['HRA'] + selectedEmployee['LOCAN CONVEY'] + selectedEmployee['MEDICAL ALLOW']).toFixed(2)}</td>
-                      <td className="p-2 text-right font-bold text-white" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['GROSS SALARY'].toFixed(2)}</td>
-                      <td className="p-2 font-bold text-white" style={{ border: '1px solid #d1d5db' }}>Total Deductions</td>
-                      <td className="p-2 text-right font-bold text-white" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['TOTAL DEDUCTIONS'].toFixed(2)}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Net Salary */}
-              <div className="text-center mb-6 p-3" style={{ backgroundColor: '#f0f9ff', border: '2px solid #0ea5e9' }}>
-                <div className="text-base font-bold text-blue-800">
-                  Net Salary: {formatCurrency(selectedEmployee['NET PAY'])} (Rupees {convertNumberToWords(selectedEmployee['NET PAY'])})
-                </div>
-              </div>
-
-              {/* Footer Note */}
-              <div className="text-center text-xs text-gray-600 border-t pt-3">
-                <p className="mb-1">
-                  <strong>Note:</strong> This is system generated payslip signature or company seal not required, your salary is confidential and should not be shared with other colleague.
-                </p>
-                <div className="flex justify-between mt-3">
-                  <span>Page 1 of 1</span>
-                  <span>Downloaded On {new Date().toLocaleDateString('en-GB')} {new Date().toLocaleTimeString('en-US', { hour12: true })}</span>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* This is kept for reference but not used in PDF generation */}
         </div>
       </div>
     </div>
