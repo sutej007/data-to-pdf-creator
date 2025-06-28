@@ -1,10 +1,9 @@
-
 import React, { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, Download, FileText, Users } from "lucide-react";
+import { Upload, Download, FileText, Users, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
@@ -64,6 +63,7 @@ const PayslipGenerator = () => {
   const [employees, setEmployees] = useState<EmployeeData[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeData | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [currentProgress, setCurrentProgress] = useState(0);
   const payslipRef = useRef<HTMLDivElement>(null);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,6 +79,7 @@ const PayslipGenerator = () => {
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet) as EmployeeData[];
         
+        console.log('Loaded employee data:', jsonData);
         setEmployees(jsonData);
         toast.success(`Successfully loaded ${jsonData.length} employee records`);
       } catch (error) {
@@ -89,21 +90,28 @@ const PayslipGenerator = () => {
     reader.readAsArrayBuffer(file);
   };
 
-  const generatePDF = async (employee: EmployeeData) => {
-    if (!payslipRef.current) return;
-
-    setIsGenerating(true);
-    setSelectedEmployee(employee);
-
-    // Wait for the component to render
-    await new Promise(resolve => setTimeout(resolve, 200));
+  const generatePDF = async (employee: EmployeeData, showToast: boolean = true) => {
+    if (!payslipRef.current) {
+      console.error('Payslip ref not found');
+      return false;
+    }
 
     try {
+      setSelectedEmployee(employee);
+      
+      // Wait for the component to render with new data
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      console.log('Generating PDF for:', employee['EMPLOYEE NAME']);
+
       const canvas = await html2canvas(payslipRef.current, {
         scale: 2,
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
+        width: 794,
+        height: 1123,
+        logging: false,
       });
 
       const imgData = canvas.toDataURL('image/png');
@@ -115,29 +123,58 @@ const PayslipGenerator = () => {
       pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
       pdf.save(`Payslip_${employee['EMPLOYEE NAME']}_${employee['AS ON']}.pdf`);
       
-      toast.success(`PDF generated for ${employee['EMPLOYEE NAME']}`);
+      if (showToast) {
+        toast.success(`PDF generated for ${employee['EMPLOYEE NAME']}`);
+      }
+      
+      return true;
     } catch (error) {
-      toast.error('Error generating PDF');
       console.error('PDF generation error:', error);
-    } finally {
-      setIsGenerating(false);
+      if (showToast) {
+        toast.error(`Error generating PDF for ${employee['EMPLOYEE NAME']}`);
+      }
+      return false;
     }
   };
 
   const generateAllPDFs = async () => {
-    if (employees.length === 0) return;
+    if (employees.length === 0) {
+      toast.error('No employee data found');
+      return;
+    }
 
     setIsGenerating(true);
-    toast.info(`Starting bulk PDF generation for ${employees.length} employees...`);
+    setCurrentProgress(0);
+    
+    let successCount = 0;
+    let failCount = 0;
 
     for (let i = 0; i < employees.length; i++) {
-      await generatePDF(employees[i]);
-      // Small delay between generations
-      await new Promise(resolve => setTimeout(resolve, 500));
+      const employee = employees[i];
+      setCurrentProgress(i + 1);
+      
+      console.log(`Processing ${i + 1}/${employees.length}: ${employee['EMPLOYEE NAME']}`);
+      
+      const success = await generatePDF(employee, false);
+      
+      if (success) {
+        successCount++;
+      } else {
+        failCount++;
+      }
+      
+      // Small delay between generations to prevent browser freezing
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
     setIsGenerating(false);
-    toast.success('All PDFs generated successfully!');
+    setCurrentProgress(0);
+    
+    if (successCount > 0) {
+      toast.success(`Successfully generated ${successCount} PDFs${failCount > 0 ? ` (${failCount} failed)` : ''}`);
+    } else {
+      toast.error('Failed to generate any PDFs');
+    }
   };
 
   const formatCurrency = (amount: number) => {
@@ -193,8 +230,17 @@ const PayslipGenerator = () => {
                       disabled={isGenerating}
                       className="w-full bg-blue-600 hover:bg-blue-700"
                     >
-                      <Download className="h-4 w-4 mr-2" />
-                      {isGenerating ? 'Generating PDFs...' : `Generate All ${employees.length} PDFs`}
+                      {isGenerating ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Generating PDFs... ({currentProgress}/{employees.length})
+                        </>
+                      ) : (
+                        <>
+                          <Download className="h-4 w-4 mr-2" />
+                          Generate All {employees.length} PDFs
+                        </>
+                      )}
                     </Button>
                   </div>
 
@@ -267,14 +313,21 @@ const PayslipGenerator = () => {
           </Card>
         </div>
 
-        {/* Hidden Professional Payslip Template */}
+        {/* Hidden Professional Payslip Template - Now positioned properly for rendering */}
         {selectedEmployee && (
           <div
             ref={payslipRef}
-            className="fixed -left-full -top-full bg-white"
-            style={{ width: '794px', fontSize: '11px', lineHeight: '1.4', fontFamily: 'Arial, sans-serif' }}
+            className="absolute top-[-9999px] left-[-9999px] bg-white"
+            style={{ 
+              width: '794px', 
+              height: '1123px',
+              fontSize: '11px', 
+              lineHeight: '1.4', 
+              fontFamily: 'Arial, sans-serif',
+              visibility: 'hidden'
+            }}
           >
-            <div className="p-8 border-2 border-gray-300">
+            <div className="p-8 border-2 border-gray-300 h-full">
               {/* Company Header */}
               <div className="text-center mb-8 pb-4 border-b-2 border-blue-600">
                 <div className="text-2xl font-bold text-blue-800 mb-2">PAYSLIP</div>
