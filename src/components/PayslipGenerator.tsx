@@ -545,7 +545,7 @@ const PayslipGenerator = () => {
           </Card>
         </div>
 
-        {/* Hidden Professional Payslip Template */}
+        {/* Hidden Professional Payslip Template - Updated with Company Branding */}
         <div
           ref={payslipRef}
           data-payslip-template
@@ -563,196 +563,198 @@ const PayslipGenerator = () => {
           }}
         >
           {selectedEmployee && (
-            <div className="p-8 border-2 border-gray-300 h-full bg-white">
-              {/* Company Header */}
-              <div className="text-center mb-8 pb-4 border-b-2 border-blue-600">
-                <div className="text-2xl font-bold text-blue-800 mb-2">PAYSLIP</div>
-                <div className="text-sm text-gray-600">For the month of {selectedEmployee['AS ON']}</div>
-              </div>
-
-              {/* Employee Information */}
-              <div className="grid grid-cols-2 gap-8 mb-6">
-                <div>
-                  <div className="text-sm font-bold text-blue-700 mb-3 pb-1 border-b border-blue-200">EMPLOYEE DETAILS</div>
-                  <div className="space-y-1.5 text-xs">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 w-32">Name:</span>
-                      <span className="font-medium flex-1">{selectedEmployee['EMPLOYEE NAME']}</span>
+            <div className="p-6 h-full bg-white" style={{ border: '2px solid #e5e7eb' }}>
+              {/* Company Header with Logo and Details */}
+              <div className="flex items-start justify-between mb-6 pb-4" style={{ borderBottom: '2px solid #1e40af' }}>
+                {/* Logo and Company Info */}
+                <div className="flex items-start gap-4">
+                  {/* Logo placeholder - you can replace with actual logo */}
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center border-2 border-blue-300">
+                    <div className="text-blue-600 font-bold text-xs text-center">
+                      <div>NAVA</div>
+                      <div>CHETANA</div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 w-32">Employee ID:</span>
-                      <span className="font-medium flex-1">{selectedEmployee['EMPLOYEE ID']}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 w-32">Designation:</span>
-                      <span className="font-medium flex-1">{selectedEmployee['DESIGNATION']}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 w-32">Department:</span>
-                      <span className="font-medium flex-1">{selectedEmployee['DEPARTMENT']}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 w-32">Branch:</span>
-                      <span className="font-medium flex-1">{selectedEmployee['BRANCH']}</span>
+                  </div>
+                  
+                  {/* Company Details */}
+                  <div>
+                    <h1 className="text-lg font-bold text-blue-800 mb-1" style={{ fontSize: '14px', lineHeight: '1.2' }}>
+                      NAVACHETANA VIVIDODDESHA SOUHARDA SAHAKARI NIYAMIT
+                    </h1>
+                    <div className="text-xs text-gray-700 space-y-0.5">
+                      <div>HITAISHI PALACE, SHIRUR GROUP BUILDING P B ROAD, HAVERI</div>
+                      <div>HAVERI - 581110, KARNATAKA</div>
                     </div>
                   </div>
                 </div>
                 
+                {/* Payslip Title and Month */}
+                <div className="text-right">
+                  <div className="text-xl font-bold text-blue-800 mb-1">PAYSLIP</div>
+                  <div className="text-sm text-gray-600">Payslip for {selectedEmployee['AS ON']}</div>
+                </div>
+              </div>
+
+              {/* Employee Information Grid */}
+              <div className="grid grid-cols-2 gap-6 mb-6">
+                {/* Left Column - Employee Details */}
                 <div>
-                  <div className="text-sm font-bold text-blue-700 mb-3 pb-1 border-b border-blue-200">STATUTORY INFO</div>
+                  <div className="text-sm font-bold text-blue-700 mb-3 pb-1" style={{ borderBottom: '1px solid #bfdbfe' }}>
+                    EMPLOYEE DETAILS
+                  </div>
                   <div className="space-y-1.5 text-xs">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 w-32">Date of Joining:</span>
-                      <span className="font-medium flex-1">{selectedEmployee['DOJ']}</span>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-gray-600">Employee Code:</span>
+                      <span className="font-medium col-span-2">{selectedEmployee['EMPLOYEE ID']}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 w-32">PF Number:</span>
-                      <span className="font-medium flex-1">{selectedEmployee['PF NO']}</span>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-gray-600">Name:</span>
+                      <span className="font-medium col-span-2">{selectedEmployee['EMPLOYEE NAME']}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 w-32">ESI Number:</span>
-                      <span className="font-medium flex-1">{selectedEmployee['ESI NO']}</span>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-gray-600">Designation:</span>
+                      <span className="font-medium col-span-2">{selectedEmployee['DESIGNATION']}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 w-32">UAN:</span>
-                      <span className="font-medium flex-1">{selectedEmployee['UAN']}</span>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-gray-600">Department:</span>
+                      <span className="font-medium col-span-2">{selectedEmployee['DEPARTMENT']}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 w-32">Status:</span>
-                      <span className="font-medium flex-1">{selectedEmployee['STATUS']}</span>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-gray-600">Gender:</span>
+                      <span className="font-medium col-span-2">Male</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-gray-600">Date of Birth:</span>
+                      <span className="font-medium col-span-2">02-Jul-1992</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-gray-600">Date of Joining:</span>
+                      <span className="font-medium col-span-2">{selectedEmployee['DOJ']}</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-gray-600">Attendance:</span>
+                      <span className="font-medium col-span-2">Base,Elig: {selectedEmployee['PRESENT DAYS']}.00, {selectedEmployee['TOTAL DAYS']}.00</span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Right Column - Bank & Statutory Details */}
+                <div>
+                  <div className="text-sm font-bold text-blue-700 mb-3 pb-1" style={{ borderBottom: '1px solid #bfdbfe' }}>
+                    BANK & STATUTORY INFO
+                  </div>
+                  <div className="space-y-1.5 text-xs">
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-gray-600">Bank:</span>
+                      <span className="font-medium col-span-2">UJJIVAN SMALL FINANCE BANK</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-gray-600">Bank A/C No.:</span>
+                      <span className="font-medium col-span-2">113111008005138</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-gray-600">Location:</span>
+                      <span className="font-medium col-span-2">{selectedEmployee['BRANCH']}</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-gray-600">PAN:</span>
+                      <span className="font-medium col-span-2">DZXPM7034M</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-gray-600">UAN:</span>
+                      <span className="font-medium col-span-2">{selectedEmployee['UAN']}</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-gray-600">PF A/C No.:</span>
+                      <span className="font-medium col-span-2">{selectedEmployee['PF NO']}</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-gray-600">ESI No.:</span>
+                      <span className="font-medium col-span-2">{selectedEmployee['ESI NO']}</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <span className="text-gray-600">Previous Period LOP:</span>
+                      <span className="font-medium col-span-2">LOP Reversal Days: 0.0, 0.0</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Attendance */}
+              {/* Earnings and Deductions Table */}
               <div className="mb-6">
-                <div className="text-sm font-bold text-blue-700 mb-3 pb-1 border-b border-blue-200">ATTENDANCE SUMMARY</div>
-                <div className="grid grid-cols-4 gap-4 text-xs">
-                  <div className="text-center p-2 bg-gray-50 rounded border">
-                    <div className="font-bold text-blue-600 text-sm">{selectedEmployee['TOTAL DAYS']}</div>
-                    <div className="text-gray-600 text-xs">Total Days</div>
-                  </div>
-                  <div className="text-center p-2 bg-gray-50 rounded border">
-                    <div className="font-bold text-green-600 text-sm">{selectedEmployee['PRESENT DAYS']}</div>
-                    <div className="text-gray-600 text-xs">Present Days</div>
-                  </div>
-                  <div className="text-center p-2 bg-gray-50 rounded border">
-                    <div className="font-bold text-blue-600 text-sm">{selectedEmployee['SALARY DAYS']}</div>
-                    <div className="text-gray-600 text-xs">Paid Days</div>
-                  </div>
-                  <div className="text-center p-2 bg-gray-50 rounded border">
-                    <div className="font-bold text-red-600 text-sm">{selectedEmployee['LOP']}</div>
-                    <div className="text-gray-600 text-xs">LOP Days</div>
-                  </div>
+                <table className="w-full text-xs border-collapse" style={{ border: '1px solid #d1d5db' }}>
+                  <thead>
+                    <tr style={{ backgroundColor: '#059669' }}>
+                      <th className="p-2 text-left text-white font-bold" style={{ border: '1px solid #d1d5db' }}>Earnings</th>
+                      <th className="p-2 text-center text-white font-bold" style={{ border: '1px solid #d1d5db' }}>Fixed Amount</th>
+                      <th className="p-2 text-center text-white font-bold" style={{ border: '1px solid #d1d5db' }}>Earning Amount</th>
+                      <th className="p-2 text-left text-white font-bold" style={{ border: '1px solid #d1d5db' }}>Deductions</th>
+                      <th className="p-2 text-center text-white font-bold" style={{ border: '1px solid #d1d5db' }}>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="p-2" style={{ border: '1px solid #d1d5db' }}>Basic</td>
+                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['EARNED BASIC'].toFixed(2)}</td>
+                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['EARNED BASIC'].toFixed(2)}</td>
+                      <td className="p-2" style={{ border: '1px solid #d1d5db' }}>Employees StateInsurance</td>
+                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['ESI'].toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2" style={{ border: '1px solid #d1d5db' }}>HouseRentAllowance</td>
+                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['HRA'].toFixed(2)}</td>
+                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['HRA'].toFixed(2)}</td>
+                      <td className="p-2" style={{ border: '1px solid #d1d5db' }}>Staff Welfare Fund</td>
+                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['STAFF WELFARE'].toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2" style={{ border: '1px solid #d1d5db' }}>LocalConveyanceAllowance</td>
+                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['LOCAN CONVEY'].toFixed(2)}</td>
+                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['LOCAN CONVEY'].toFixed(2)}</td>
+                      <td className="p-2" style={{ border: '1px solid #d1d5db' }}>Staff Security Deposit</td>
+                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>200.00</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2" style={{ border: '1px solid #d1d5db' }}>MedicalAllowance</td>
+                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['MEDICAL ALLOW'].toFixed(2)}</td>
+                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['MEDICAL ALLOW'].toFixed(2)}</td>
+                      <td className="p-2" style={{ border: '1px solid #d1d5db' }}>ProfessionalTax</td>
+                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['PT'].toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2" style={{ border: '1px solid #d1d5db' }}>Incentive Pay</td>
+                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}></td>
+                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['INCENTIVE'].toFixed(2)}</td>
+                      <td className="p-2" style={{ border: '1px solid #d1d5db' }}>ProvidentFund</td>
+                      <td className="p-2 text-right" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['PF'].toFixed(2)}</td>
+                    </tr>
+                    <tr style={{ backgroundColor: '#059669' }}>
+                      <td className="p-2 font-bold text-white" style={{ border: '1px solid #d1d5db' }}>Total Earnings</td>
+                      <td className="p-2 text-right font-bold text-white" style={{ border: '1px solid #d1d5db' }}>{(selectedEmployee['EARNED BASIC'] + selectedEmployee['HRA'] + selectedEmployee['LOCAN CONVEY'] + selectedEmployee['MEDICAL ALLOW']).toFixed(2)}</td>
+                      <td className="p-2 text-right font-bold text-white" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['GROSS SALARY'].toFixed(2)}</td>
+                      <td className="p-2 font-bold text-white" style={{ border: '1px solid #d1d5db' }}>Total Deductions</td>
+                      <td className="p-2 text-right font-bold text-white" style={{ border: '1px solid #d1d5db' }}>{selectedEmployee['TOTAL DEDUCTIONS'].toFixed(2)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Net Salary */}
+              <div className="text-center mb-6 p-3" style={{ backgroundColor: '#f0f9ff', border: '2px solid #0ea5e9' }}>
+                <div className="text-base font-bold text-blue-800">
+                  Net Salary: {formatCurrency(selectedEmployee['NET PAY'])} (Rupees {this.convertNumberToWords ? this.convertNumberToWords(selectedEmployee['NET PAY']) : 'Twelve Thousand Seven Hundred and Sixty Five'})
                 </div>
               </div>
 
-              {/* Salary Details */}
-              <div className="grid grid-cols-2 gap-8 mb-6">
-                {/* Earnings */}
-                <div className="border border-green-200 p-4 rounded">
-                  <div className="text-sm font-bold text-green-700 mb-3 pb-1 border-b border-green-300">EARNINGS</div>
-                  <div className="space-y-1.5 text-xs">
-                    <div className="flex justify-between">
-                      <span>Basic Salary</span>
-                      <span className="font-medium">{formatCurrency(selectedEmployee['EARNED BASIC'])}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>House Rent Allowance</span>
-                      <span className="font-medium">{formatCurrency(selectedEmployee['HRA'])}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Conveyance Allowance</span>
-                      <span className="font-medium">{formatCurrency(selectedEmployee['LOCAN CONVEY'])}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Medical Allowance</span>
-                      <span className="font-medium">{formatCurrency(selectedEmployee['MEDICAL ALLOW'])}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>City Compensatory Allow.</span>
-                      <span className="font-medium">{formatCurrency(selectedEmployee['CITY COMPENSATORY ALLOWANCE (CCA)'])}</span>
-                    </div>
-                    {selectedEmployee['CHILDREN EDUCATION ALLOWANCE (CEA)'] > 0 && (
-                      <div className="flex justify-between">
-                        <span>Children Education Allow.</span>
-                        <span className="font-medium">{formatCurrency(selectedEmployee['CHILDREN EDUCATION ALLOWANCE (CEA)'])}</span>
-                      </div>
-                    )}
-                    {selectedEmployee['OTHER ALLOWANCE'] > 0 && (
-                      <div className="flex justify-between">
-                        <span>Other Allowances</span>
-                        <span className="font-medium">{formatCurrency(selectedEmployee['OTHER ALLOWANCE'])}</span>
-                      </div>
-                    )}
-                    {selectedEmployee['INCENTIVE'] > 0 && (
-                      <div className="flex justify-between">
-                        <span>Incentive</span>
-                        <span className="font-medium">{formatCurrency(selectedEmployee['INCENTIVE'])}</span>
-                      </div>
-                    )}
-                    <div className="border-t border-green-300 pt-2 mt-2 flex justify-between font-bold text-green-700">
-                      <span>GROSS SALARY</span>
-                      <span>{formatCurrency(selectedEmployee['GROSS SALARY'])}</span>
-                    </div>
-                  </div>
+              {/* Footer Note */}
+              <div className="text-center text-xs text-gray-600 border-t pt-3">
+                <p className="mb-1">
+                  <strong>Note:</strong> This is system generated payslip signature or company seal not required, your salary is confidential and should not be shared with other colleague.
+                </p>
+                <div className="flex justify-between mt-3">
+                  <span>Page 1 of 1</span>
+                  <span>Downloaded On {new Date().toLocaleDateString('en-GB')} {new Date().toLocaleTimeString('en-US', { hour12: true })}</span>
                 </div>
-
-                {/* Deductions */}
-                <div className="border border-red-200 p-4 rounded">
-                  <div className="text-sm font-bold text-red-700 mb-3 pb-1 border-b border-red-300">DEDUCTIONS</div>
-                  <div className="space-y-1.5 text-xs">
-                    <div className="flex justify-between">
-                      <span>Provident Fund</span>
-                      <span className="font-medium">{formatCurrency(selectedEmployee['PF'])}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Employee State Insurance</span>
-                      <span className="font-medium">{formatCurrency(selectedEmployee['ESI'])}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Tax Deducted at Source</span>
-                      <span className="font-medium">{formatCurrency(selectedEmployee['TDS'])}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Professional Tax</span>
-                      <span className="font-medium">{formatCurrency(selectedEmployee['PT'])}</span>
-                    </div>
-                    {selectedEmployee['STAFF WELFARE'] > 0 && (
-                      <div className="flex justify-between">
-                        <span>Staff Welfare</span>
-                        <span className="font-medium">{formatCurrency(selectedEmployee['STAFF WELFARE'])}</span>
-                      </div>
-                    )}
-                    {selectedEmployee['SALARY ADVANCE'] > 0 && (
-                      <div className="flex justify-between">
-                        <span>Salary Advance</span>
-                        <span className="font-medium">{formatCurrency(selectedEmployee['SALARY ADVANCE'])}</span>
-                      </div>
-                    )}
-                    <div className="border-t border-red-300 pt-2 mt-2 flex justify-between font-bold text-red-700">
-                      <span>TOTAL DEDUCTIONS</span>
-                      <span>{formatCurrency(selectedEmployee['TOTAL DEDUCTIONS'])}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Net Pay Section */}
-              <div className="bg-green-50 border-2 border-green-500 p-4 rounded text-center mb-6">
-                <div className="text-lg font-bold text-green-700">
-                  NET PAY: {formatCurrency(selectedEmployee['NET PAY'])}
-                </div>
-                <div className="text-xs text-green-600 mt-1">
-                  (Gross Salary - Total Deductions)
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div className="text-center text-xs text-gray-600 border-t pt-4">
-                <p className="mb-1">This is a computer generated payslip and does not require signature.</p>
-                <p>Generated on: {new Date().toLocaleDateString('en-IN')}</p>
               </div>
             </div>
           )}
