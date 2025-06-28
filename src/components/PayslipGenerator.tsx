@@ -682,7 +682,7 @@ const PayslipGenerator = () => {
           </Card>
         </div>
 
-        {/* Hidden Professional Payslip Template - Updated with Nava Chetana Logo */}
+        {/* Hidden Professional Payslip Template - Updated with Nava Chetana Logo in Left Corner */}
         <div
           ref={payslipRef}
           data-payslip-template
@@ -701,17 +701,17 @@ const PayslipGenerator = () => {
         >
           {selectedEmployee && (
             <div className="p-6 h-full bg-white" style={{ border: '2px solid #e5e7eb' }}>
-              {/* Company Header with Logo and Details */}
+              {/* Company Header with Logo in Left Corner */}
               <div className="flex items-start justify-between mb-6 pb-4" style={{ borderBottom: '2px solid #1e40af' }}>
-                {/* Logo and Company Info */}
+                {/* Left Side - Logo and Company Info */}
                 <div className="flex items-start gap-4">
-                  {/* Company Logo */}
-                  <div className="w-20 h-20 flex-shrink-0">
+                  {/* Company Logo in Left Corner */}
+                  <div className="w-16 h-16 flex-shrink-0">
                     <img 
-                      src="/WhatsApp Image 2025-06-28 at 23.24.54 copy.jpeg" 
+                      src="/WhatsApp Image 2025-06-28 at 23.24.54 copy copy.jpeg" 
                       alt="Nava Chetana Logo" 
                       className="w-full h-full object-contain"
-                      style={{ maxWidth: '80px', maxHeight: '80px' }}
+                      style={{ maxWidth: '64px', maxHeight: '64px' }}
                     />
                   </div>
                   
@@ -727,7 +727,7 @@ const PayslipGenerator = () => {
                   </div>
                 </div>
                 
-                {/* Payslip Title and Month */}
+                {/* Right Side - Payslip Title and Month */}
                 <div className="text-right">
                   <div className="text-xl font-bold text-blue-800 mb-1">PAYSLIP</div>
                   <div className="text-sm text-gray-600">Payslip for {selectedEmployee['AS ON']}</div>
