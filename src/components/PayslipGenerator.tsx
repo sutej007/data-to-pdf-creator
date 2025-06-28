@@ -313,20 +313,20 @@ const PayslipGenerator = () => {
           </Card>
         </div>
 
-        {/* Hidden Professional Payslip Template - Now positioned properly for rendering */}
-        {selectedEmployee && (
-          <div
-            ref={payslipRef}
-            className="absolute top-[-9999px] left-[-9999px] bg-white"
-            style={{ 
-              width: '794px', 
-              height: '1123px',
-              fontSize: '11px', 
-              lineHeight: '1.4', 
-              fontFamily: 'Arial, sans-serif',
-              visibility: 'hidden'
-            }}
-          >
+        {/* Hidden Professional Payslip Template - Always rendered but content is conditional */}
+        <div
+          ref={payslipRef}
+          className="absolute top-[-9999px] left-[-9999px] bg-white"
+          style={{ 
+            width: '794px', 
+            height: '1123px',
+            fontSize: '11px', 
+            lineHeight: '1.4', 
+            fontFamily: 'Arial, sans-serif',
+            visibility: 'hidden'
+          }}
+        >
+          {selectedEmployee ? (
             <div className="p-8 border-2 border-gray-300 h-full">
               {/* Company Header */}
               <div className="text-center mb-8 pb-4 border-b-2 border-blue-600">
@@ -519,8 +519,8 @@ const PayslipGenerator = () => {
                 <p>Generated on: {new Date().toLocaleDateString('en-IN')}</p>
               </div>
             </div>
-          </div>
-        )}
+          ) : null}
+        </div>
       </div>
     </div>
   );
