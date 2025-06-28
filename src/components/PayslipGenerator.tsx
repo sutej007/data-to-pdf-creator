@@ -48,7 +48,6 @@ interface EmployeeData {
 const PayslipGenerator = () => {
   const [employees, setEmployees] = useState<EmployeeData[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeData | null>(null);
-  const [currentPdfEmployee, setCurrentPdfEmployee] = useState<EmployeeData | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [currentProgress, setCurrentProgress] = useState(0);
   const [debugInfo, setDebugInfo] = useState<string>('');
@@ -197,6 +196,12 @@ const PayslipGenerator = () => {
         
         console.log('Final processed data:', processedData);
         setEmployees(processedData);
+        
+        // Set the first employee as selected for preview
+        if (processedData.length > 0) {
+          setSelectedEmployee(processedData[0]);
+        }
+        
         toast.success(`Successfully loaded ${processedData.length} employee records`);
         
       } catch (error) {
@@ -214,28 +219,67 @@ const PayslipGenerator = () => {
     }
 
     try {
-      console.log('Setting employee for PDF generation:', employee['EMPLOYEE NAME'], 'Net Pay:', employee['NET PAY']);
+      console.log('Generating PDF for employee:', employee);
+      console.log('Employee name:', employee['EMPLOYEE NAME']);
+      console.log('Net pay:', employee['NET PAY']);
       
-      // Set the employee data for the template
-      setCurrentPdfEmployee(employee);
+      // Set the employee data for the template and force re-render
       setSelectedEmployee(employee);
       
-      // Wait for the component to render with new data
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Wait longer for the component to render with new data
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-      console.log('Generating PDF for:', employee['EMPLOYEE NAME'], 'Net Pay:', employee['NET PAY']);
+      // Verify the element has content before capturing
+      const element = payslipRef.current;
+      if (!element) {
+        throw new Error('Payslip element not found');
+      }
 
-      const canvas = await html2canvas(payslipRef.current, {
+      console.log('Element content before capture:', element.innerHTML.length);
+      
+      // Make the element visible temporarily for capture
+      element.style.position = 'fixed';
+      element.style.top = '0';
+      element.style.left = '0';
+      element.style.visibility = 'visible';
+      element.style.zIndex = '9999';
+
+      const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
         width: 794,
         height: 1123,
-        logging: false,
+        logging: true,
+        onclone: (clonedDoc) => {
+          const clonedElement = clonedDoc.querySelector('[data-payslip-template]') as HTMLElement;
+          if (clonedElement) {
+            clonedElement.style.visibility = 'visible';
+            clonedElement.style.position = 'static';
+          }
+        }
       });
 
+      // Hide the element again
+      element.style.position = 'fixed';
+      element.style.top = '-9999px';
+      element.style.left = '-9999px';
+      element.style.visibility = 'hidden';
+      element.style.zIndex = '-1';
+
+      console.log('Canvas dimensions:', canvas.width, 'x', canvas.height);
+
+      if (canvas.width === 0 || canvas.height === 0) {
+        throw new Error('Canvas has no content - check if element is properly rendered');
+      }
+
       const imgData = canvas.toDataURL('image/png');
+      
+      if (imgData === 'data:,') {
+        throw new Error('Canvas is empty - no content captured');
+      }
+
       const pdf = new jsPDF('p', 'mm', 'a4');
       
       const imgWidth = 210; // A4 width in mm
@@ -252,7 +296,7 @@ const PayslipGenerator = () => {
     } catch (error) {
       console.error('PDF generation error:', error);
       if (showToast) {
-        toast.error(`Error generating PDF for ${employee['EMPLOYEE NAME']}`);
+        toast.error(`Error generating PDF for ${employee['EMPLOYEE NAME']}: ${error.message}`);
       }
       return false;
     }
@@ -285,7 +329,7 @@ const PayslipGenerator = () => {
       }
       
       // Small delay between generations to prevent browser freezing
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
     setIsGenerating(false);
@@ -305,9 +349,6 @@ const PayslipGenerator = () => {
       minimumFractionDigits: 2
     }).format(amount || 0);
   };
-
-  // Use currentPdfEmployee for PDF generation, selectedEmployee for preview
-  const templateEmployee = currentPdfEmployee || selectedEmployee;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
@@ -451,22 +492,25 @@ const PayslipGenerator = () => {
         <div
           ref={payslipRef}
           data-payslip-template
-          className="fixed top-[-9999px] left-[-9999px] bg-white"
+          className="fixed"
           style={{ 
+            top: '-9999px',
+            left: '-9999px',
             width: '794px', 
             height: '1123px',
             fontSize: '11px', 
             lineHeight: '1.4', 
             fontFamily: 'Arial, sans-serif',
-            visibility: 'hidden'
+            visibility: 'hidden',
+            backgroundColor: 'white'
           }}
         >
-          {templateEmployee && (
-            <div className="p-8 border-2 border-gray-300 h-full">
+          {selectedEmployee && (
+            <div className="p-8 border-2 border-gray-300 h-full bg-white">
               {/* Company Header */}
               <div className="text-center mb-8 pb-4 border-b-2 border-blue-600">
                 <div className="text-2xl font-bold text-blue-800 mb-2">PAYSLIP</div>
-                <div className="text-sm text-gray-600">For the month of {templateEmployee['AS ON']}</div>
+                <div className="text-sm text-gray-600">For the month of {selectedEmployee['AS ON']}</div>
               </div>
 
               {/* Employee Information */}
@@ -476,23 +520,23 @@ const PayslipGenerator = () => {
                   <div className="space-y-1.5 text-xs">
                     <div className="flex justify-between">
                       <span className="text-gray-600 w-32">Name:</span>
-                      <span className="font-medium flex-1">{templateEmployee['EMPLOYEE NAME']}</span>
+                      <span className="font-medium flex-1">{selectedEmployee['EMPLOYEE NAME']}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600 w-32">Employee ID:</span>
-                      <span className="font-medium flex-1">{templateEmployee['EMPLOYEE ID']}</span>
+                      <span className="font-medium flex-1">{selectedEmployee['EMPLOYEE ID']}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600 w-32">Designation:</span>
-                      <span className="font-medium flex-1">{templateEmployee['DESIGNATION']}</span>
+                      <span className="font-medium flex-1">{selectedEmployee['DESIGNATION']}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600 w-32">Department:</span>
-                      <span className="font-medium flex-1">{templateEmployee['DEPARTMENT']}</span>
+                      <span className="font-medium flex-1">{selectedEmployee['DEPARTMENT']}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600 w-32">Branch:</span>
-                      <span className="font-medium flex-1">{templateEmployee['BRANCH']}</span>
+                      <span className="font-medium flex-1">{selectedEmployee['BRANCH']}</span>
                     </div>
                   </div>
                 </div>
@@ -502,23 +546,23 @@ const PayslipGenerator = () => {
                   <div className="space-y-1.5 text-xs">
                     <div className="flex justify-between">
                       <span className="text-gray-600 w-32">Date of Joining:</span>
-                      <span className="font-medium flex-1">{templateEmployee['DOJ']}</span>
+                      <span className="font-medium flex-1">{selectedEmployee['DOJ']}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600 w-32">PF Number:</span>
-                      <span className="font-medium flex-1">{templateEmployee['PF NO']}</span>
+                      <span className="font-medium flex-1">{selectedEmployee['PF NO']}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600 w-32">ESI Number:</span>
-                      <span className="font-medium flex-1">{templateEmployee['ESI NO']}</span>
+                      <span className="font-medium flex-1">{selectedEmployee['ESI NO']}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600 w-32">UAN:</span>
-                      <span className="font-medium flex-1">{templateEmployee['UAN']}</span>
+                      <span className="font-medium flex-1">{selectedEmployee['UAN']}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600 w-32">Status:</span>
-                      <span className="font-medium flex-1">{templateEmployee['STATUS']}</span>
+                      <span className="font-medium flex-1">{selectedEmployee['STATUS']}</span>
                     </div>
                   </div>
                 </div>
@@ -529,19 +573,19 @@ const PayslipGenerator = () => {
                 <div className="text-sm font-bold text-blue-700 mb-3 pb-1 border-b border-blue-200">ATTENDANCE SUMMARY</div>
                 <div className="grid grid-cols-4 gap-4 text-xs">
                   <div className="text-center p-2 bg-gray-50 rounded border">
-                    <div className="font-bold text-blue-600 text-sm">{templateEmployee['TOTAL DAYS']}</div>
+                    <div className="font-bold text-blue-600 text-sm">{selectedEmployee['TOTAL DAYS']}</div>
                     <div className="text-gray-600 text-xs">Total Days</div>
                   </div>
                   <div className="text-center p-2 bg-gray-50 rounded border">
-                    <div className="font-bold text-green-600 text-sm">{templateEmployee['PRESENT DAYS']}</div>
+                    <div className="font-bold text-green-600 text-sm">{selectedEmployee['PRESENT DAYS']}</div>
                     <div className="text-gray-600 text-xs">Present Days</div>
                   </div>
                   <div className="text-center p-2 bg-gray-50 rounded border">
-                    <div className="font-bold text-blue-600 text-sm">{templateEmployee['SALARY DAYS']}</div>
+                    <div className="font-bold text-blue-600 text-sm">{selectedEmployee['SALARY DAYS']}</div>
                     <div className="text-gray-600 text-xs">Paid Days</div>
                   </div>
                   <div className="text-center p-2 bg-gray-50 rounded border">
-                    <div className="font-bold text-red-600 text-sm">{templateEmployee['LOP']}</div>
+                    <div className="font-bold text-red-600 text-sm">{selectedEmployee['LOP']}</div>
                     <div className="text-gray-600 text-xs">LOP Days</div>
                   </div>
                 </div>
@@ -555,45 +599,45 @@ const PayslipGenerator = () => {
                   <div className="space-y-1.5 text-xs">
                     <div className="flex justify-between">
                       <span>Basic Salary</span>
-                      <span className="font-medium">{formatCurrency(templateEmployee['EARNED BASIC'])}</span>
+                      <span className="font-medium">{formatCurrency(selectedEmployee['EARNED BASIC'])}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>House Rent Allowance</span>
-                      <span className="font-medium">{formatCurrency(templateEmployee['HRA'])}</span>
+                      <span className="font-medium">{formatCurrency(selectedEmployee['HRA'])}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Conveyance Allowance</span>
-                      <span className="font-medium">{formatCurrency(templateEmployee['LOCAN CONVEY'])}</span>
+                      <span className="font-medium">{formatCurrency(selectedEmployee['LOCAN CONVEY'])}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Medical Allowance</span>
-                      <span className="font-medium">{formatCurrency(templateEmployee['MEDICAL ALLOW'])}</span>
+                      <span className="font-medium">{formatCurrency(selectedEmployee['MEDICAL ALLOW'])}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>City Compensatory Allow.</span>
-                      <span className="font-medium">{formatCurrency(templateEmployee['CITY COMPENSATORY ALLOWANCE (CCA)'])}</span>
+                      <span className="font-medium">{formatCurrency(selectedEmployee['CITY COMPENSATORY ALLOWANCE (CCA)'])}</span>
                     </div>
-                    {templateEmployee['CHILDREN EDUCATION ALLOWANCE (CEA)'] > 0 && (
+                    {selectedEmployee['CHILDREN EDUCATION ALLOWANCE (CEA)'] > 0 && (
                       <div className="flex justify-between">
                         <span>Children Education Allow.</span>
-                        <span className="font-medium">{formatCurrency(templateEmployee['CHILDREN EDUCATION ALLOWANCE (CEA)'])}</span>
+                        <span className="font-medium">{formatCurrency(selectedEmployee['CHILDREN EDUCATION ALLOWANCE (CEA)'])}</span>
                       </div>
                     )}
-                    {templateEmployee['OTHER ALLOWANCE'] > 0 && (
+                    {selectedEmployee['OTHER ALLOWANCE'] > 0 && (
                       <div className="flex justify-between">
                         <span>Other Allowances</span>
-                        <span className="font-medium">{formatCurrency(templateEmployee['OTHER ALLOWANCE'])}</span>
+                        <span className="font-medium">{formatCurrency(selectedEmployee['OTHER ALLOWANCE'])}</span>
                       </div>
                     )}
-                    {templateEmployee['INCENTIVE'] > 0 && (
+                    {selectedEmployee['INCENTIVE'] > 0 && (
                       <div className="flex justify-between">
                         <span>Incentive</span>
-                        <span className="font-medium">{formatCurrency(templateEmployee['INCENTIVE'])}</span>
+                        <span className="font-medium">{formatCurrency(selectedEmployee['INCENTIVE'])}</span>
                       </div>
                     )}
                     <div className="border-t border-green-300 pt-2 mt-2 flex justify-between font-bold text-green-700">
                       <span>GROSS SALARY</span>
-                      <span>{formatCurrency(templateEmployee['GROSS SALARY'])}</span>
+                      <span>{formatCurrency(selectedEmployee['GROSS SALARY'])}</span>
                     </div>
                   </div>
                 </div>
@@ -604,35 +648,35 @@ const PayslipGenerator = () => {
                   <div className="space-y-1.5 text-xs">
                     <div className="flex justify-between">
                       <span>Provident Fund</span>
-                      <span className="font-medium">{formatCurrency(templateEmployee['PF'])}</span>
+                      <span className="font-medium">{formatCurrency(selectedEmployee['PF'])}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Employee State Insurance</span>
-                      <span className="font-medium">{formatCurrency(templateEmployee['ESI'])}</span>
+                      <span className="font-medium">{formatCurrency(selectedEmployee['ESI'])}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Tax Deducted at Source</span>
-                      <span className="font-medium">{formatCurrency(templateEmployee['TDS'])}</span>
+                      <span className="font-medium">{formatCurrency(selectedEmployee['TDS'])}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Professional Tax</span>
-                      <span className="font-medium">{formatCurrency(templateEmployee['PT'])}</span>
+                      <span className="font-medium">{formatCurrency(selectedEmployee['PT'])}</span>
                     </div>
-                    {templateEmployee['STAFF WELFARE'] > 0 && (
+                    {selectedEmployee['STAFF WELFARE'] > 0 && (
                       <div className="flex justify-between">
                         <span>Staff Welfare</span>
-                        <span className="font-medium">{formatCurrency(templateEmployee['STAFF WELFARE'])}</span>
+                        <span className="font-medium">{formatCurrency(selectedEmployee['STAFF WELFARE'])}</span>
                       </div>
                     )}
-                    {templateEmployee['SALARY ADVANCE'] > 0 && (
+                    {selectedEmployee['SALARY ADVANCE'] > 0 && (
                       <div className="flex justify-between">
                         <span>Salary Advance</span>
-                        <span className="font-medium">{formatCurrency(templateEmployee['SALARY ADVANCE'])}</span>
+                        <span className="font-medium">{formatCurrency(selectedEmployee['SALARY ADVANCE'])}</span>
                       </div>
                     )}
                     <div className="border-t border-red-300 pt-2 mt-2 flex justify-between font-bold text-red-700">
                       <span>TOTAL DEDUCTIONS</span>
-                      <span>{formatCurrency(templateEmployee['TOTAL DEDUCTIONS'])}</span>
+                      <span>{formatCurrency(selectedEmployee['TOTAL DEDUCTIONS'])}</span>
                     </div>
                   </div>
                 </div>
@@ -641,7 +685,7 @@ const PayslipGenerator = () => {
               {/* Net Pay Section */}
               <div className="bg-green-50 border-2 border-green-500 p-4 rounded text-center mb-6">
                 <div className="text-lg font-bold text-green-700">
-                  NET PAY: {formatCurrency(templateEmployee['NET PAY'])}
+                  NET PAY: {formatCurrency(selectedEmployee['NET PAY'])}
                 </div>
                 <div className="text-xs text-green-600 mt-1">
                   (Gross Salary - Total Deductions)
