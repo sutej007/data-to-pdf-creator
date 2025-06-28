@@ -154,6 +154,43 @@ const PayslipGenerator = () => {
     return result.trim() + ' Only';
   };
 
+  // Function to format date consistently
+  const formatDate = (dateString: string): string => {
+    if (!dateString) return '';
+    
+    // If it's already in DD-MMM-YYYY format, return as is
+    if (dateString.match(/^\d{2}-[A-Za-z]{3}-\d{4}$/)) {
+      return dateString;
+    }
+    
+    // Try to parse various date formats
+    let date: Date;
+    
+    // Handle Excel date serial numbers
+    if (!isNaN(Number(dateString))) {
+      const excelDate = Number(dateString);
+      // Excel date serial number (days since 1900-01-01, with 1900 incorrectly treated as leap year)
+      date = new Date((excelDate - 25569) * 86400 * 1000);
+    } else {
+      // Try to parse as regular date
+      date = new Date(dateString);
+    }
+    
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+      return dateString; // Return original if can't parse
+    }
+    
+    // Format as DD-MMM-YYYY
+    const day = date.getDate().toString().padStart(2, '0');
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    
+    return `${day}-${month}-${year}`;
+  };
+
   // Check if device is mobile and handle PWA install prompt
   useEffect(() => {
     const checkMobile = () => {
@@ -319,6 +356,7 @@ const PayslipGenerator = () => {
                 processedRow[standardField] = standardField === 'EMPLOYEE NAME' ? `Employee ${index + 1}` :
                                            standardField === 'EMPLOYEE ID' ? `EMP${String(index + 1).padStart(3, '0')}` :
                                            standardField === 'AS ON' ? new Date().toLocaleDateString('en-IN') :
+                                           standardField === 'DOJ' ? '01-Jan-2020' :
                                            '';
               }
             }
@@ -625,6 +663,7 @@ const PayslipGenerator = () => {
                   <div className="text-xs text-gray-600 space-y-1">
                     <div>Employee ID: {selectedEmployee['EMPLOYEE ID']}</div>
                     <div>Department: {selectedEmployee['DEPARTMENT']}</div>
+                    <div>Date of Joining: {formatDate(selectedEmployee['DOJ'])}</div>
                     <div>Period: {selectedEmployee['AS ON']}</div>
                     <div className="font-medium text-green-600">Net Pay: {formatCurrency(selectedEmployee['NET PAY'])}</div>
                   </div>
@@ -729,7 +768,7 @@ const PayslipGenerator = () => {
                     </div>
                     <div className="grid grid-cols-3 gap-2">
                       <span className="text-gray-600">Date of Joining:</span>
-                      <span className="font-medium col-span-2">{selectedEmployee['DOJ']}</span>
+                      <span className="font-medium col-span-2">{formatDate(selectedEmployee['DOJ'])}</span>
                     </div>
                     <div className="grid grid-cols-3 gap-2">
                       <span className="text-gray-600">Attendance:</span>
