@@ -643,7 +643,7 @@ const PayslipGenerator = () => {
           </Card>
         </div>
 
-        {/* Hidden Professional Payslip Template - Updated with Company Branding */}
+        {/* Hidden Professional Payslip Template - Updated with Company Logo */}
         <div
           ref={payslipRef}
           data-payslip-template
@@ -666,12 +666,14 @@ const PayslipGenerator = () => {
               <div className="flex items-start justify-between mb-6 pb-4" style={{ borderBottom: '2px solid #1e40af' }}>
                 {/* Logo and Company Info */}
                 <div className="flex items-start gap-4">
-                  {/* Logo placeholder - you can replace with actual logo */}
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center border-2 border-blue-300">
-                    <div className="text-blue-600 font-bold text-xs text-center">
-                      <div>NAVA</div>
-                      <div>CHETANA</div>
-                    </div>
+                  {/* Company Logo */}
+                  <div className="w-20 h-20 flex-shrink-0">
+                    <img 
+                      src="/WhatsApp Image 2025-06-28 at 23.24.54.jpeg" 
+                      alt="Nava Chetana Logo" 
+                      className="w-full h-full object-contain"
+                      style={{ maxWidth: '80px', maxHeight: '80px' }}
+                    />
                   </div>
                   
                   {/* Company Details */}
