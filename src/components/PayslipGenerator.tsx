@@ -65,6 +65,7 @@ const PayslipGenerator = () => {
   const [currentPdfEmployee, setCurrentPdfEmployee] = useState<EmployeeData | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [currentProgress, setCurrentProgress] = useState(0);
+  const [debugInfo, setDebugInfo] = useState<string>('');
   const payslipRef = useRef<HTMLDivElement>(null);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,35 +79,79 @@ const PayslipGenerator = () => {
         const workbook = XLSX.read(data, { type: 'array' });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet) as EmployeeData[];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet) as any[];
+        
+        // Debug: Log the raw data and column headers
+        console.log('Raw Excel data:', jsonData);
+        
+        if (jsonData.length > 0) {
+          const firstRow = jsonData[0];
+          const columnHeaders = Object.keys(firstRow);
+          console.log('Column headers found:', columnHeaders);
+          setDebugInfo(`Column headers: ${columnHeaders.join(', ')}`);
+          
+          // Check for employee name variations
+          const nameColumns = columnHeaders.filter(header => 
+            header.toLowerCase().includes('name') || 
+            header.toLowerCase().includes('employee')
+          );
+          console.log('Name-related columns:', nameColumns);
+        }
         
         // Process the data to ensure numeric fields are properly converted
-        const processedData = jsonData.map(emp => ({
-          ...emp,
-          'NET PAY': Number(emp['NET PAY']) || 0,
-          'GROSS SALARY': Number(emp['GROSS SALARY']) || 0,
-          'TOTAL DEDUCTIONS': Number(emp['TOTAL DEDUCTIONS']) || 0,
-          'EARNED BASIC': Number(emp['EARNED BASIC']) || 0,
-          'HRA': Number(emp['HRA']) || 0,
-          'LOCAN CONVEY': Number(emp['LOCAN CONVEY']) || 0,
-          'MEDICAL ALLOW': Number(emp['MEDICAL ALLOW']) || 0,
-          'CITY COMPENSATORY ALLOWANCE (CCA)': Number(emp['CITY COMPENSATORY ALLOWANCE (CCA)']) || 0,
-          'CHILDREN EDUCATION ALLOWANCE (CEA)': Number(emp['CHILDREN EDUCATION ALLOWANCE (CEA)']) || 0,
-          'OTHER ALLOWANCE': Number(emp['OTHER ALLOWANCE']) || 0,
-          'INCENTIVE': Number(emp['INCENTIVE']) || 0,
-          'PF': Number(emp['PF']) || 0,
-          'ESI': Number(emp['ESI']) || 0,
-          'TDS': Number(emp['TDS']) || 0,
-          'PT': Number(emp['PT']) || 0,
-          'STAFF WELFARE': Number(emp['STAFF WELFARE']) || 0,
-          'SALARY ADVANCE': Number(emp['SALARY ADVANCE']) || 0,
-          'TOTAL DAYS': Number(emp['TOTAL DAYS']) || 0,
-          'PRESENT DAYS': Number(emp['PRESENT DAYS']) || 0,
-          'SALARY DAYS': Number(emp['SALARY DAYS']) || 0,
-          'LOP': Number(emp['LOP']) || 0,
-        }));
+        const processedData = jsonData.map((emp, index) => {
+          console.log(`Row ${index + 1} data:`, emp);
+          
+          // Try to find the employee name field with different possible variations
+          let employeeName = emp['EMPLOYEE NAME'] || 
+                           emp['Employee Name'] || 
+                           emp['NAME'] || 
+                           emp['Name'] || 
+                           emp['EMPNAME'] || 
+                           emp['EMP_NAME'] ||
+                           emp['Employee_Name'] ||
+                           'Unknown Employee';
+          
+          console.log(`Employee ${index + 1} name:`, employeeName);
+          
+          return {
+            ...emp,
+            'EMPLOYEE NAME': employeeName,
+            'NET PAY': Number(emp['NET PAY'] || emp['Net Pay'] || emp['NETPAY'] || 0),
+            'GROSS SALARY': Number(emp['GROSS SALARY'] || emp['Gross Salary'] || emp['GROSS'] || 0),
+            'TOTAL DEDUCTIONS': Number(emp['TOTAL DEDUCTIONS'] || emp['Total Deductions'] || emp['DEDUCTIONS'] || 0),
+            'EARNED BASIC': Number(emp['EARNED BASIC'] || emp['Earned Basic'] || emp['BASIC'] || 0),
+            'HRA': Number(emp['HRA'] || 0),
+            'LOCAN CONVEY': Number(emp['LOCAN CONVEY'] || emp['Conveyance'] || emp['CONVEYANCE'] || 0),
+            'MEDICAL ALLOW': Number(emp['MEDICAL ALLOW'] || emp['Medical Allowance'] || emp['MEDICAL'] || 0),
+            'CITY COMPENSATORY ALLOWANCE (CCA)': Number(emp['CITY COMPENSATORY ALLOWANCE (CCA)'] || emp['CCA'] || 0),
+            'CHILDREN EDUCATION ALLOWANCE (CEA)': Number(emp['CHILDREN EDUCATION ALLOWANCE (CEA)'] || emp['CEA'] || 0),
+            'OTHER ALLOWANCE': Number(emp['OTHER ALLOWANCE'] || emp['Other Allowance'] || 0),
+            'INCENTIVE': Number(emp['INCENTIVE'] || emp['Incentive'] || 0),
+            'PF': Number(emp['PF'] || emp['Provident Fund'] || 0),
+            'ESI': Number(emp['ESI'] || emp['Employee State Insurance'] || 0),
+            'TDS': Number(emp['TDS'] || emp['Tax Deducted at Source'] || 0),
+            'PT': Number(emp['PT'] || emp['Professional Tax'] || 0),
+            'STAFF WELFARE': Number(emp['STAFF WELFARE'] || emp['Staff Welfare'] || 0),
+            'SALARY ADVANCE': Number(emp['SALARY ADVANCE'] || emp['Salary Advance'] || 0),
+            'TOTAL DAYS': Number(emp['TOTAL DAYS'] || emp['Total Days'] || 0),
+            'PRESENT DAYS': Number(emp['PRESENT DAYS'] || emp['Present Days'] || 0),
+            'SALARY DAYS': Number(emp['SALARY DAYS'] || emp['Salary Days'] || 0),
+            'LOP': Number(emp['LOP'] || emp['Loss of Pay'] || 0),
+            'EMPLOYEE ID': emp['EMPLOYEE ID'] || emp['Employee ID'] || emp['EMP ID'] || emp['ID'] || `EMP${index + 1}`,
+            'DESIGNATION': emp['DESIGNATION'] || emp['Designation'] || emp['Position'] || 'Employee',
+            'DEPARTMENT': emp['DEPARTMENT'] || emp['Department'] || emp['Dept'] || 'General',
+            'BRANCH': emp['BRANCH'] || emp['Branch'] || emp['Location'] || 'Main',
+            'PF NO': emp['PF NO'] || emp['PF Number'] || emp['PF_NO'] || '',
+            'ESI NO': emp['ESI NO'] || emp['ESI Number'] || emp['ESI_NO'] || '',
+            'UAN': emp['UAN'] || emp['UAN Number'] || '',
+            'DOJ': emp['DOJ'] || emp['Date of Joining'] || emp['Joining Date'] || '',
+            'AS ON': emp['AS ON'] || emp['Month'] || emp['Period'] || new Date().toLocaleDateString(),
+            'STATUS': emp['STATUS'] || emp['Status'] || emp['Employment Status'] || 'Active',
+          };
+        });
         
-        console.log('Loaded and processed employee data:', processedData);
+        console.log('Processed employee data:', processedData);
         setEmployees(processedData);
         toast.success(`Successfully loaded ${processedData.length} employee records`);
       } catch (error) {
@@ -251,6 +296,14 @@ const PayslipGenerator = () => {
                 </p>
               </div>
 
+              {/* Debug Information */}
+              {debugInfo && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
+                  <div className="text-sm font-medium text-yellow-800 mb-1">Debug Info:</div>
+                  <div className="text-xs text-yellow-700">{debugInfo}</div>
+                </div>
+              )}
+
               {employees.length > 0 && (
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-green-600">
@@ -291,8 +344,8 @@ const PayslipGenerator = () => {
                       <tbody>
                         {employees.map((emp, index) => (
                           <tr key={index} className="border-t hover:bg-gray-50">
-                            <td className="p-2 font-medium">{emp['EMPLOYEE NAME']}</td>
-                            <td className="p-2 text-gray-600">{emp['EMPLOYEE ID']}</td>
+                            <td className="p-2 font-medium">{emp['EMPLOYEE NAME'] || 'No Name Found'}</td>
+                            <td className="p-2 text-gray-600">{emp['EMPLOYEE ID'] || 'No ID'}</td>
                             <td className="p-2 text-green-600 font-medium">{formatCurrency(emp['NET PAY'])}</td>
                             <td className="p-2">
                               <Button
