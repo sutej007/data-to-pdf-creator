@@ -55,6 +55,7 @@ const PayslipGenerator = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [installPrompt, setInstallPrompt] = useState<any>(null);
   const [logoLoaded, setLogoLoaded] = useState(false);
+  const [logoDataUrl, setLogoDataUrl] = useState<string>('');
   const payslipRef = useRef<HTMLDivElement>(null);
 
   // Function to convert number to words
@@ -192,6 +193,24 @@ const PayslipGenerator = () => {
     return `${day}-${month}-${year}`;
   };
 
+  // Function to convert image to data URL for better PDF compatibility
+  const loadImageAsDataUrl = (src: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx?.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL('image/png'));
+      };
+      img.onerror = reject;
+      img.src = src;
+    });
+  };
+
   // Check if device is mobile and handle PWA install prompt
   useEffect(() => {
     const checkMobile = () => {
@@ -209,14 +228,30 @@ const PayslipGenerator = () => {
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-    // Preload the logo image
-    const img = new Image();
-    img.onload = () => setLogoLoaded(true);
-    img.onerror = () => {
-      console.error('Failed to load logo image');
-      setLogoLoaded(false);
+    // Load and convert logo to data URL for better PDF compatibility
+    const loadLogo = async () => {
+      try {
+        console.log('Loading logo image...');
+        const dataUrl = await loadImageAsDataUrl('/WhatsApp Image 2025-06-28 at 23.24.54 copy copy.jpeg');
+        setLogoDataUrl(dataUrl);
+        setLogoLoaded(true);
+        console.log('Logo loaded successfully as data URL');
+      } catch (error) {
+        console.error('Failed to load logo image:', error);
+        setLogoLoaded(false);
+        // Try alternative paths
+        try {
+          const altDataUrl = await loadImageAsDataUrl('/WhatsApp Image 2025-06-28 at 23.24.54.jpeg');
+          setLogoDataUrl(altDataUrl);
+          setLogoLoaded(true);
+          console.log('Logo loaded successfully from alternative path');
+        } catch (altError) {
+          console.error('Failed to load logo from alternative path:', altError);
+        }
+      }
     };
-    img.src = '/WhatsApp Image 2025-06-28 at 23.24.54 copy copy.jpeg';
+
+    loadLogo();
 
     return () => {
       window.removeEventListener('resize', checkMobile);
@@ -404,12 +439,13 @@ const PayslipGenerator = () => {
       console.log('Generating PDF for employee:', employee);
       console.log('Employee name:', employee['EMPLOYEE NAME']);
       console.log('Net pay:', employee['NET PAY']);
+      console.log('Logo loaded:', logoLoaded);
       
       // Set the employee data for the template and force re-render
       setSelectedEmployee(employee);
       
-      // Wait longer for the component to render with new data
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Wait for the component to render with new data
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
       // Verify the element has content before capturing
       const element = payslipRef.current;
@@ -419,36 +455,55 @@ const PayslipGenerator = () => {
 
       console.log('Element content before capture:', element.innerHTML.length);
       
-      // Make the element visible temporarily for capture
-      element.style.position = 'fixed';
-      element.style.top = '0';
-      element.style.left = '0';
+      // Make the element visible temporarily for capture with better positioning
+      const originalStyles = {
+        position: element.style.position,
+        top: element.style.top,
+        left: element.style.left,
+        visibility: element.style.visibility,
+        zIndex: element.style.zIndex
+      };
+
+      element.style.position = 'absolute';
+      element.style.top = '0px';
+      element.style.left = '0px';
       element.style.visibility = 'visible';
-      element.style.zIndex = '9999';
+      element.style.zIndex = '10000';
+
+      // Wait a bit more for images to load
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       const canvas = await html2canvas(element, {
-        scale: isMobile ? 1.5 : 2, // Reduce scale on mobile for performance
+        scale: isMobile ? 1.5 : 2,
         useCORS: true,
-        allowTaint: true,
+        allowTaint: false,
         backgroundColor: '#ffffff',
         width: 794,
         height: 1123,
-        logging: true,
+        logging: false,
+        imageTimeout: 15000,
+        removeContainer: true,
+        foreignObjectRendering: true,
         onclone: (clonedDoc) => {
           const clonedElement = clonedDoc.querySelector('[data-payslip-template]') as HTMLElement;
           if (clonedElement) {
             clonedElement.style.visibility = 'visible';
             clonedElement.style.position = 'static';
+            clonedElement.style.transform = 'none';
+            
+            // Ensure logo is visible in cloned document
+            const logoImg = clonedElement.querySelector('img[alt="Nava Chetana Logo"]') as HTMLImageElement;
+            if (logoImg && logoDataUrl) {
+              logoImg.src = logoDataUrl;
+              logoImg.style.display = 'block';
+              logoImg.style.visibility = 'visible';
+            }
           }
         }
       });
 
-      // Hide the element again
-      element.style.position = 'fixed';
-      element.style.top = '-9999px';
-      element.style.left = '-9999px';
-      element.style.visibility = 'hidden';
-      element.style.zIndex = '-1';
+      // Restore original styles
+      Object.assign(element.style, originalStyles);
 
       console.log('Canvas dimensions:', canvas.width, 'x', canvas.height);
 
@@ -680,11 +735,9 @@ const PayslipGenerator = () => {
                   <div className="text-xs text-blue-600 mt-3">
                     PDF will be generated with professional formatting and company logo
                   </div>
-                  {!logoLoaded && (
-                    <div className="text-xs text-orange-600 mt-2">
-                      ⚠️ Company logo is loading...
-                    </div>
-                  )}
+                  <div className={`text-xs mt-2 ${logoLoaded ? 'text-green-600' : 'text-orange-600'}`}>
+                    {logoLoaded ? '✅ Company logo loaded successfully' : '⚠️ Company logo is loading...'}
+                  </div>
                 </div>
               ) : (
                 <div className="text-center py-8 md:py-12 text-gray-500">
@@ -697,7 +750,7 @@ const PayslipGenerator = () => {
           </Card>
         </div>
 
-        {/* Hidden Professional Payslip Template - Updated with Better Logo Handling */}
+        {/* Hidden Professional Payslip Template - Fixed Logo Display */}
         <div
           ref={payslipRef}
           data-payslip-template
@@ -711,7 +764,8 @@ const PayslipGenerator = () => {
             lineHeight: '1.4', 
             fontFamily: 'Arial, sans-serif',
             visibility: 'hidden',
-            backgroundColor: 'white'
+            backgroundColor: 'white',
+            zIndex: '-1'
           }}
         >
           {selectedEmployee && (
@@ -720,36 +774,41 @@ const PayslipGenerator = () => {
               <div className="flex items-start justify-between mb-6 pb-4" style={{ borderBottom: '2px solid #1e40af' }}>
                 {/* Left Side - Logo and Company Info */}
                 <div className="flex items-start gap-4">
-                  {/* Company Logo in Left Corner - Fixed with better error handling */}
-                  <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center" style={{ border: '1px solid #e5e7eb' }}>
-                    {logoLoaded ? (
+                  {/* Company Logo in Left Corner - Fixed with data URL */}
+                  <div 
+                    className="w-16 h-16 flex-shrink-0 flex items-center justify-center" 
+                    style={{ 
+                      border: '1px solid #e5e7eb',
+                      backgroundColor: '#f9fafb'
+                    }}
+                  >
+                    {logoLoaded && logoDataUrl ? (
                       <img 
-                        src="/WhatsApp Image 2025-06-28 at 23.24.54 copy copy.jpeg" 
+                        src={logoDataUrl}
                         alt="Nava Chetana Logo" 
                         style={{ 
                           width: '60px', 
                           height: '60px', 
                           objectFit: 'contain',
-                          display: 'block'
-                        }}
-                        onError={(e) => {
-                          console.error('Logo failed to load in payslip');
-                          e.currentTarget.style.display = 'none';
+                          display: 'block',
+                          maxWidth: '100%',
+                          maxHeight: '100%'
                         }}
                       />
                     ) : (
                       <div style={{ 
                         width: '60px', 
                         height: '60px', 
-                        backgroundColor: '#f3f4f6',
+                        backgroundColor: '#e5e7eb',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         fontSize: '8px',
                         color: '#6b7280',
-                        textAlign: 'center'
+                        textAlign: 'center',
+                        fontWeight: 'bold'
                       }}>
-                        LOGO
+                        NAVA<br/>CHETANA<br/>LOGO
                       </div>
                     )}
                   </div>
