@@ -56,6 +56,7 @@ const PayslipGenerator = () => {
   const [installPrompt, setInstallPrompt] = useState<any>(null);
   const [logoLoaded, setLogoLoaded] = useState(false);
   const [logoDataUrl, setLogoDataUrl] = useState<string>('');
+  const [highResLogoDataUrl, setHighResLogoDataUrl] = useState<string>('');
   const payslipRef = useRef<HTMLDivElement>(null);
 
   // Function to convert number to words
@@ -193,20 +194,60 @@ const PayslipGenerator = () => {
     return `${day}-${month}-${year}`;
   };
 
-  // Function to convert image to data URL for better PDF compatibility
-  const loadImageAsDataUrl = (src: string): Promise<string> => {
+  // Enhanced function to convert image to high-quality data URL
+  const loadImageAsHighQualityDataUrl = (src: string, targetWidth: number = 200, targetHeight: number = 200): Promise<string> => {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.crossOrigin = 'anonymous';
       img.onload = () => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx?.drawImage(img, 0, 0);
-        resolve(canvas.toDataURL('image/png'));
+        
+        // Set high resolution canvas
+        const scale = 3; // 3x resolution for crisp output
+        canvas.width = targetWidth * scale;
+        canvas.height = targetHeight * scale;
+        
+        // Configure context for high quality
+        if (ctx) {
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          
+          // Calculate aspect ratio and positioning
+          const imgAspectRatio = img.width / img.height;
+          const canvasAspectRatio = targetWidth / targetHeight;
+          
+          let drawWidth, drawHeight, offsetX, offsetY;
+          
+          if (imgAspectRatio > canvasAspectRatio) {
+            // Image is wider than canvas
+            drawWidth = canvas.width;
+            drawHeight = canvas.width / imgAspectRatio;
+            offsetX = 0;
+            offsetY = (canvas.height - drawHeight) / 2;
+          } else {
+            // Image is taller than canvas
+            drawHeight = canvas.height;
+            drawWidth = canvas.height * imgAspectRatio;
+            offsetX = (canvas.width - drawWidth) / 2;
+            offsetY = 0;
+          }
+          
+          // Fill background with white
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // Draw image with high quality
+          ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+        }
+        
+        // Convert to high quality PNG
+        resolve(canvas.toDataURL('image/png', 1.0));
       };
-      img.onerror = reject;
+      img.onerror = (error) => {
+        console.error('Failed to load image:', error);
+        reject(error);
+      };
       img.src = src;
     });
   };
@@ -228,26 +269,50 @@ const PayslipGenerator = () => {
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-    // Load and convert logo to data URL for better PDF compatibility
+    // Load and convert logo to high-quality data URL
     const loadLogo = async () => {
       try {
-        console.log('Loading logo image...');
-        const dataUrl = await loadImageAsDataUrl('/WhatsApp Image 2025-06-28 at 23.24.54 copy copy.jpeg');
-        setLogoDataUrl(dataUrl);
-        setLogoLoaded(true);
-        console.log('Logo loaded successfully as data URL');
+        console.log('Loading logo image with high quality...');
+        
+        // Try multiple logo paths
+        const logoPaths = [
+          '/WhatsApp Image 2025-06-28 at 23.24.54 copy copy.jpeg',
+          '/WhatsApp Image 2025-06-28 at 23.24.54 copy.jpeg',
+          '/WhatsApp Image 2025-06-28 at 23.24.54.jpeg'
+        ];
+        
+        let logoLoaded = false;
+        
+        for (const logoPath of logoPaths) {
+          try {
+            console.log(`Trying to load logo from: ${logoPath}`);
+            
+            // Load standard resolution for preview
+            const standardDataUrl = await loadImageAsHighQualityDataUrl(logoPath, 80, 80);
+            setLogoDataUrl(standardDataUrl);
+            
+            // Load high resolution for PDF
+            const highResDataUrl = await loadImageAsHighQualityDataUrl(logoPath, 240, 240);
+            setHighResLogoDataUrl(highResDataUrl);
+            
+            setLogoLoaded(true);
+            logoLoaded = true;
+            console.log(`Logo loaded successfully from: ${logoPath}`);
+            break;
+          } catch (error) {
+            console.warn(`Failed to load logo from ${logoPath}:`, error);
+            continue;
+          }
+        }
+        
+        if (!logoLoaded) {
+          console.error('Failed to load logo from all paths');
+          setLogoLoaded(false);
+        }
+        
       } catch (error) {
         console.error('Failed to load logo image:', error);
         setLogoLoaded(false);
-        // Try alternative paths
-        try {
-          const altDataUrl = await loadImageAsDataUrl('/WhatsApp Image 2025-06-28 at 23.24.54.jpeg');
-          setLogoDataUrl(altDataUrl);
-          setLogoLoaded(true);
-          console.log('Logo loaded successfully from alternative path');
-        } catch (altError) {
-          console.error('Failed to load logo from alternative path:', altError);
-        }
       }
     };
 
@@ -446,18 +511,21 @@ const PayslipGenerator = () => {
       tempContainer.style.lineHeight = '1.4';
       tempContainer.style.zIndex = '10000';
       
-      // Create the payslip HTML content
+      // Use high-resolution logo for PDF
+      const logoToUse = highResLogoDataUrl || logoDataUrl;
+      
+      // Create the payslip HTML content with enhanced logo styling
       tempContainer.innerHTML = `
         <div style="padding: 24px; height: 100%; background: white; border: 2px solid #e5e7eb;">
-          <!-- Company Header with Logo -->
+          <!-- Company Header with High-Quality Logo -->
           <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #1e40af;">
             <!-- Left Side - Logo and Company Info -->
             <div style="display: flex; align-items: flex-start; gap: 16px;">
-              <!-- Company Logo -->
-              <div style="width: 64px; height: 64px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 1px solid #e5e7eb; background-color: #f9fafb;">
-                ${logoLoaded && logoDataUrl ? 
-                  `<img src="${logoDataUrl}" alt="Nava Chetana Logo" style="width: 60px; height: 60px; object-fit: contain; display: block; max-width: 100%; max-height: 100%;" />` :
-                  `<div style="width: 60px; height: 60px; background-color: #e5e7eb; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #6b7280; text-align: center; font-weight: bold;">NAVA<br/>CHETANA<br/>LOGO</div>`
+              <!-- Company Logo with Enhanced Quality -->
+              <div style="width: 80px; height: 80px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 2px solid #e5e7eb; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                ${logoLoaded && logoToUse ? 
+                  `<img src="${logoToUse}" alt="Nava Chetana Logo" style="width: 76px; height: 76px; object-fit: contain; display: block; max-width: 100%; max-height: 100%; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; image-rendering: pixelated;" />` :
+                  `<div style="width: 76px; height: 76px; background-color: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #6b7280; text-align: center; font-weight: bold; border-radius: 4px;">NAVA<br/>CHETANA<br/>LOGO</div>`
                 }
               </div>
               
@@ -647,22 +715,30 @@ const PayslipGenerator = () => {
       // Add to document temporarily
       document.body.appendChild(tempContainer);
 
-      // Wait for images to load
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Wait for images to load and render
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
       console.log('Capturing element with html2canvas...');
       
       const canvas = await html2canvas(tempContainer, {
-        scale: isMobile ? 1.5 : 2,
+        scale: isMobile ? 2 : 3, // Higher scale for better quality
         useCORS: true,
         allowTaint: false,
         backgroundColor: '#ffffff',
         width: 794,
         height: 1123,
         logging: false,
-        imageTimeout: 15000,
+        imageTimeout: 20000,
         removeContainer: false,
-        foreignObjectRendering: true
+        foreignObjectRendering: true,
+        onclone: (clonedDoc) => {
+          // Ensure images in cloned document have proper rendering
+          const images = clonedDoc.querySelectorAll('img');
+          images.forEach(img => {
+            img.style.imageRendering = 'high-quality';
+            img.style.imageRendering = '-webkit-optimize-contrast';
+          });
+        }
       });
 
       // Remove temporary container
@@ -674,7 +750,7 @@ const PayslipGenerator = () => {
         throw new Error('Canvas has no content - check if element is properly rendered');
       }
 
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL('image/png', 1.0); // Maximum quality
       
       if (imgData === 'data:,') {
         throw new Error('Canvas is empty - no content captured');
@@ -685,7 +761,7 @@ const PayslipGenerator = () => {
       const imgWidth = 210; // A4 width in mm
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       
-      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight, undefined, 'FAST');
       pdf.save(`Payslip_${employee['EMPLOYEE NAME']}_${employee['AS ON']}.pdf`);
       
       if (showToast) {
@@ -896,17 +972,27 @@ const PayslipGenerator = () => {
                     <div className="font-medium text-green-600">Net Pay: {formatCurrency(selectedEmployee['NET PAY'])}</div>
                   </div>
                   <div className="text-xs text-blue-600 mt-3">
-                    PDF will be generated with professional formatting and company logo
+                    PDF will be generated with professional formatting and high-quality company logo
                   </div>
                   <div className={`text-xs mt-2 ${logoLoaded ? 'text-green-600' : 'text-orange-600'}`}>
-                    {logoLoaded ? '✅ Company logo loaded successfully' : '⚠️ Company logo is loading...'}
+                    {logoLoaded ? '✅ High-quality company logo loaded successfully' : '⚠️ Company logo is loading...'}
                   </div>
+                  {logoLoaded && (
+                    <div className="mt-3 p-2 bg-gray-50 rounded border">
+                      <div className="text-xs text-gray-600 mb-2">Logo Preview:</div>
+                      <img 
+                        src={logoDataUrl} 
+                        alt="Company Logo Preview" 
+                        className="w-16 h-16 object-contain border border-gray-200 rounded"
+                      />
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="text-center py-8 md:py-12 text-gray-500">
                   <FileText className="h-8 w-8 md:h-12 md:w-12 mx-auto mb-4 opacity-50" />
                   <p className="text-sm">Upload Excel file to see employee data</p>
-                  <p className="text-xs text-gray-400 mt-1">Individual PDFs will be generated for each employee</p>
+                  <p className="text-xs text-gray-400 mt-1">Individual PDFs will be generated for each employee with high-quality logo</p>
                 </div>
               )}
             </CardContent>
