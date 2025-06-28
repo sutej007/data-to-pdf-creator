@@ -56,6 +56,104 @@ const PayslipGenerator = () => {
   const [installPrompt, setInstallPrompt] = useState<any>(null);
   const payslipRef = useRef<HTMLDivElement>(null);
 
+  // Function to convert number to words
+  const convertNumberToWords = (amount: number): string => {
+    const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+    const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+    const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+    const thousands = ['', 'Thousand', 'Lakh', 'Crore'];
+
+    if (amount === 0) return 'Zero';
+
+    const convertHundreds = (num: number): string => {
+      let result = '';
+      
+      if (num >= 100) {
+        result += ones[Math.floor(num / 100)] + ' Hundred ';
+        num %= 100;
+      }
+      
+      if (num >= 20) {
+        result += tens[Math.floor(num / 10)] + ' ';
+        num %= 10;
+      } else if (num >= 10) {
+        result += teens[num - 10] + ' ';
+        return result;
+      }
+      
+      if (num > 0) {
+        result += ones[num] + ' ';
+      }
+      
+      return result;
+    };
+
+    let result = '';
+    let groupIndex = 0;
+    
+    // Handle Indian numbering system (lakhs and crores)
+    const groups = [];
+    let remaining = Math.floor(amount);
+    
+    // First group: ones and tens
+    if (remaining > 0) {
+      groups.push(remaining % 100);
+      remaining = Math.floor(remaining / 100);
+    }
+    
+    // Second group: hundreds
+    if (remaining > 0) {
+      groups.push(remaining % 10);
+      remaining = Math.floor(remaining / 10);
+    }
+    
+    // Remaining groups: thousands, lakhs, crores (groups of 2 digits each)
+    while (remaining > 0) {
+      groups.push(remaining % 100);
+      remaining = Math.floor(remaining / 100);
+    }
+    
+    // Convert each group
+    for (let i = groups.length - 1; i >= 0; i--) {
+      if (groups[i] > 0) {
+        if (i === 0) {
+          // Ones and tens
+          if (groups[i] >= 20) {
+            result += tens[Math.floor(groups[i] / 10)] + ' ';
+            if (groups[i] % 10 > 0) {
+              result += ones[groups[i] % 10] + ' ';
+            }
+          } else if (groups[i] >= 10) {
+            result += teens[groups[i] - 10] + ' ';
+          } else {
+            result += ones[groups[i]] + ' ';
+          }
+        } else if (i === 1) {
+          // Hundreds
+          result += ones[groups[i]] + ' Hundred ';
+        } else {
+          // Thousands, lakhs, crores
+          if (groups[i] >= 20) {
+            result += tens[Math.floor(groups[i] / 10)] + ' ';
+            if (groups[i] % 10 > 0) {
+              result += ones[groups[i] % 10] + ' ';
+            }
+          } else if (groups[i] >= 10) {
+            result += teens[groups[i] - 10] + ' ';
+          } else {
+            result += ones[groups[i]] + ' ';
+          }
+          
+          if (i === 2) result += 'Thousand ';
+          else if (i === 3) result += 'Lakh ';
+          else if (i === 4) result += 'Crore ';
+        }
+      }
+    }
+    
+    return result.trim() + ' Only';
+  };
+
   // Check if device is mobile and handle PWA install prompt
   useEffect(() => {
     const checkMobile = () => {
@@ -742,7 +840,7 @@ const PayslipGenerator = () => {
               {/* Net Salary */}
               <div className="text-center mb-6 p-3" style={{ backgroundColor: '#f0f9ff', border: '2px solid #0ea5e9' }}>
                 <div className="text-base font-bold text-blue-800">
-                  Net Salary: {formatCurrency(selectedEmployee['NET PAY'])} (Rupees {this.convertNumberToWords ? this.convertNumberToWords(selectedEmployee['NET PAY']) : 'Twelve Thousand Seven Hundred and Sixty Five'})
+                  Net Salary: {formatCurrency(selectedEmployee['NET PAY'])} (Rupees {convertNumberToWords(selectedEmployee['NET PAY'])})
                 </div>
               </div>
 
