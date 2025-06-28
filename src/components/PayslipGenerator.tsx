@@ -194,8 +194,8 @@ const PayslipGenerator = () => {
     return `${day}-${month}-${year}`;
   };
 
-  // Enhanced function to convert image to high-quality data URL
-  const loadImageAsHighQualityDataUrl = (src: string, targetWidth: number = 200, targetHeight: number = 200): Promise<string> => {
+  // Enhanced function to process and clean logo image
+  const processLogoImage = (src: string, targetWidth: number = 200, targetHeight: number = 200): Promise<string> => {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.crossOrigin = 'anonymous';
@@ -203,17 +203,67 @@ const PayslipGenerator = () => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         
-        // Set high resolution canvas
-        const scale = 3; // 3x resolution for crisp output
+        // Set ultra-high resolution canvas for maximum quality
+        const scale = 4; // 4x resolution for ultra-crisp output
         canvas.width = targetWidth * scale;
         canvas.height = targetHeight * scale;
         
-        // Configure context for high quality
         if (ctx) {
+          // Configure context for maximum quality
           ctx.imageSmoothingEnabled = true;
           ctx.imageSmoothingQuality = 'high';
           
-          // Calculate aspect ratio and positioning
+          // Create a temporary canvas to process the original image
+          const tempCanvas = document.createElement('canvas');
+          const tempCtx = tempCanvas.getContext('2d');
+          tempCanvas.width = img.width;
+          tempCanvas.height = img.height;
+          
+          if (tempCtx) {
+            // Draw original image
+            tempCtx.drawImage(img, 0, 0);
+            
+            // Get image data for processing
+            const imageData = tempCtx.getImageData(0, 0, img.width, img.height);
+            const data = imageData.data;
+            
+            // Process pixels to remove black areas and enhance contrast
+            for (let i = 0; i < data.length; i += 4) {
+              const r = data[i];
+              const g = data[i + 1];
+              const b = data[i + 2];
+              const a = data[i + 3];
+              
+              // Calculate brightness
+              const brightness = (r + g + b) / 3;
+              
+              // Remove very dark pixels (black areas) by making them transparent
+              if (brightness < 30) {
+                data[i + 3] = 0; // Make transparent
+              }
+              // Enhance contrast for mid-tones
+              else if (brightness < 100) {
+                // Slightly brighten dark areas
+                const factor = 1.2;
+                data[i] = Math.min(255, r * factor);
+                data[i + 1] = Math.min(255, g * factor);
+                data[i + 2] = Math.min(255, b * factor);
+              }
+              // Keep bright areas as they are but ensure they're crisp
+              else {
+                // Slight contrast enhancement
+                const factor = 1.1;
+                data[i] = Math.min(255, r * factor);
+                data[i + 1] = Math.min(255, g * factor);
+                data[i + 2] = Math.min(255, b * factor);
+              }
+            }
+            
+            // Put processed image data back
+            tempCtx.putImageData(imageData, 0, 0);
+          }
+          
+          // Calculate aspect ratio and positioning for final canvas
           const imgAspectRatio = img.width / img.height;
           const canvasAspectRatio = targetWidth / targetHeight;
           
@@ -233,15 +283,46 @@ const PayslipGenerator = () => {
             offsetY = 0;
           }
           
-          // Fill background with white
+          // Fill background with white (transparent areas will show as white)
           ctx.fillStyle = '#ffffff';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           
-          // Draw image with high quality
-          ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+          // Draw processed image with ultra-high quality
+          ctx.drawImage(tempCanvas, offsetX, offsetY, drawWidth, drawHeight);
+          
+          // Apply additional sharpening filter
+          const finalImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const finalData = finalImageData.data;
+          
+          // Simple sharpening kernel
+          const sharpenKernel = [
+            0, -1, 0,
+            -1, 5, -1,
+            0, -1, 0
+          ];
+          
+          // Apply sharpening (simplified version)
+          for (let y = 1; y < canvas.height - 1; y++) {
+            for (let x = 1; x < canvas.width - 1; x++) {
+              for (let c = 0; c < 3; c++) { // RGB channels only
+                let sum = 0;
+                for (let ky = -1; ky <= 1; ky++) {
+                  for (let kx = -1; kx <= 1; kx++) {
+                    const pixelIndex = ((y + ky) * canvas.width + (x + kx)) * 4 + c;
+                    const kernelIndex = (ky + 1) * 3 + (kx + 1);
+                    sum += finalData[pixelIndex] * sharpenKernel[kernelIndex];
+                  }
+                }
+                const currentIndex = (y * canvas.width + x) * 4 + c;
+                finalData[currentIndex] = Math.max(0, Math.min(255, sum));
+              }
+            }
+          }
+          
+          ctx.putImageData(finalImageData, 0, 0);
         }
         
-        // Convert to high quality PNG
+        // Convert to ultra-high quality PNG
         resolve(canvas.toDataURL('image/png', 1.0));
       };
       img.onerror = (error) => {
@@ -269,13 +350,14 @@ const PayslipGenerator = () => {
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-    // Load and convert logo to high-quality data URL
+    // Load and process logo with black removal and quality enhancement
     const loadLogo = async () => {
       try {
-        console.log('Loading logo image with high quality...');
+        console.log('Loading and processing logo image with black removal and quality enhancement...');
         
-        // Try multiple logo paths
+        // Try multiple logo paths with the new uploaded image
         const logoPaths = [
+          '/WhatsApp Image 2025-06-28 at 23.24.54 copy copy copy.jpeg',
           '/WhatsApp Image 2025-06-28 at 23.24.54 copy copy.jpeg',
           '/WhatsApp Image 2025-06-28 at 23.24.54 copy.jpeg',
           '/WhatsApp Image 2025-06-28 at 23.24.54.jpeg'
@@ -285,34 +367,37 @@ const PayslipGenerator = () => {
         
         for (const logoPath of logoPaths) {
           try {
-            console.log(`Trying to load logo from: ${logoPath}`);
+            console.log(`Processing logo from: ${logoPath}`);
             
-            // Load standard resolution for preview
-            const standardDataUrl = await loadImageAsHighQualityDataUrl(logoPath, 80, 80);
+            // Load standard resolution for preview (with processing)
+            const standardDataUrl = await processLogoImage(logoPath, 100, 100);
             setLogoDataUrl(standardDataUrl);
             
-            // Load high resolution for PDF
-            const highResDataUrl = await loadImageAsHighQualityDataUrl(logoPath, 240, 240);
-            setHighResLogoDataUrl(highResDataUrl);
+            // Load ultra-high resolution for PDF (with processing)
+            const ultraHighResDataUrl = await processLogoImage(logoPath, 400, 400);
+            setHighResLogoDataUrl(ultraHighResDataUrl);
             
             setLogoLoaded(true);
             logoLoaded = true;
-            console.log(`Logo loaded successfully from: ${logoPath}`);
+            console.log(`Logo processed and loaded successfully from: ${logoPath}`);
+            toast.success('Company logo loaded with enhanced quality!');
             break;
           } catch (error) {
-            console.warn(`Failed to load logo from ${logoPath}:`, error);
+            console.warn(`Failed to process logo from ${logoPath}:`, error);
             continue;
           }
         }
         
         if (!logoLoaded) {
-          console.error('Failed to load logo from all paths');
+          console.error('Failed to load and process logo from all paths');
           setLogoLoaded(false);
+          toast.error('Failed to load company logo');
         }
         
       } catch (error) {
-        console.error('Failed to load logo image:', error);
+        console.error('Failed to load and process logo image:', error);
         setLogoLoaded(false);
+        toast.error('Error processing company logo');
       }
     };
 
@@ -511,21 +596,21 @@ const PayslipGenerator = () => {
       tempContainer.style.lineHeight = '1.4';
       tempContainer.style.zIndex = '10000';
       
-      // Use high-resolution logo for PDF
+      // Use ultra-high-resolution processed logo for PDF
       const logoToUse = highResLogoDataUrl || logoDataUrl;
       
-      // Create the payslip HTML content with enhanced logo styling
+      // Create the payslip HTML content with ultra-enhanced logo styling
       tempContainer.innerHTML = `
         <div style="padding: 24px; height: 100%; background: white; border: 2px solid #e5e7eb;">
-          <!-- Company Header with High-Quality Logo -->
+          <!-- Company Header with Ultra-High-Quality Processed Logo -->
           <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #1e40af;">
-            <!-- Left Side - Logo and Company Info -->
+            <!-- Left Side - Enhanced Logo and Company Info -->
             <div style="display: flex; align-items: flex-start; gap: 16px;">
-              <!-- Company Logo with Enhanced Quality -->
-              <div style="width: 80px; height: 80px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 2px solid #e5e7eb; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <!-- Company Logo with Ultra-Enhanced Quality and Black Removal -->
+              <div style="width: 100px; height: 100px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 1px solid #e5e7eb; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 4px;">
                 ${logoLoaded && logoToUse ? 
-                  `<img src="${logoToUse}" alt="Nava Chetana Logo" style="width: 76px; height: 76px; object-fit: contain; display: block; max-width: 100%; max-height: 100%; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; image-rendering: pixelated;" />` :
-                  `<div style="width: 76px; height: 76px; background-color: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #6b7280; text-align: center; font-weight: bold; border-radius: 4px;">NAVA<br/>CHETANA<br/>LOGO</div>`
+                  `<img src="${logoToUse}" alt="Nava Chetana Logo" style="width: 92px; height: 92px; object-fit: contain; display: block; max-width: 100%; max-height: 100%; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; image-rendering: pixelated; filter: contrast(1.1) brightness(1.05) saturate(1.1);" />` :
+                  `<div style="width: 92px; height: 92px; background-color: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #6b7280; text-align: center; font-weight: bold; border-radius: 8px;">NAVA<br/>CHETANA<br/>LOGO</div>`
                 }
               </div>
               
@@ -716,19 +801,19 @@ const PayslipGenerator = () => {
       document.body.appendChild(tempContainer);
 
       // Wait for images to load and render
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       console.log('Capturing element with html2canvas...');
       
       const canvas = await html2canvas(tempContainer, {
-        scale: isMobile ? 2 : 3, // Higher scale for better quality
+        scale: isMobile ? 3 : 4, // Ultra-high scale for maximum quality
         useCORS: true,
         allowTaint: false,
         backgroundColor: '#ffffff',
         width: 794,
         height: 1123,
         logging: false,
-        imageTimeout: 20000,
+        imageTimeout: 30000,
         removeContainer: false,
         foreignObjectRendering: true,
         onclone: (clonedDoc) => {
@@ -737,6 +822,7 @@ const PayslipGenerator = () => {
           images.forEach(img => {
             img.style.imageRendering = 'high-quality';
             img.style.imageRendering = '-webkit-optimize-contrast';
+            img.style.filter = 'contrast(1.1) brightness(1.05) saturate(1.1)';
           });
         }
       });
@@ -805,7 +891,7 @@ const PayslipGenerator = () => {
       }
       
       // Small delay between generations to prevent browser freezing
-      await new Promise(resolve => setTimeout(resolve, isMobile ? 2000 : 1000));
+      await new Promise(resolve => setTimeout(resolve, isMobile ? 2500 : 1500));
     }
 
     setIsGenerating(false);
@@ -972,19 +1058,27 @@ const PayslipGenerator = () => {
                     <div className="font-medium text-green-600">Net Pay: {formatCurrency(selectedEmployee['NET PAY'])}</div>
                   </div>
                   <div className="text-xs text-blue-600 mt-3">
-                    PDF will be generated with professional formatting and high-quality company logo
+                    PDF will be generated with professional formatting and ultra-high-quality processed company logo
                   </div>
                   <div className={`text-xs mt-2 ${logoLoaded ? 'text-green-600' : 'text-orange-600'}`}>
-                    {logoLoaded ? '✅ High-quality company logo loaded successfully' : '⚠️ Company logo is loading...'}
+                    {logoLoaded ? '✅ Ultra-high-quality company logo processed and loaded (black areas removed)' : '⚠️ Company logo is processing...'}
                   </div>
                   {logoLoaded && (
-                    <div className="mt-3 p-2 bg-gray-50 rounded border">
-                      <div className="text-xs text-gray-600 mb-2">Logo Preview:</div>
-                      <img 
-                        src={logoDataUrl} 
-                        alt="Company Logo Preview" 
-                        className="w-16 h-16 object-contain border border-gray-200 rounded"
-                      />
+                    <div className="mt-3 p-3 bg-gray-50 rounded border">
+                      <div className="text-xs text-gray-600 mb-2">Enhanced Logo Preview (Black Removed):</div>
+                      <div className="flex items-center gap-3">
+                        <img 
+                          src={logoDataUrl} 
+                          alt="Company Logo Preview" 
+                          className="w-20 h-20 object-contain border border-gray-200 rounded bg-white p-1"
+                        />
+                        <div className="text-xs text-green-600">
+                          <div>✅ Black areas removed</div>
+                          <div>✅ Ultra-high resolution</div>
+                          <div>✅ Enhanced contrast & clarity</div>
+                          <div>✅ Professional quality</div>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -992,7 +1086,7 @@ const PayslipGenerator = () => {
                 <div className="text-center py-8 md:py-12 text-gray-500">
                   <FileText className="h-8 w-8 md:h-12 md:w-12 mx-auto mb-4 opacity-50" />
                   <p className="text-sm">Upload Excel file to see employee data</p>
-                  <p className="text-xs text-gray-400 mt-1">Individual PDFs will be generated for each employee with high-quality logo</p>
+                  <p className="text-xs text-gray-400 mt-1">Individual PDFs will be generated for each employee with ultra-high-quality processed logo</p>
                 </div>
               )}
             </CardContent>
