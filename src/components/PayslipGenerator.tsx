@@ -439,27 +439,27 @@ const PayslipGenerator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-blue-50" style={{ fontFamily: '"Inter", system-ui, -apple-system, sans-serif' }}>
-      {/* Enhanced Header with Blue Background */}
-      <div className="bg-blue-100 border-b border-blue-200 shadow-sm">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50/40 via-teal-50/30 to-green-50/40" style={{ fontFamily: '"Inter", system-ui, -apple-system, sans-serif' }}>
+      {/* Enhanced Header with Light Blue-Green Mix */}
+      <div className="bg-gradient-to-r from-blue-50/60 via-teal-50/50 to-green-50/60 border-b border-teal-100 shadow-sm backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               {processedLogoUrl && (
                 <div className="relative">
-                  <div className="absolute inset-0 bg-blue-300 rounded-full blur-md opacity-30"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-200 to-green-200 rounded-full blur-md opacity-30"></div>
                   <img 
                     src={processedLogoUrl}
                     alt="Company Logo"
-                    className="relative w-14 h-14 object-contain rounded-full border-2 border-blue-200 shadow-lg"
+                    className="relative w-14 h-14 object-contain rounded-full border-2 border-teal-100 shadow-lg"
                   />
                 </div>
               )}
               <div>
-                <h1 className="text-3xl font-bold text-blue-800">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-teal-600 to-green-600 bg-clip-text text-transparent">
                   Payslip Generator
                 </h1>
-                <p className="text-blue-600">Convert Excel data to professional PDF payslips</p>
+                <p className="text-slate-600">Convert Excel data to professional PDF payslips</p>
               </div>
             </div>
           </div>
@@ -470,24 +470,24 @@ const PayslipGenerator = () => {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Left Panel - Upload & Controls */}
           <div className="space-y-6">
-            {/* File Upload Card with Blue Background */}
-            <Card className="border border-blue-200 shadow-lg bg-blue-100/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+            {/* File Upload Card with Light Blue-Green Mix */}
+            <Card className="border border-teal-200 shadow-lg bg-gradient-to-br from-blue-50/30 via-teal-50/25 to-green-50/30 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center space-x-3 text-xl text-slate-800">
-                  <div className="p-3 bg-blue-500 rounded-xl shadow-lg">
+                  <div className="p-3 bg-gradient-to-br from-blue-500 via-teal-500 to-green-500 rounded-xl shadow-lg">
                     <FileSpreadsheet className="w-6 h-6 text-white" />
                   </div>
                   <span>1. Upload Excel File</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="border-2 border-dashed border-blue-300 rounded-xl p-6 hover:border-blue-400 hover:bg-blue-100/70 transition-all duration-300 group bg-blue-100/30">
+                <div className="border-2 border-dashed border-teal-300 rounded-xl p-6 hover:border-teal-400 hover:bg-gradient-to-br hover:from-blue-50/40 hover:via-teal-50/35 hover:to-green-50/40 transition-all duration-300 group bg-gradient-to-br from-blue-50/20 via-teal-50/15 to-green-50/20">
                   <div className="text-center">
                     <div className="relative mb-4">
-                      <Upload className="w-12 h-12 text-blue-500 mx-auto group-hover:text-blue-600 transition-colors" />
-                      <div className="absolute inset-0 bg-blue-400 rounded-full blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                      <Upload className="w-12 h-12 text-teal-400 mx-auto group-hover:text-teal-500 transition-colors" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-green-400 rounded-full blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
                     </div>
-                    <Label htmlFor="excel-upload" className="text-lg font-semibold text-slate-700 cursor-pointer hover:text-blue-600 transition-colors">
+                    <Label htmlFor="excel-upload" className="text-lg font-semibold text-slate-700 cursor-pointer hover:text-teal-600 transition-colors">
                       Choose Excel File
                     </Label>
                     <p className="text-sm text-slate-500 mt-2">Supports .xlsx and .xls formats</p>
@@ -496,22 +496,22 @@ const PayslipGenerator = () => {
                       type="file"
                       accept=".xlsx,.xls"
                       onChange={handleFileUpload}
-                      className="mt-4 file:bg-blue-500 file:text-white file:border-0 file:rounded-lg file:px-4 file:py-2 file:mr-4 file:shadow-md hover:file:shadow-lg file:transition-all bg-blue-100/40"
+                      className="mt-4 file:bg-gradient-to-r file:from-blue-500 file:via-teal-500 file:to-green-500 file:text-white file:border-0 file:rounded-lg file:px-4 file:py-2 file:mr-4 file:shadow-md hover:file:shadow-lg file:transition-all bg-gradient-to-br from-blue-50/25 via-teal-50/20 to-green-50/25"
                     />
                   </div>
                 </div>
-                <div className="flex items-center space-x-2 text-sm text-slate-600 bg-blue-100/40 p-3 rounded-lg">
-                  <Info className="w-4 h-4 text-blue-500" />
+                <div className="flex items-center space-x-2 text-sm text-slate-600 bg-gradient-to-r from-blue-50/25 via-teal-50/20 to-green-50/25 p-3 rounded-lg">
+                  <Info className="w-4 h-4 text-teal-500" />
                   <span>Excel file should have column headers in the first row</span>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Template Selection Card with Blue Background */}
-            <Card className="border border-blue-200 shadow-lg bg-blue-100/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+            {/* Template Selection Card with Light Blue-Green Mix */}
+            <Card className="border border-purple-200 shadow-lg bg-gradient-to-br from-blue-50/30 via-teal-50/25 to-green-50/30 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center space-x-3 text-xl text-slate-800">
-                  <div className="p-3 bg-purple-500 rounded-xl shadow-lg">
+                  <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-lg">
                     <Settings className="w-6 h-6 text-white" />
                   </div>
                   <span>2. Choose Template</span>
@@ -520,16 +520,16 @@ const PayslipGenerator = () => {
               <CardContent>
                 <div className="grid grid-cols-3 gap-3">
                   {[
-                    { key: 'classic', name: 'Classic', desc: 'Traditional', gradient: 'from-amber-400 to-orange-500', bg: 'bg-blue-100/40', border: 'border-amber-200' },
-                    { key: 'modern', name: 'Modern', desc: 'Recommended', gradient: 'from-blue-400 to-blue-600', bg: 'bg-blue-100/40', border: 'border-blue-200' },
-                    { key: 'professional', name: 'Professional', desc: 'Corporate', gradient: 'from-slate-400 to-gray-500', bg: 'bg-blue-100/40', border: 'border-slate-200' }
+                    { key: 'classic', name: 'Classic', desc: 'Traditional', gradient: 'from-amber-400 to-orange-500', bg: 'bg-gradient-to-br from-blue-50/25 via-teal-50/20 to-green-50/25', border: 'border-amber-200' },
+                    { key: 'modern', name: 'Modern', desc: 'Recommended', gradient: 'from-blue-400 via-teal-400 to-green-400', bg: 'bg-gradient-to-br from-blue-50/25 via-teal-50/20 to-green-50/25', border: 'border-teal-200' },
+                    { key: 'professional', name: 'Professional', desc: 'Corporate', gradient: 'from-slate-400 to-gray-500', bg: 'bg-gradient-to-br from-blue-50/25 via-teal-50/20 to-green-50/25', border: 'border-slate-200' }
                   ].map(({ key, name, desc, gradient, bg, border }) => (
                     <button
                       key={key}
                       onClick={() => setSelectedTemplate(key as TemplateType)}
                       className={`p-4 rounded-xl border-2 text-center transition-all duration-300 transform hover:scale-105 ${
                         selectedTemplate === key 
-                          ? `border-blue-400 bg-blue-100/70 shadow-lg scale-105` 
+                          ? `border-teal-400 bg-gradient-to-br from-blue-50/40 via-teal-50/35 to-green-50/40 shadow-lg scale-105` 
                           : `${border} ${bg} hover:shadow-md`
                       }`}
                     >
@@ -542,16 +542,16 @@ const PayslipGenerator = () => {
               </CardContent>
             </Card>
 
-            {/* Employee Data Card with Blue Background */}
+            {/* Employee Data Card with Light Blue-Green Mix */}
             {employees.length > 0 && (
-              <Card className="border border-blue-200 shadow-lg bg-blue-100/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+              <Card className="border border-emerald-200 shadow-lg bg-gradient-to-br from-blue-50/30 via-teal-50/25 to-green-50/30 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center space-x-3 text-xl text-slate-800">
-                    <div className="p-3 bg-emerald-500 rounded-xl shadow-lg">
+                    <div className="p-3 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-lg">
                       <Users className="w-6 h-6 text-white" />
                     </div>
                     <span>3. Generate PDFs</span>
-                    <div className="ml-auto bg-emerald-100 text-emerald-800 px-4 py-2 rounded-full text-sm font-semibold shadow-sm">
+                    <div className="ml-auto bg-gradient-to-r from-emerald-100/90 to-green-100/80 text-emerald-800 px-4 py-2 rounded-full text-sm font-semibold shadow-sm">
                       {employees.length} employees
                     </div>
                   </CardTitle>
@@ -561,7 +561,7 @@ const PayslipGenerator = () => {
                     <Button
                       onClick={generateAllPDFs}
                       disabled={isGenerating}
-                      className="bg-blue-500 hover:bg-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                      className="bg-gradient-to-r from-blue-500 via-teal-500 to-green-500 hover:from-blue-600 hover:via-teal-600 hover:to-green-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                     >
                       {isGenerating ? (
                         <>
@@ -580,7 +580,7 @@ const PayslipGenerator = () => {
                       <Button
                         onClick={() => setShowPreview(true)}
                         variant="outline"
-                        className="border-blue-300 hover:bg-blue-100/60 transition-all duration-300 transform hover:scale-105 bg-blue-100/40"
+                        className="border-teal-300 hover:bg-gradient-to-br hover:from-blue-50/40 hover:via-teal-50/35 hover:to-green-50/40 transition-all duration-300 transform hover:scale-105 bg-gradient-to-br from-blue-50/25 via-teal-50/20 to-green-50/25"
                       >
                         <Eye className="w-4 h-4 mr-2" />
                         Preview
@@ -588,10 +588,10 @@ const PayslipGenerator = () => {
                     )}
                   </div>
 
-                  {/* Employee List with Blue Background */}
-                  <div className="max-h-64 overflow-y-auto border border-blue-200 rounded-xl shadow-inner bg-blue-100/40 backdrop-blur-sm">
+                  {/* Employee List with Light Blue-Green Mix */}
+                  <div className="max-h-64 overflow-y-auto border border-teal-200 rounded-xl shadow-inner bg-gradient-to-br from-blue-50/25 via-teal-50/20 to-green-50/25 backdrop-blur-sm">
                     <table className="w-full text-sm">
-                      <thead className="bg-blue-100/60 sticky top-0 backdrop-blur-sm">
+                      <thead className="bg-gradient-to-r from-blue-50/40 via-teal-50/35 to-green-50/40 sticky top-0 backdrop-blur-sm">
                         <tr>
                           <th className="px-4 py-3 text-left font-semibold text-slate-700">Name</th>
                           <th className="px-4 py-3 text-left font-semibold text-slate-700">ID</th>
@@ -601,7 +601,7 @@ const PayslipGenerator = () => {
                       </thead>
                       <tbody>
                         {employees.map((emp, index) => (
-                          <tr key={index} className="border-t border-blue-100 hover:bg-blue-100/50 transition-all duration-200">
+                          <tr key={index} className="border-t border-teal-100 hover:bg-gradient-to-r hover:from-blue-50/35 hover:via-teal-50/30 hover:to-green-50/35 transition-all duration-200">
                             <td className="px-4 py-3 font-medium text-slate-900">{emp['EMPLOYEE NAME']}</td>
                             <td className="px-4 py-3 text-slate-600">{emp['EMPLOYEE ID']}</td>
                             <td className="px-4 py-3 text-emerald-600 font-semibold">{formatCurrency(emp['NET PAY'])}</td>
@@ -611,7 +611,7 @@ const PayslipGenerator = () => {
                                 variant="outline"
                                 onClick={() => generatePDF(emp)}
                                 disabled={isGenerating}
-                                className="text-xs border-blue-200 hover:bg-blue-100/50 hover:border-blue-300 transition-all duration-200 bg-blue-100/30"
+                                className="text-xs border-teal-200 hover:bg-gradient-to-r hover:from-blue-50/35 hover:via-teal-50/30 hover:to-green-50/35 hover:border-teal-300 transition-all duration-200 bg-gradient-to-br from-blue-50/20 via-teal-50/15 to-green-50/20"
                               >
                                 <FileText className="w-3 h-3 mr-1" />
                                 PDF
@@ -627,12 +627,12 @@ const PayslipGenerator = () => {
             )}
           </div>
 
-          {/* Right Panel - Preview with Blue Background */}
+          {/* Right Panel - Preview with Light Blue-Green Mix */}
           <div className="space-y-6">
-            <Card className="border border-blue-200 shadow-lg bg-blue-100/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+            <Card className="border border-indigo-200 shadow-lg bg-gradient-to-br from-blue-50/30 via-teal-50/25 to-green-50/30 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center space-x-3 text-xl text-slate-800">
-                  <div className="p-3 bg-indigo-500 rounded-xl shadow-lg">
+                  <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg">
                     <Eye className="w-6 h-6 text-white" />
                   </div>
                   <span>Preview</span>
@@ -641,9 +641,9 @@ const PayslipGenerator = () => {
               <CardContent>
                 {selectedEmployee ? (
                   <div className="space-y-4">
-                    <div className="bg-blue-100/60 rounded-xl p-5 border border-blue-200 shadow-sm">
+                    <div className="bg-gradient-to-br from-blue-50/40 via-teal-50/35 to-green-50/40 rounded-xl p-5 border border-teal-200 shadow-sm">
                       <h3 className="text-lg font-bold text-slate-900 mb-3 flex items-center">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                        <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-green-500 rounded-full mr-2"></div>
                         {selectedEmployee['EMPLOYEE NAME']}
                       </h3>
                       <div className="grid grid-cols-2 gap-4 text-sm">
@@ -666,12 +666,12 @@ const PayslipGenerator = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5 text-center shadow-sm">
+                    <div className="bg-gradient-to-br from-emerald-50/95 to-green-50/90 border border-emerald-200 rounded-xl p-5 text-center shadow-sm">
                       <div className="flex items-center justify-center mb-2">
                         <Sparkles className="w-4 h-4 text-emerald-600 mr-2" />
                         <div className="text-emerald-700 font-semibold text-sm">Net Salary</div>
                       </div>
-                      <div className="text-3xl font-bold text-emerald-600">
+                      <div className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
                         {formatCurrency(selectedEmployee['NET PAY'])}
                       </div>
                     </div>
@@ -680,7 +680,7 @@ const PayslipGenerator = () => {
                   <div className="text-center py-12">
                     <div className="relative mb-4">
                       <Folder className="w-16 h-16 text-slate-300 mx-auto" />
-                      <div className="absolute inset-0 bg-blue-300 rounded-full blur-xl opacity-20"></div>
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-300 to-green-300 rounded-full blur-xl opacity-20"></div>
                     </div>
                     <h3 className="text-lg font-semibold text-slate-700 mb-2">No Data Loaded</h3>
                     <p className="text-slate-500">Upload an Excel file to see employee data and preview payslips</p>
@@ -694,31 +694,31 @@ const PayslipGenerator = () => {
 
       {/* Copyright Badge at Bottom */}
       <div className="fixed bottom-4 right-4 z-40">
-        <div className="bg-blue-600/90 backdrop-blur-sm text-white px-4 py-2 rounded-full shadow-lg border border-white/20 flex items-center space-x-2 text-sm font-medium">
+        <div className="bg-gradient-to-r from-blue-600/90 via-teal-600/90 to-green-600/90 backdrop-blur-sm text-white px-4 py-2 rounded-full shadow-lg border border-white/20 flex items-center space-x-2 text-sm font-medium">
           <Copyright className="w-4 h-4" />
           <span>Powered & Developed by Sutejrao K S</span>
         </div>
       </div>
 
-      {/* Template Preview Modal with Blue Background */}
+      {/* Template Preview Modal with Light Blue-Green Mix */}
       {showPreview && selectedEmployee && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-blue-50 rounded-2xl shadow-2xl max-w-4xl max-h-[90vh] overflow-auto border border-blue-200">
-            <div className="flex justify-between items-center p-6 border-b border-blue-200 bg-blue-100">
+          <div className="bg-gradient-to-br from-blue-50/95 via-teal-50/90 to-green-50/95 rounded-2xl shadow-2xl max-w-4xl max-h-[90vh] overflow-auto border border-teal-200">
+            <div className="flex justify-between items-center p-6 border-b border-teal-200 bg-gradient-to-r from-blue-50/80 via-teal-50/75 to-green-50/80">
               <h3 className="text-2xl font-bold text-slate-900 flex items-center">
-                <Eye className="w-6 h-6 mr-3 text-blue-600" />
+                <Eye className="w-6 h-6 mr-3 text-teal-600" />
                 Template Preview - {selectedTemplate}
               </h3>
               <Button 
                 onClick={() => setShowPreview(false)} 
                 variant="outline"
                 size="sm"
-                className="hover:bg-blue-100 transition-colors bg-blue-50"
+                className="hover:bg-gradient-to-r hover:from-blue-100/80 hover:via-teal-100/75 hover:to-green-100/80 transition-colors bg-gradient-to-br from-blue-50/60 via-teal-50/55 to-green-50/60"
               >
                 Close
               </Button>
             </div>
-            <div className="p-6 bg-blue-50">
+            <div className="p-6 bg-gradient-to-br from-blue-50/60 via-teal-50/55 to-green-50/60">
               <div className="transform scale-50 origin-top-left bg-white rounded-lg shadow-lg">
                 {renderTemplate(selectedEmployee)}
               </div>
@@ -727,15 +727,15 @@ const PayslipGenerator = () => {
         </div>
       )}
 
-      {/* PDF Generation Modal with Blue Background */}
+      {/* PDF Generation Modal with Light Blue-Green Mix */}
       {showPdfTemplate && pdfEmployee && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-blue-50 rounded-2xl shadow-2xl max-w-4xl max-h-[90vh] overflow-auto border border-blue-200">
-            <div className="text-center p-8 border-b border-blue-200 bg-blue-100">
+          <div className="bg-gradient-to-br from-blue-50/95 via-teal-50/90 to-green-50/95 rounded-2xl shadow-2xl max-w-4xl max-h-[90vh] overflow-auto border border-teal-200">
+            <div className="text-center p-8 border-b border-teal-200 bg-gradient-to-r from-blue-50/80 via-teal-50/75 to-green-50/80">
               <div className="flex items-center justify-center space-x-3 mb-4">
                 <div className="relative">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                  <div className="absolute inset-0 bg-blue-600 rounded-full blur-lg opacity-20"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-green-600 rounded-full blur-lg opacity-20"></div>
                 </div>
                 <span className="text-xl font-bold text-slate-900">
                   Generating PDF for {pdfEmployee['EMPLOYEE NAME']}
@@ -744,7 +744,7 @@ const PayslipGenerator = () => {
               <p className="text-slate-600">Please wait while we process your payslip with high quality...</p>
             </div>
             
-            <div ref={payslipRef} className="p-6 bg-blue-50">
+            <div ref={payslipRef} className="p-6 bg-gradient-to-br from-blue-50/60 via-teal-50/55 to-green-50/60">
               {renderTemplate(pdfEmployee)}
             </div>
           </div>
