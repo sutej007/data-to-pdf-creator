@@ -57,7 +57,6 @@ const formatMonthYear = (dateString: string) => {
   if (dateString.includes('/')) {
     const parts = dateString.split('/');
     if (parts.length === 3) {
-      // Convert string parts to numbers
       date = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
     }
   } else if (dateString.includes('-')) {
@@ -86,179 +85,205 @@ const ModernPayslipTemplate = React.forwardRef<HTMLDivElement, ModernPayslipTemp
           width: '794px', 
           height: '1123px',
           fontSize: '11px', 
-          lineHeight: '1.4', 
-          fontFamily: 'Inter, Arial, sans-serif'
+          lineHeight: '1.5', 
+          fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif'
         }}
       >
-        <div className="p-8 h-full bg-gradient-to-br from-blue-50 to-white">
-          {/* Modern Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6 rounded-lg mb-6 shadow-lg">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                {processedLogoUrl ? (
-                  <img 
-                    src={processedLogoUrl}
-                    alt="Company Logo"
-                    className="w-16 h-16 object-contain bg-white rounded-full p-2"
-                  />
-                ) : (
-                  <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                    <span className="text-xs">Logo</span>
-                  </div>
-                )}
+        <div className="p-6 h-full" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
+          {/* Ultra Modern Header */}
+          <div className="relative mb-8 overflow-hidden rounded-2xl shadow-2xl" style={{ background: 'linear-gradient(135deg, #1e40af 0%, #059669 50%, #1e40af 100%)' }}>
+            <div className="absolute inset-0 opacity-10" style={{ background: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="4"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }}></div>
+            
+            <div className="relative flex items-center justify-between p-8 text-white">
+              <div className="flex items-center space-x-6">
+                <div className="relative">
+                  {processedLogoUrl ? (
+                    <>
+                      <div className="absolute inset-0 bg-white rounded-2xl blur-sm opacity-20 scale-110"></div>
+                      <img 
+                        src={processedLogoUrl}
+                        alt="Company Logo"
+                        className="relative w-24 h-24 object-contain bg-white rounded-2xl p-3 shadow-xl border border-white/20"
+                      />
+                    </>
+                  ) : (
+                    <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30">
+                      <span className="text-sm font-bold">LOGO</span>
+                    </div>
+                  )}
+                </div>
                 <div>
-                  <h1 className="text-2xl font-bold">NAVA CHETANA</h1>
-                  <p className="text-blue-200">SOUHARDA SAHAKARI</p>
+                  <h1 className="text-4xl font-bold mb-1 tracking-tight">NAVA CHETANA</h1>
+                  <h2 className="text-xl font-medium text-blue-100 mb-2">SOUHARDA SAHAKARI</h2>
+                  <div className="flex items-center space-x-2 text-green-200">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span className="text-sm">Excellence • Innovation • Trust</span>
+                  </div>
                 </div>
               </div>
+              
               <div className="text-right">
-                <div className="text-xl font-bold">PAYSLIP</div>
-                <div className="text-blue-200 text-sm">
-                  {formatMonthYear(employee['AS ON'])}
+                <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
+                  <div className="text-3xl font-bold mb-1">PAYSLIP</div>
+                  <div className="text-blue-100 text-sm mb-3">Employee Salary Statement</div>
+                  <div className="bg-white/20 rounded-lg px-4 py-2">
+                    <div className="text-lg font-bold">{formatMonthYear(employee['AS ON'])}</div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Employee Card */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6 border-l-4 border-blue-500">
-            <h3 className="text-lg font-bold text-gray-800 mb-4">Employee Information</h3>
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <div className="flex flex-col">
-                  <span className="text-xs text-gray-500 uppercase tracking-wide">Name</span>
-                  <span className="font-semibold text-gray-800">{employee['EMPLOYEE NAME']}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs text-gray-500 uppercase tracking-wide">Employee ID</span>
-                  <span className="font-semibold text-gray-800">{employee['EMPLOYEE ID']}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs text-gray-500 uppercase tracking-wide">Designation</span>
-                  <span className="font-semibold text-gray-800">{employee['DESIGNATION']}</span>
-                </div>
+          {/* Employee Information with Glass Effect */}
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 mb-6 shadow-xl border border-white/50">
+            <div className="flex items-center mb-6">
+              <div className="w-1 h-8 bg-gradient-to-b from-blue-500 to-green-500 rounded-full mr-4"></div>
+              <h3 className="text-xl font-bold text-gray-800">Employee Information</h3>
+            </div>
+            <div className="grid grid-cols-2 gap-8">
+              <div className="space-y-4">
+                {[
+                  ['Employee Name', employee['EMPLOYEE NAME'], 'font-bold text-gray-900'],
+                  ['Employee ID', employee['EMPLOYEE ID'], 'text-blue-600 font-semibold'],
+                  ['Designation', employee['DESIGNATION'], 'text-gray-800'],
+                  ['Department', employee['DEPARTMENT'], 'text-gray-800']
+                ].map(([label, value, className], index) => (
+                  <div key={index} className="group">
+                    <div className="text-xs text-gray-500 uppercase tracking-wider font-medium mb-1">{label}</div>
+                    <div className={`text-sm ${className} group-hover:text-blue-600 transition-colors`}>{value}</div>
+                  </div>
+                ))}
               </div>
-              <div className="space-y-3">
-                <div className="flex flex-col">
-                  <span className="text-xs text-gray-500 uppercase tracking-wide">Department</span>
-                  <span className="font-semibold text-gray-800">{employee['DEPARTMENT']}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs text-gray-500 uppercase tracking-wide">PF Number</span>
-                  <span className="font-semibold text-gray-800">{employee['PF NO']}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs text-gray-500 uppercase tracking-wide">UAN</span>
-                  <span className="font-semibold text-gray-800">{employee['UAN']}</span>
-                </div>
+              <div className="space-y-4">
+                {[
+                  ['PF Number', employee['PF NO']],
+                  ['ESI Number', employee['ESI NO']],
+                  ['UAN', employee['UAN']],
+                  ['Date of Joining', employee['DOJ']]
+                ].map(([label, value], index) => (
+                  <div key={index} className="group">
+                    <div className="text-xs text-gray-500 uppercase tracking-wider font-medium mb-1">{label}</div>
+                    <div className="text-sm text-gray-800 group-hover:text-green-600 transition-colors">{value}</div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Attendance Dashboard */}
+          {/* Attendance Cards with Hover Effects */}
           <div className="grid grid-cols-4 gap-4 mb-6">
-            <div className="bg-white rounded-lg p-4 text-center shadow-md border-t-4 border-blue-500">
-              <div className="text-2xl font-bold text-blue-600">{employee['TOTAL DAYS']}</div>
-              <div className="text-xs text-gray-600 uppercase tracking-wide">Total Days</div>
-            </div>
-            <div className="bg-white rounded-lg p-4 text-center shadow-md border-t-4 border-green-500">
-              <div className="text-2xl font-bold text-green-600">{employee['PRESENT DAYS']}</div>
-              <div className="text-xs text-gray-600 uppercase tracking-wide">Present</div>
-            </div>
-            <div className="bg-white rounded-lg p-4 text-center shadow-md border-t-4 border-orange-500">
-              <div className="text-2xl font-bold text-orange-600">{employee['SALARY DAYS']}</div>
-              <div className="text-xs text-gray-600 uppercase tracking-wide">Paid Days</div>
-            </div>
-            <div className="bg-white rounded-lg p-4 text-center shadow-md border-t-4 border-red-500">
-              <div className="text-2xl font-bold text-red-600">{employee['LOP']}</div>
-              <div className="text-xs text-gray-600 uppercase tracking-wide">LOP</div>
-            </div>
+            {[
+              ['Total Days', employee['TOTAL DAYS'], 'from-blue-500 to-blue-600', 'bg-blue-50'],
+              ['Present Days', employee['PRESENT DAYS'], 'from-green-500 to-green-600', 'bg-green-50'],
+              ['Paid Days', employee['SALARY DAYS'], 'from-orange-500 to-orange-600', 'bg-orange-50'],
+              ['LOP Days', employee['LOP'], 'from-red-500 to-red-600', 'bg-red-50']
+            ].map(([label, value, gradient, bgColor], index) => (
+              <div key={index} className={`${bgColor} rounded-2xl p-5 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-white/50`}>
+                <div className={`w-12 h-12 bg-gradient-to-r ${gradient} rounded-xl mx-auto mb-3 flex items-center justify-center shadow-lg`}>
+                  <span className="text-white font-bold text-lg">{value}</span>
+                </div>
+                <div className="text-xs text-gray-600 uppercase tracking-wide font-medium">{label}</div>
+              </div>
+            ))}
           </div>
 
-          {/* Salary Breakdown */}
+          {/* Salary Breakdown with Advanced Design */}
           <div className="grid grid-cols-2 gap-6 mb-6">
             {/* Earnings */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="bg-green-500 text-white p-3">
-                <h4 className="font-bold text-center">EARNINGS</h4>
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden border border-green-200/50">
+              <div className="bg-gradient-to-r from-green-500 to-green-600 p-4 relative">
+                <div className="absolute inset-0 bg-white/10"></div>
+                <h4 className="relative text-lg font-bold text-white text-center flex items-center justify-center">
+                  <span className="mr-2">💰</span> EARNINGS
+                </h4>
               </div>
-              <div className="p-4 space-y-2">
-                <div className="flex justify-between py-1 border-b border-gray-100">
-                  <span className="text-gray-600">Basic Salary</span>
-                  <span className="font-semibold">{formatCurrency(employee['EARNED BASIC'])}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-gray-100">
-                  <span className="text-gray-600">HRA</span>
-                  <span className="font-semibold">{formatCurrency(employee['HRA'])}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-gray-100">
-                  <span className="text-gray-600">Conveyance</span>
-                  <span className="font-semibold">{formatCurrency(employee['LOCAN CONVEY'])}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-gray-100">
-                  <span className="text-gray-600">Medical Allow.</span>
-                  <span className="font-semibold">{formatCurrency(employee['MEDICAL ALLOW'])}</span>
-                </div>
-                {employee['OTHER ALLOWANCE'] > 0 && (
-                  <div className="flex justify-between py-1 border-b border-gray-100">
-                    <span className="text-gray-600">Other Allow.</span>
-                    <span className="font-semibold">{formatCurrency(employee['OTHER ALLOWANCE'])}</span>
+              <div className="p-6 space-y-3">
+                {[
+                  ['Basic Salary', employee['EARNED BASIC']],
+                  ['HRA', employee['HRA']],
+                  ['Conveyance', employee['LOCAN CONVEY']],
+                  ['Medical Allowance', employee['MEDICAL ALLOW']],
+                  ...(employee['OTHER ALLOWANCE'] > 0 ? [['Other Allowances', employee['OTHER ALLOWANCE']]] : [])
+                ].map(([label, amount], index) => (
+                  <div key={index} className="flex justify-between items-center py-2 px-3 rounded-lg hover:bg-green-50 transition-colors group">
+                    <span className="text-gray-700 group-hover:text-green-700">{label}</span>
+                    <span className="font-bold text-green-700 group-hover:text-green-800">{formatCurrency(amount as number)}</span>
                   </div>
-                )}
-                <div className="flex justify-between pt-3 font-bold text-green-700 border-t-2 border-green-500">
-                  <span>GROSS TOTAL</span>
-                  <span>{formatCurrency(employee['GROSS SALARY'])}</span>
+                ))}
+                <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-xl mt-4 shadow-lg">
+                  <div className="flex justify-between items-center font-bold text-lg">
+                    <span>GROSS TOTAL</span>
+                    <span>{formatCurrency(employee['GROSS SALARY'])}</span>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Deductions */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="bg-red-500 text-white p-3">
-                <h4 className="font-bold text-center">DEDUCTIONS</h4>
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden border border-red-200/50">
+              <div className="bg-gradient-to-r from-red-500 to-red-600 p-4 relative">
+                <div className="absolute inset-0 bg-white/10"></div>
+                <h4 className="relative text-lg font-bold text-white text-center flex items-center justify-center">
+                  <span className="mr-2">📉</span> DEDUCTIONS
+                </h4>
               </div>
-              <div className="p-4 space-y-2">
-                <div className="flex justify-between py-1 border-b border-gray-100">
-                  <span className="text-gray-600">Provident Fund</span>
-                  <span className="font-semibold">{formatCurrency(employee['PF'])}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-gray-100">
-                  <span className="text-gray-600">ESI</span>
-                  <span className="font-semibold">{formatCurrency(employee['ESI'])}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-gray-100">
-                  <span className="text-gray-600">TDS</span>
-                  <span className="font-semibold">{formatCurrency(employee['TDS'])}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-gray-100">
-                  <span className="text-gray-600">Professional Tax</span>
-                  <span className="font-semibold">{formatCurrency(employee['PT'])}</span>
-                </div>
-                {employee['SALARY ADVANCE'] > 0 && (
-                  <div className="flex justify-between py-1 border-b border-gray-100">
-                    <span className="text-gray-600">Salary Advance</span>
-                    <span className="font-semibold">{formatCurrency(employee['SALARY ADVANCE'])}</span>
+              <div className="p-6 space-y-3">
+                {[
+                  ['Provident Fund', employee['PF']],
+                  ['ESI', employee['ESI']],
+                  ['TDS', employee['TDS']],
+                  ['Professional Tax', employee['PT']],
+                  ...(employee['SALARY ADVANCE'] > 0 ? [['Salary Advance', employee['SALARY ADVANCE']]] : [])
+                ].map(([label, amount], index) => (
+                  <div key={index} className="flex justify-between items-center py-2 px-3 rounded-lg hover:bg-red-50 transition-colors group">
+                    <span className="text-gray-700 group-hover:text-red-700">{label}</span>
+                    <span className="font-bold text-red-700 group-hover:text-red-800">{formatCurrency(amount as number)}</span>
                   </div>
-                )}
-                <div className="flex justify-between pt-3 font-bold text-red-700 border-t-2 border-red-500">
-                  <span>TOTAL DEDUCTIONS</span>
-                  <span>{formatCurrency(employee['TOTAL DEDUCTIONS'])}</span>
+                ))}
+                <div className="bg-gradient-to-r from-red-500 to-red-600 text-white p-4 rounded-xl mt-4 shadow-lg">
+                  <div className="flex justify-between items-center font-bold text-lg">
+                    <span>TOTAL DEDUCTIONS</span>
+                    <span>{formatCurrency(employee['TOTAL DEDUCTIONS'])}</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Net Pay Banner */}
-          <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-lg text-center mb-6 shadow-lg">
-            <div className="text-sm uppercase tracking-wide opacity-90">Net Salary</div>
-            <div className="text-3xl font-bold">{formatCurrency(employee['NET PAY'])}</div>
-            <div className="text-sm opacity-90 mt-1">Take Home Pay</div>
+          {/* Net Pay with Spectacular Design */}
+          <div className="relative mb-6 overflow-hidden rounded-2xl shadow-2xl">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-green-500 to-blue-600"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+            <div className="relative p-8 text-white text-center">
+              <div className="mb-4">
+                <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-6 py-2 border border-white/30">
+                  <span className="text-sm uppercase tracking-wider font-medium opacity-90">💵 Net Salary Payable</span>
+                </div>
+              </div>
+              <div className="mb-4">
+                <div className="text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-100">
+                  {formatCurrency(employee['NET PAY'])}
+                </div>
+              </div>
+              <div className="flex items-center justify-center space-x-4 text-sm opacity-90">
+                <span>Take Home Pay</span>
+                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                <span>{formatMonthYear(employee['AS ON'])}</span>
+              </div>
+            </div>
           </div>
 
-          {/* Footer */}
-          <div className="text-center text-xs text-gray-500 border-t border-gray-200 pt-4">
-            <p>This is a computer generated payslip. No signature required.</p>
-            <p className="mt-1">Generated on: {new Date().toLocaleDateString('en-IN')}</p>
+          {/* Premium Footer */}
+          <div className="text-center text-sm text-gray-600 border-t border-gray-200 pt-6">
+            <div className="flex items-center justify-center mb-3">
+              <div className="flex space-x-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              </div>
+            </div>
+            <p className="font-medium text-gray-700 mb-2">This is a digitally generated payslip. No physical signature required.</p>
+            <p className="text-xs text-gray-500">Generated on: {new Date().toLocaleDateString('en-IN')} • Confidential & Proprietary</p>
           </div>
         </div>
       </div>
