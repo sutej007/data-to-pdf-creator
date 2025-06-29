@@ -50,60 +50,106 @@ interface EmployeeData {
 
 type TemplateType = 'classic' | 'modern' | 'professional';
 
-// Custom S Logo Component
-const CustomSLogo = ({ size = 56, className = "" }) => {
+// Custom SR Logo Component - Premium 3D Style (Selected)
+const CustomSRLogo = ({ size = 56, className = "" }) => {
   return (
     <div className={`relative ${className}`} style={{ width: size, height: size }}>
-      {/* Outer glow effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-teal-400 to-green-400 rounded-2xl blur-lg opacity-30 animate-pulse"></div>
+      {/* Outer glow effect with animation */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-teal-400 to-green-400 rounded-2xl blur-lg opacity-40 animate-pulse"></div>
       
-      {/* Main logo container */}
-      <div className="relative w-full h-full bg-gradient-to-br from-blue-600 via-teal-600 to-green-600 rounded-2xl shadow-2xl border-2 border-white/20 backdrop-blur-sm">
-        {/* Inner gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent rounded-2xl"></div>
+      {/* Main logo container with enhanced 3D effect */}
+      <div className="relative w-full h-full bg-gradient-to-br from-blue-600 via-teal-600 to-green-600 rounded-2xl shadow-2xl border-2 border-white/30 backdrop-blur-sm transform hover:scale-105 transition-all duration-300">
+        {/* Inner gradient overlay for glass effect */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-white/20 via-white/10 to-transparent rounded-2xl"></div>
         
-        {/* S Letter */}
+        {/* SR Letters with Premium 3D Design */}
         <div className="absolute inset-0 flex items-center justify-center">
           <svg 
-            width={size * 0.6} 
-            height={size * 0.7} 
-            viewBox="0 0 100 120" 
-            className="drop-shadow-lg"
+            width={size * 0.75} 
+            height={size * 0.6} 
+            viewBox="0 0 120 80" 
+            className="drop-shadow-2xl"
           >
             <defs>
-              <linearGradient id="sGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
-                <stop offset="50%" stopColor="#f0f9ff" stopOpacity="0.9" />
-                <stop offset="100%" stopColor="#e0f2fe" stopOpacity="0.85" />
+              {/* Enhanced gradients for 3D effect */}
+              <linearGradient id="srGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
+                <stop offset="30%" stopColor="#f0f9ff" stopOpacity="0.95" />
+                <stop offset="70%" stopColor="#e0f2fe" stopOpacity="0.9" />
+                <stop offset="100%" stopColor="#cffafe" stopOpacity="0.85" />
               </linearGradient>
-              <filter id="letterShadow">
-                <feDropShadow dx="2" dy="2" stdDeviation="3" floodColor="#000000" floodOpacity="0.3"/>
+              
+              {/* Shadow filter for depth */}
+              <filter id="letterShadow3D">
+                <feDropShadow dx="3" dy="3" stdDeviation="4" floodColor="#000000" floodOpacity="0.4"/>
+                <feDropShadow dx="1" dy="1" stdDeviation="2" floodColor="#1e40af" floodOpacity="0.3"/>
+              </filter>
+              
+              {/* Inner shadow for embossed effect */}
+              <filter id="innerShadow">
+                <feOffset dx="1" dy="1"/>
+                <feGaussianBlur stdDeviation="1" result="offset-blur"/>
+                <feFlood floodColor="#ffffff" floodOpacity="0.6"/>
+                <feComposite in2="offset-blur" operator="in"/>
               </filter>
             </defs>
             
-            {/* S Letter Path - Custom designed */}
+            {/* S Letter - Enhanced 3D Design */}
             <path
-              d="M75 25 C75 15, 65 5, 50 5 L30 5 C20 5, 10 15, 10 25 C10 35, 20 40, 30 40 L60 40 C70 40, 75 45, 75 55 C75 65, 70 70, 60 70 L25 70 C20 70, 15 75, 15 80 C15 85, 20 90, 25 90 L70 90 C80 90, 90 80, 90 70 C90 60, 80 55, 70 55 L40 55 C30 55, 25 50, 25 40 C25 30, 30 25, 40 25 L75 25 Z"
-              fill="url(#sGradient)"
-              filter="url(#letterShadow)"
-              stroke="rgba(255,255,255,0.3)"
+              d="M45 15 C45 8, 38 2, 30 2 L15 2 C8 2, 2 8, 2 15 C2 22, 8 26, 15 26 L35 26 C42 26, 45 30, 45 35 C45 42, 42 46, 35 46 L12 46 C8 46, 5 49, 5 52 C5 55, 8 58, 12 58 L42 58 C49 58, 55 52, 55 45 C55 38, 49 34, 42 34 L22 34 C15 34, 12 30, 12 25 C12 18, 15 15, 22 15 L45 15 Z"
+              fill="url(#srGradient)"
+              filter="url(#letterShadow3D)"
+              stroke="rgba(255,255,255,0.4)"
+              strokeWidth="1.5"
+            />
+            
+            {/* R Letter - Enhanced 3D Design */}
+            <path
+              d="M65 2 L65 58 M65 2 L85 2 C92 2, 98 8, 98 15 C98 22, 92 28, 85 28 L65 28 M85 28 L98 58"
+              fill="none"
+              stroke="url(#srGradient)"
+              strokeWidth="8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              filter="url(#letterShadow3D)"
+            />
+            
+            {/* R Letter Fill */}
+            <path
+              d="M65 2 L85 2 C92 2, 98 8, 98 15 C98 22, 92 28, 85 28 L65 28 L65 2 Z"
+              fill="url(#srGradient)"
+              filter="url(#letterShadow3D)"
+              stroke="rgba(255,255,255,0.4)"
               strokeWidth="1"
             />
             
-            {/* Highlight effect */}
+            {/* Highlight effects for 3D depth */}
             <path
-              d="M75 25 C75 15, 65 5, 50 5 L30 5 C20 5, 10 15, 10 25 C10 30, 15 35, 25 37"
+              d="M45 15 C45 8, 38 2, 30 2 L15 2 C8 2, 2 8, 2 15 C2 18, 4 21, 8 23"
               fill="none"
-              stroke="rgba(255,255,255,0.6)"
+              stroke="rgba(255,255,255,0.8)"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            
+            <path
+              d="M65 2 L85 2 C88 2, 91 4, 93 7"
+              fill="none"
+              stroke="rgba(255,255,255,0.8)"
               strokeWidth="2"
               strokeLinecap="round"
             />
           </svg>
         </div>
         
-        {/* Corner accent dots */}
-        <div className="absolute top-2 right-2 w-2 h-2 bg-white/40 rounded-full"></div>
-        <div className="absolute bottom-2 left-2 w-1.5 h-1.5 bg-white/30 rounded-full"></div>
+        {/* Enhanced corner accent elements */}
+        <div className="absolute top-2 right-2 w-2.5 h-2.5 bg-white/50 rounded-full shadow-sm"></div>
+        <div className="absolute bottom-2 left-2 w-2 h-2 bg-white/40 rounded-full shadow-sm"></div>
+        <div className="absolute top-2 left-2 w-1.5 h-1.5 bg-white/30 rounded-full"></div>
+        <div className="absolute bottom-2 right-2 w-1.5 h-1.5 bg-white/35 rounded-full"></div>
+        
+        {/* Subtle inner border for premium feel */}
+        <div className="absolute inset-1 border border-white/20 rounded-xl pointer-events-none"></div>
       </div>
     </div>
   );
@@ -263,7 +309,7 @@ const PayslipGenerator = () => {
   };
 
   const renderTemplate = (employee: EmployeeData) => {
-    const templateProps = { employee, processedLogoUrl: '' }; // Using custom S logo instead
+    const templateProps = { employee, processedLogoUrl: '' }; // Using custom SR logo instead
     
     switch (selectedTemplate) {
       case 'classic':
@@ -375,13 +421,13 @@ const PayslipGenerator = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/40 via-teal-50/30 to-green-50/40" style={{ fontFamily: '"Inter", system-ui, -apple-system, sans-serif' }}>
-      {/* Enhanced Header with Custom S Logo */}
+      {/* Enhanced Header with Custom SR Logo */}
       <div className="bg-gradient-to-r from-blue-50/60 via-teal-50/50 to-green-50/60 border-b border-teal-100 shadow-sm backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              {/* Custom S Logo */}
-              <CustomSLogo size={56} className="transform hover:scale-110 transition-transform duration-300" />
+              {/* Custom SR Logo */}
+              <CustomSRLogo size={64} className="transform hover:scale-110 transition-transform duration-300" />
               
               <div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-teal-600 to-green-600 bg-clip-text text-transparent">
