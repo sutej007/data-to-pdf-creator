@@ -162,7 +162,7 @@ const PayslipGenerator = () => {
   const [currentProgress, setCurrentProgress] = useState(0);
   const [debugInfo, setDebugInfo] = useState<string>('');
   const [columnMapping, setColumnMapping] = useState<{[key: string]: string}>({});
-  const [processedLogoUrl, setProcessedLogoUrl] = useState<string>('');
+  const [processedLogoUrl, setProcessedLogoUrl] = useState<string>('/company_logo.jpeg');
   const [showPdfTemplate, setShowPdfTemplate] = useState(false);
   const [pdfEmployee, setPdfEmployee] = useState<EmployeeData | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>('modern');
@@ -309,7 +309,7 @@ const PayslipGenerator = () => {
   };
 
   const renderTemplate = (employee: EmployeeData) => {
-    const templateProps = { employee, processedLogoUrl: '' }; // Using custom SR logo instead
+    const templateProps = { employee, processedLogoUrl };
     
     switch (selectedTemplate) {
       case 'classic':
