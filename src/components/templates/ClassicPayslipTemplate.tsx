@@ -58,8 +58,8 @@ const formatMonthYear = (dateString: string) => {
   if (dateString.includes('/')) {
     const parts = dateString.split('/');
     if (parts.length === 3) {
-      // Assume MM/DD/YYYY or DD/MM/YYYY format
-      date = new Date(parts[2], parts[1] - 1, parts[0]);
+      // Convert string parts to numbers and assume MM/DD/YYYY or DD/MM/YYYY format
+      date = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
     }
   } else if (dateString.includes('-')) {
     date = new Date(dateString);
