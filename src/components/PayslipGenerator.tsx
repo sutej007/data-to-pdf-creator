@@ -3,11 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, Download, FileText, Users, Loader2 } from "lucide-react";
+import { Upload, Download, FileText, Users, Loader2, Eye } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import ClassicPayslipTemplate from './templates/ClassicPayslipTemplate';
+import ModernPayslipTemplate from './templates/ModernPayslipTemplate';
+import ProfessionalPayslipTemplate from './templates/ProfessionalPayslipTemplate';
 
 interface EmployeeData {
   [key: string]: any;
@@ -45,6 +48,8 @@ interface EmployeeData {
   'STATUS': string;
 }
 
+type TemplateType = 'classic' | 'modern' | 'professional';
+
 const PayslipGenerator = () => {
   const [employees, setEmployees] = useState<EmployeeData[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeData | null>(null);
@@ -55,6 +60,8 @@ const PayslipGenerator = () => {
   const [processedLogoUrl, setProcessedLogoUrl] = useState<string>('');
   const [showPdfTemplate, setShowPdfTemplate] = useState(false);
   const [pdfEmployee, setPdfEmployee] = useState<EmployeeData | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>('modern'); // Modern is the best
+  const [showPreview, setShowPreview] = useState(false);
   const payslipRef = useRef<HTMLDivElement>(null);
 
   // Advanced logo processing function
@@ -350,6 +357,7 @@ const PayslipGenerator = () => {
         
         console.log('Final processed data:', processedData);
         setEmployees(processedData);
+        setSelectedEmployee(processedData[0] || null);
         toast.success(`Successfully loaded ${processedData.length} employee records`);
         
       } catch (error) {
@@ -358,6 +366,21 @@ const PayslipGenerator = () => {
       }
     };
     reader.readAsArrayBuffer(file);
+  };
+
+  const renderTemplate = (employee: EmployeeData) => {
+    const templateProps = { employee, processedLogoUrl };
+    
+    switch (selectedTemplate) {
+      case 'classic':
+        return <ClassicPayslipTemplate {...templateProps} />;
+      case 'modern':
+        return <ModernPayslipTemplate {...templateProps} />;
+      case 'professional':
+        return <ProfessionalPayslipTemplate {...templateProps} />;
+      default:
+        return <ModernPayslipTemplate {...templateProps} />;
+    }
   };
 
   const generatePDF = async (employee: EmployeeData, showToast: boolean = true) => {
@@ -501,6 +524,40 @@ const PayslipGenerator = () => {
                 </p>
               </div>
 
+              {/* Template Selection */}
+              <div>
+                <Label className="text-sm font-medium">Choose Payslip Template</Label>
+                <div className="grid grid-cols-3 gap-2 mt-2">
+                  <Button
+                    variant={selectedTemplate === 'classic' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedTemplate('classic')}
+                    className="text-xs"
+                  >
+                    Classic
+                  </Button>
+                  <Button
+                    variant={selectedTemplate === 'modern' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedTemplate('modern')}
+                    className="text-xs bg-blue-600 hover:bg-blue-700"
+                  >
+                    Modern ⭐
+                  </Button>
+                  <Button
+                    variant={selectedTemplate === 'professional' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedTemplate('professional')}
+                    className="text-xs"
+                  >
+                    Professional
+                  </Button>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Modern template recommended for best design
+                </p>
+              </div>
+
               {/* Logo Processing Status */}
               {processedLogoUrl && (
                 <div className="bg-green-50 border border-green-200 rounded p-3">
@@ -546,6 +603,17 @@ const PayslipGenerator = () => {
                         </>
                       )}
                     </Button>
+                    
+                    {selectedEmployee && (
+                      <Button
+                        onClick={() => setShowPreview(true)}
+                        variant="outline"
+                        className="w-full"
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        Preview Template
+                      </Button>
+                    )}
                   </div>
 
                   <div className="max-h-60 overflow-y-auto border rounded-lg">
@@ -603,7 +671,7 @@ const PayslipGenerator = () => {
                     <div className="font-medium text-green-600">Net Pay: {formatCurrency(selectedEmployee['NET PAY'])}</div>
                   </div>
                   <div className="text-xs text-blue-600 mt-3">
-                    PDF will be generated with professional formatting and ultra-high quality logo
+                    Using {selectedTemplate} template with proper month/year formatting
                   </div>
                 </div>
               ) : (
@@ -617,7 +685,24 @@ const PayslipGenerator = () => {
           </Card>
         </div>
 
-        {/* Visible PDF Template - Only shown during PDF generation */}
+        {/* Template Preview Modal */}
+        {showPreview && selectedEmployee && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-4 rounded-lg shadow-xl max-w-4xl max-h-[90vh] overflow-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold">Template Preview - {selectedTemplate}</h3>
+                <Button onClick={() => setShowPreview(false)} variant="outline" size="sm">
+                  Close
+                </Button>
+              </div>
+              <div className="transform scale-50 origin-top-left">
+                {renderTemplate(selectedEmployee)}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* PDF Generation Template - Hidden */}
         {showPdfTemplate && pdfEmployee && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-4 rounded-lg shadow-xl max-w-4xl max-h-[90vh] overflow-auto">
@@ -626,238 +711,8 @@ const PayslipGenerator = () => {
                 <p className="text-sm text-gray-600">Please wait while we capture the payslip</p>
               </div>
               
-              <div
-                ref={payslipRef}
-                className="bg-white border-2 border-gray-300"
-                style={{ 
-                  width: '794px', 
-                  height: '1123px',
-                  fontSize: '11px', 
-                  lineHeight: '1.4', 
-                  fontFamily: 'Arial, sans-serif'
-                }}
-              >
-                <div className="p-8 h-full">
-                  {/* Company Header with Ultra-High Quality Logo */}
-                  <div className="flex items-center justify-between mb-8 pb-4 border-b-2 border-blue-600">
-                    {/* Ultra-High Quality Logo */}
-                    <div className="flex-shrink-0">
-                      {processedLogoUrl ? (
-                        <img 
-                          src={processedLogoUrl}
-                          alt="Nava Chetana Logo"
-                          className="w-28 h-28 object-contain bg-white rounded-lg shadow-sm border border-gray-200 p-2"
-                          style={{
-                            imageRendering: 'crisp-edges',
-                            imageRendering: '-webkit-optimize-contrast',
-                            imageRendering: 'pixelated',
-                            filter: 'contrast(110%) brightness(105%)'
-                          }}
-                        />
-                      ) : (
-                        <div className="w-28 h-28 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200">
-                          <span className="text-xs text-gray-500">Logo</span>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Company Info */}
-                    <div className="text-center flex-1 mx-6">
-                      <div className="text-2xl font-bold text-blue-800 mb-2">PAYSLIP</div>
-                      <div className="text-lg font-semibold text-gray-800 mb-1">NAVA CHETANA</div>
-                      <div className="text-sm text-blue-600 font-medium">SOUHARDA SAHAKARI</div>
-                      <div className="text-sm text-gray-600 mt-2">For the month of {pdfEmployee['AS ON']}</div>
-                    </div>
-                    
-                    {/* Right side space for balance */}
-                    <div className="w-28"></div>
-                  </div>
-
-                  {/* Employee Information */}
-                  <div className="grid grid-cols-2 gap-8 mb-6">
-                    <div>
-                      <div className="text-sm font-bold text-blue-700 mb-3 pb-1 border-b border-blue-200">EMPLOYEE DETAILS</div>
-                      <div className="space-y-1.5 text-xs">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 w-32">Name:</span>
-                          <span className="font-medium flex-1">{pdfEmployee['EMPLOYEE NAME']}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 w-32">Employee ID:</span>
-                          <span className="font-medium flex-1">{pdfEmployee['EMPLOYEE ID']}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 w-32">Designation:</span>
-                          <span className="font-medium flex-1">{pdfEmployee['DESIGNATION']}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 w-32">Department:</span>
-                          <span className="font-medium flex-1">{pdfEmployee['DEPARTMENT']}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 w-32">Branch:</span>
-                          <span className="font-medium flex-1">{pdfEmployee['BRANCH']}</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <div className="text-sm font-bold text-blue-700 mb-3 pb-1 border-b border-blue-200">STATUTORY INFO</div>
-                      <div className="space-y-1.5 text-xs">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 w-32">Date of Joining:</span>
-                          <span className="font-medium flex-1">{pdfEmployee['DOJ']}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 w-32">PF Number:</span>
-                          <span className="font-medium flex-1">{pdfEmployee['PF NO']}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 w-32">ESI Number:</span>
-                          <span className="font-medium flex-1">{pdfEmployee['ESI NO']}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 w-32">UAN:</span>
-                          <span className="font-medium flex-1">{pdfEmployee['UAN']}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 w-32">Status:</span>
-                          <span className="font-medium flex-1">{pdfEmployee['STATUS']}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Attendance */}
-                  <div className="mb-6">
-                    <div className="text-sm font-bold text-blue-700 mb-3 pb-1 border-b border-blue-200">ATTENDANCE SUMMARY</div>
-                    <div className="grid grid-cols-4 gap-4 text-xs">
-                      <div className="text-center p-2 bg-gray-50 rounded border">
-                        <div className="font-bold text-blue-600 text-sm">{pdfEmployee['TOTAL DAYS']}</div>
-                        <div className="text-gray-600 text-xs">Total Days</div>
-                      </div>
-                      <div className="text-center p-2 bg-gray-50 rounded border">
-                        <div className="font-bold text-green-600 text-sm">{pdfEmployee['PRESENT DAYS']}</div>
-                        <div className="text-gray-600 text-xs">Present Days</div>
-                      </div>
-                      <div className="text-center p-2 bg-gray-50 rounded border">
-                        <div className="font-bold text-blue-600 text-sm">{pdfEmployee['SALARY DAYS']}</div>
-                        <div className="text-gray-600 text-xs">Paid Days</div>
-                      </div>
-                      <div className="text-center p-2 bg-gray-50 rounded border">
-                        <div className="font-bold text-red-600 text-sm">{pdfEmployee['LOP']}</div>
-                        <div className="text-gray-600 text-xs">LOP Days</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Salary Details */}
-                  <div className="grid grid-cols-2 gap-8 mb-6">
-                    {/* Earnings */}
-                    <div className="border border-green-200 p-4 rounded">
-                      <div className="text-sm font-bold text-green-700 mb-3 pb-1 border-b border-green-300">EARNINGS</div>
-                      <div className="space-y-1.5 text-xs">
-                        <div className="flex justify-between">
-                          <span>Basic Salary</span>
-                          <span className="font-medium">{formatCurrency(pdfEmployee['EARNED BASIC'])}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>House Rent Allowance</span>
-                          <span className="font-medium">{formatCurrency(pdfEmployee['HRA'])}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Conveyance Allowance</span>
-                          <span className="font-medium">{formatCurrency(pdfEmployee['LOCAN CONVEY'])}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Medical Allowance</span>
-                          <span className="font-medium">{formatCurrency(pdfEmployee['MEDICAL ALLOW'])}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>City Compensatory Allow.</span>
-                          <span className="font-medium">{formatCurrency(pdfEmployee['CITY COMPENSATORY ALLOWANCE (CCA)'])}</span>
-                        </div>
-                        {pdfEmployee['CHILDREN EDUCATION ALLOWANCE (CEA)'] > 0 && (
-                          <div className="flex justify-between">
-                            <span>Children Education Allow.</span>
-                            <span className="font-medium">{formatCurrency(pdfEmployee['CHILDREN EDUCATION ALLOWANCE (CEA)'])}</span>
-                          </div>
-                        )}
-                        {pdfEmployee['OTHER ALLOWANCE'] > 0 && (
-                          <div className="flex justify-between">
-                            <span>Other Allowances</span>
-                            <span className="font-medium">{formatCurrency(pdfEmployee['OTHER ALLOWANCE'])}</span>
-                          </div>
-                        )}
-                        {pdfEmployee['INCENTIVE'] > 0 && (
-                          <div className="flex justify-between">
-                            <span>Incentive</span>
-                            <span className="font-medium">{formatCurrency(pdfEmployee['INCENTIVE'])}</span>
-                          </div>
-                        )}
-                        <div className="border-t border-green-300 pt-2 mt-2 flex justify-between font-bold text-green-700">
-                          <span>GROSS SALARY</span>
-                          <span>{formatCurrency(pdfEmployee['GROSS SALARY'])}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Deductions */}
-                    <div className="border border-red-200 p-4 rounded">
-                      <div className="text-sm font-bold text-red-700 mb-3 pb-1 border-b border-red-300">DEDUCTIONS</div>
-                      <div className="space-y-1.5 text-xs">
-                        <div className="flex justify-between">
-                          <span>Provident Fund</span>
-                          <span className="font-medium">{formatCurrency(pdfEmployee['PF'])}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Employee State Insurance</span>
-                          <span className="font-medium">{formatCurrency(pdfEmployee['ESI'])}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Tax Deducted at Source</span>
-                          <span className="font-medium">{formatCurrency(pdfEmployee['TDS'])}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Professional Tax</span>
-                          <span className="font-medium">{formatCurrency(pdfEmployee['PT'])}</span>
-                        </div>
-                        {pdfEmployee['STAFF WELFARE'] > 0 && (
-                          <div className="flex justify-between">
-                            <span>Staff Welfare</span>
-                            <span className="font-medium">{formatCurrency(pdfEmployee['STAFF WELFARE'])}</span>
-                          </div>
-                        )}
-                        {pdfEmployee['SALARY ADVANCE'] > 0 && (
-                          <div className="flex justify-between">
-                            <span>Salary Advance</span>
-                            <span className="font-medium">{formatCurrency(pdfEmployee['SALARY ADVANCE'])}</span>
-                          </div>
-                        )}
-                        <div className="border-t border-red-300 pt-2 mt-2 flex justify-between font-bold text-red-700">
-                          <span>TOTAL DEDUCTIONS</span>
-                          <span>{formatCurrency(pdfEmployee['TOTAL DEDUCTIONS'])}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Net Pay Section */}
-                  <div className="bg-green-50 border-2 border-green-500 p-4 rounded text-center mb-6">
-                    <div className="text-lg font-bold text-green-700">
-                      NET PAY: {formatCurrency(pdfEmployee['NET PAY'])}
-                    </div>
-                    <div className="text-xs text-green-600 mt-1">
-                      (Gross Salary - Total Deductions)
-                    </div>
-                  </div>
-
-                  {/* Footer */}
-                  <div className="text-center text-xs text-gray-600 border-t pt-4">
-                    <p className="mb-1">This is a computer generated payslip and does not require signature.</p>
-                    <p>Generated on: {new Date().toLocaleDateString('en-IN')}</p>
-                  </div>
-                </div>
+              <div ref={payslipRef}>
+                {renderTemplate(pdfEmployee)}
               </div>
             </div>
           </div>
