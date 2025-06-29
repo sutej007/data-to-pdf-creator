@@ -84,214 +84,563 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
         style={{ 
           width: '794px', 
           height: '1123px',
-          fontSize: '10px', 
-          lineHeight: '1.4', 
-          fontFamily: 'Times New Roman, Georgia, serif',
-          border: '2px solid #1f2937'
-        }}
+          fontSize: '11px', 
+          lineHeight: '1.5', 
+          fontFamily: "'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          border: '1px solid #e5e7eb'
+        }} 
       >
-        <div className="p-8 h-full">
-          {/* Corporate Letterhead */}
-          <div className="mb-8">
-            <div className="border-4 border-gray-800 p-6 bg-gradient-to-r from-gray-50 to-white relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 via-green-500 to-blue-600"></div>
-              <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 via-green-500 to-blue-600"></div>
+        <div className="h-full" style={{ padding: '32px' }}>
+          {/* Premium Corporate Header */}
+          <div className="mb-10">
+            <div 
+              className="relative overflow-hidden"
+              style={{
+                background: 'linear-gradient(135deg, #1e40af 0%, #059669 100%)',
+                borderRadius: '16px',
+                padding: '24px',
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+              }}
+            >
+              {/* Decorative Elements */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full transform translate-x-8 -translate-y-8"></div>
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-5 rounded-full transform -translate-x-4 translate-y-4"></div>
               
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-6">
+              <div className="relative flex items-center justify-between">
+                <div className="flex items-center space-x-8">
                   {processedLogoUrl ? (
                     <div className="relative">
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-green-500 rounded-full blur-sm opacity-20 scale-110"></div>
+                      <div 
+                        className="absolute inset-0 bg-white rounded-full blur-sm opacity-20 scale-110"
+                        style={{ filter: 'blur(4px)' }}
+                      ></div>
                       <img 
                         src={processedLogoUrl}
                         alt="Company Logo"
-                        className="relative w-24 h-24 object-contain border-4 border-gray-300 rounded-full bg-white p-2 shadow-lg"
+                        className="relative w-20 h-20 object-contain rounded-full bg-white p-2"
+                        style={{ 
+                          border: '3px solid rgba(255,255,255,0.3)',
+                          boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+                        }}
                       />
                     </div>
                   ) : (
-                    <div className="w-24 h-24 border-4 border-gray-300 rounded-full bg-gradient-to-br from-blue-600 to-green-500 flex items-center justify-center shadow-lg">
+                    <div 
+                      className="w-20 h-20 rounded-full bg-white bg-opacity-20 flex items-center justify-center"
+                      style={{ 
+                        border: '3px solid rgba(255,255,255,0.3)',
+                        backdropFilter: 'blur(10px)'
+                      }}
+                    >
                       <span className="text-white text-xs font-bold">LOGO</span>
                     </div>
                   )}
+                  
                   <div className="text-left">
-                    <h1 className="text-4xl font-bold text-gray-800 mb-2 tracking-wide">NAVA CHETANA</h1>
-                    <h2 className="text-2xl font-semibold text-blue-700 mb-2">SOUHARDA SAHAKARI</h2>
-                    <div className="flex items-center space-x-4 text-sm text-gray-600">
-                      <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium">Human Resources</span>
-                      <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">Payroll Division</span>
+                    <h1 
+                      className="text-white mb-1"
+                      style={{ 
+                        fontSize: '28px',
+                        fontWeight: '700',
+                        letterSpacing: '0.5px',
+                        fontFamily: "'Inter', sans-serif"
+                      }}
+                    >
+                      NAVA CHETANA
+                    </h1>
+                    <h2 
+                      className="text-white mb-3"
+                      style={{ 
+                        fontSize: '18px',
+                        fontWeight: '500',
+                        opacity: '0.95'
+                      }}
+                    >
+                      SOUHARDA SAHAKARI
+                    </h2>
+                    <div className="flex items-center space-x-3">
+                      <div 
+                        className="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-xs font-medium"
+                        style={{ backdropFilter: 'blur(10px)' }}
+                      >
+                        Human Resources Division
+                      </div>
                     </div>
                   </div>
                 </div>
                 
                 <div className="text-right">
-                  <div className="bg-gray-800 text-white p-4 rounded-lg shadow-lg">
-                    <div className="text-2xl font-bold mb-1">SALARY STATEMENT</div>
-                    <div className="text-sm opacity-90">Official Payroll Document</div>
+                  <div 
+                    className="bg-white bg-opacity-15 text-white p-5 rounded-xl mb-4"
+                    style={{ 
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255,255,255,0.2)'
+                    }}
+                  >
+                    <div 
+                      className="mb-2"
+                      style={{ 
+                        fontSize: '24px',
+                        fontWeight: '700',
+                        letterSpacing: '1px'
+                      }}
+                    >
+                      PAYROLL STATEMENT
+                    </div>
+                    <div 
+                      style={{ 
+                        fontSize: '12px',
+                        opacity: '0.9'
+                      }}
+                    >
+                      Official Salary Certificate
+                    </div>
                   </div>
-                  <div className="mt-3 bg-gradient-to-r from-blue-600 to-green-500 text-white p-3 rounded-lg text-center">
-                    <div className="text-lg font-bold">{formatMonthYear(employee['AS ON'])}</div>
-                    <div className="text-xs opacity-90">Pay Period</div>
+                  <div 
+                    className="bg-white text-gray-800 p-3 rounded-lg text-center font-semibold"
+                    style={{ 
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    }}
+                  >
+                    <div style={{ fontSize: '16px', fontWeight: '600' }}>
+                      {formatMonthYear(employee['AS ON'])}
+                    </div>
+                    <div style={{ fontSize: '10px', color: '#6b7280' }}>
+                      Pay Period
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Employee Details Professional Table */}
-          <div className="mb-6">
-            <div className="bg-gray-800 text-white p-3 text-center font-bold text-sm tracking-wide">
-              EMPLOYEE INFORMATION & STATUTORY DETAILS
+          {/* Enhanced Employee Information */}
+          <div className="mb-8">
+            <div 
+              className="bg-gray-50 p-4 rounded-t-lg border-l-4"
+              style={{ 
+                borderLeftColor: '#059669',
+                fontSize: '14px',
+                fontWeight: '600',
+                color: '#374151'
+              }}
+            >
+              EMPLOYEE PROFILE & STATUTORY INFORMATION
             </div>
-            <table className="w-full border-collapse border-2 border-gray-800 text-xs bg-white shadow-lg">
-              <tbody>
-                <tr className="bg-gray-50">
-                  <td className="border border-gray-400 p-3 font-bold text-gray-700 w-1/4">Employee Name</td>
-                  <td className="border border-gray-400 p-3 font-semibold text-gray-900 w-1/4">{employee['EMPLOYEE NAME']}</td>
-                  <td className="border border-gray-400 p-3 font-bold text-gray-700 w-1/4">PF Number</td>
-                  <td className="border border-gray-400 p-3 text-blue-700 font-semibold w-1/4">{employee['PF NO']}</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-400 p-3 font-bold text-gray-700">Employee ID</td>
-                  <td className="border border-gray-400 p-3 font-semibold text-blue-600">{employee['EMPLOYEE ID']}</td>
-                  <td className="border border-gray-400 p-3 font-bold text-gray-700">ESI Number</td>
-                  <td className="border border-gray-400 p-3 text-green-700 font-semibold">{employee['ESI NO']}</td>
-                </tr>
-                <tr className="bg-gray-50">
-                  <td className="border border-gray-400 p-3 font-bold text-gray-700">Designation</td>
-                  <td className="border border-gray-400 p-3 text-gray-800">{employee['DESIGNATION']}</td>
-                  <td className="border border-gray-400 p-3 font-bold text-gray-700">UAN</td>
-                  <td className="border border-gray-400 p-3 text-gray-800">{employee['UAN']}</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-400 p-3 font-bold text-gray-700">Department</td>
-                  <td className="border border-gray-400 p-3 text-gray-800">{employee['DEPARTMENT']}</td>
-                  <td className="border border-gray-400 p-3 font-bold text-gray-700">Date of Joining</td>
-                  <td className="border border-gray-400 p-3 text-gray-800">{employee['DOJ']}</td>
-                </tr>
-              </tbody>
-            </table>
+            <div 
+              className="bg-white border border-gray-200 rounded-b-lg overflow-hidden"
+              style={{ boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)' }}
+            >
+              <table className="w-full">
+                <tbody>
+                  {[
+                    ['Employee Name', employee['EMPLOYEE NAME'], 'PF Number', employee['PF NO']],
+                    ['Employee ID', employee['EMPLOYEE ID'], 'ESI Number', employee['ESI NO']],
+                    ['Designation', employee['DESIGNATION'], 'UAN', employee['UAN']],
+                    ['Department', employee['DEPARTMENT'], 'Date of Joining', employee['DOJ']]
+                  ].map(([label1, value1, label2, value2], index) => (
+                    <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
+                      <td 
+                        className="p-4 font-semibold text-gray-700"
+                        style={{ 
+                          width: '25%',
+                          fontSize: '11px',
+                          borderRight: '1px solid #e5e7eb'
+                        }}
+                      >
+                        {label1}
+                      </td>
+                      <td 
+                        className="p-4 text-gray-900"
+                        style={{ 
+                          width: '25%',
+                          fontSize: '11px',
+                          fontWeight: index === 0 ? '600' : '500',
+                          color: index === 1 ? '#1e40af' : '#111827',
+                          borderRight: '1px solid #e5e7eb'
+                        }}
+                      >
+                        {value1}
+                      </td>
+                      <td 
+                        className="p-4 font-semibold text-gray-700"
+                        style={{ 
+                          width: '25%',
+                          fontSize: '11px',
+                          borderRight: '1px solid #e5e7eb'
+                        }}
+                      >
+                        {label2}
+                      </td>
+                      <td 
+                        className="p-4 text-gray-900"
+                        style={{ 
+                          width: '25%',
+                          fontSize: '11px',
+                          fontWeight: '500'
+                        }}
+                      >
+                        {value2}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          {/* Attendance Professional Display */}
-          <div className="mb-6">
-            <div className="bg-gradient-to-r from-blue-600 to-green-500 text-white p-3 text-center font-bold text-sm tracking-wide">
-              ATTENDANCE & WORKING DAYS SUMMARY
+          {/* Sophisticated Attendance Summary */}
+          <div className="mb-8">
+            <div 
+              className="p-4 rounded-t-lg text-white text-center font-semibold"
+              style={{ 
+                background: 'linear-gradient(90deg, #1e40af 0%, #059669 100%)',
+                fontSize: '13px',
+                letterSpacing: '0.5px'
+              }}
+            >
+              ATTENDANCE & WORKING DAYS ANALYSIS
             </div>
-            <div className="grid grid-cols-4 gap-0 border-2 border-gray-800">
+            <div 
+              className="grid grid-cols-4 gap-0 rounded-b-lg overflow-hidden"
+              style={{ boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+            >
               {[
-                ['TOTAL DAYS', employee['TOTAL DAYS'], 'bg-blue-50 text-blue-800'],
-                ['PRESENT DAYS', employee['PRESENT DAYS'], 'bg-green-50 text-green-800'],
-                ['PAID DAYS', employee['SALARY DAYS'], 'bg-orange-50 text-orange-800'],
-                ['LOP DAYS', employee['LOP'], 'bg-red-50 text-red-800']
-              ].map(([label, value, className], index) => (
-                <div key={index} className={`${className} border border-gray-400 p-4 text-center`}>
-                  <div className="text-3xl font-bold mb-1">{value}</div>
-                  <div className="text-xs font-semibold uppercase tracking-wide">{label}</div>
+                { label: 'TOTAL DAYS', value: employee['TOTAL DAYS'], bg: '#eff6ff', text: '#1e40af', border: '#bfdbfe' },
+                { label: 'PRESENT DAYS', value: employee['PRESENT DAYS'], bg: '#f0fdf4', text: '#059669', border: '#bbf7d0' },
+                { label: 'PAID DAYS', value: employee['SALARY DAYS'], bg: '#fff7ed', text: '#ea580c', border: '#fed7aa' },
+                { label: 'LOP DAYS', value: employee['LOP'], bg: '#fef2f2', text: '#dc2626', border: '#fecaca' }
+              ].map(({ label, value, bg, text, border }, index) => (
+                <div 
+                  key={index} 
+                  className="p-6 text-center border-r border-gray-200 last:border-r-0"
+                  style={{ backgroundColor: bg }}
+                >
+                  <div 
+                    className="mb-2"
+                    style={{ 
+                      fontSize: '28px',
+                      fontWeight: '700',
+                      color: text
+                    }}
+                  >
+                    {value}
+                  </div>
+                  <div 
+                    style={{ 
+                      fontSize: '10px',
+                      fontWeight: '600',
+                      color: text,
+                      letterSpacing: '0.5px'
+                    }}
+                  >
+                    {label}
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Professional Salary Table */}
-          <div className="mb-6">
-            <table className="w-full border-collapse border-2 border-gray-800 text-xs shadow-lg">
-              <thead>
-                <tr className="bg-gray-800 text-white">
-                  <th className="border border-gray-600 p-3 text-left font-bold uppercase tracking-wide">EARNINGS COMPONENTS</th>
-                  <th className="border border-gray-600 p-3 text-right font-bold uppercase tracking-wide">AMOUNT (₹)</th>
-                  <th className="border border-gray-600 p-3 text-left font-bold uppercase tracking-wide">DEDUCTION COMPONENTS</th>
-                  <th className="border border-gray-600 p-3 text-right font-bold uppercase tracking-wide">AMOUNT (₹)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['Basic Salary', employee['EARNED BASIC'], 'Provident Fund (PF)', employee['PF']],
-                  ['House Rent Allowance (HRA)', employee['HRA'], 'Employee State Insurance (ESI)', employee['ESI']],
-                  ['Conveyance Allowance', employee['LOCAN CONVEY'], 'Tax Deducted at Source (TDS)', employee['TDS']],
-                  ['Medical Allowance', employee['MEDICAL ALLOW'], 'Professional Tax (PT)', employee['PT']]
-                ].map(([earning, earningAmt, deduction, deductionAmt], index) => (
-                  <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                    <td className="border border-gray-400 p-3 text-gray-700 font-medium">{earning}</td>
-                    <td className="border border-gray-400 p-3 text-right font-bold text-green-700">{formatCurrency(earningAmt as number).replace('₹', '')}</td>
-                    <td className="border border-gray-400 p-3 text-gray-700 font-medium">{deduction}</td>
-                    <td className="border border-gray-400 p-3 text-right font-bold text-red-700">{formatCurrency(deductionAmt as number).replace('₹', '')}</td>
+          {/* Premium Salary Breakdown */}
+          <div className="mb-8">
+            <div 
+              className="overflow-hidden rounded-lg"
+              style={{ boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)' }}
+            >
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr 
+                    className="text-white"
+                    style={{ background: 'linear-gradient(90deg, #1f2937 0%, #374151 100%)' }}
+                  >
+                    <th 
+                      className="p-4 text-left font-semibold"
+                      style={{ 
+                        fontSize: '12px',
+                        letterSpacing: '0.5px'
+                      }}
+                    >
+                      EARNINGS COMPONENTS
+                    </th>
+                    <th 
+                      className="p-4 text-right font-semibold"
+                      style={{ 
+                        fontSize: '12px',
+                        letterSpacing: '0.5px'
+                      }}
+                    >
+                      AMOUNT (₹)
+                    </th>
+                    <th 
+                      className="p-4 text-left font-semibold border-l border-gray-600"
+                      style={{ 
+                        fontSize: '12px',
+                        letterSpacing: '0.5px'
+                      }}
+                    >
+                      DEDUCTION COMPONENTS
+                    </th>
+                    <th 
+                      className="p-4 text-right font-semibold"
+                      style={{ 
+                        fontSize: '12px',
+                        letterSpacing: '0.5px'
+                      }}
+                    >
+                      AMOUNT (₹)
+                    </th>
                   </tr>
-                ))}
-                
-                {employee['OTHER ALLOWANCE'] > 0 && (
-                  <tr className="bg-white">
-                    <td className="border border-gray-400 p-3 text-gray-700 font-medium">Other Allowances</td>
-                    <td className="border border-gray-400 p-3 text-right font-bold text-green-700">{formatCurrency(employee['OTHER ALLOWANCE']).replace('₹', '')}</td>
-                    <td className="border border-gray-400 p-3"></td>
-                    <td className="border border-gray-400 p-3"></td>
+                </thead>
+                <tbody className="bg-white">
+                  {[
+                    ['Basic Salary', employee['EARNED BASIC'], 'Provident Fund (PF)', employee['PF']],
+                    ['House Rent Allowance', employee['HRA'], 'Employee State Insurance', employee['ESI']],
+                    ['Conveyance Allowance', employee['LOCAN CONVEY'], 'Tax Deducted at Source', employee['TDS']],
+                    ['Medical Allowance', employee['MEDICAL ALLOW'], 'Professional Tax', employee['PT']]
+                  ].map(([earning, earningAmt, deduction, deductionAmt], index) => (
+                    <tr 
+                      key={index} 
+                      className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}
+                      style={{ borderBottom: '1px solid #e5e7eb' }}
+                    >
+                      <td 
+                        className="p-4"
+                        style={{ 
+                          fontSize: '11px',
+                          color: '#374151',
+                          fontWeight: '500'
+                        }}
+                      >
+                        {earning}
+                      </td>
+                      <td 
+                        className="p-4 text-right font-semibold"
+                        style={{ 
+                          fontSize: '11px',
+                          color: '#059669'
+                        }}
+                      >
+                        {formatCurrency(earningAmt as number).replace('₹', '')}
+                      </td>
+                      <td 
+                        className="p-4 border-l border-gray-200"
+                        style={{ 
+                          fontSize: '11px',
+                          color: '#374151',
+                          fontWeight: '500'
+                        }}
+                      >
+                        {deduction}
+                      </td>
+                      <td 
+                        className="p-4 text-right font-semibold"
+                        style={{ 
+                          fontSize: '11px',
+                          color: '#dc2626'
+                        }}
+                      >
+                        {formatCurrency(deductionAmt as number).replace('₹', '')}
+                      </td>
+                    </tr>
+                  ))}
+                  
+                  {employee['OTHER ALLOWANCE'] > 0 && (
+                    <tr className="bg-white" style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td className="p-4" style={{ fontSize: '11px', color: '#374151', fontWeight: '500' }}>
+                        Other Allowances
+                      </td>
+                      <td className="p-4 text-right font-semibold" style={{ fontSize: '11px', color: '#059669' }}>
+                        {formatCurrency(employee['OTHER ALLOWANCE']).replace('₹', '')}
+                      </td>
+                      <td className="p-4 border-l border-gray-200"></td>
+                      <td className="p-4"></td>
+                    </tr>
+                  )}
+                  
+                  {employee['SALARY ADVANCE'] > 0 && (
+                    <tr className="bg-gray-50" style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td className="p-4"></td>
+                      <td className="p-4"></td>
+                      <td className="p-4 border-l border-gray-200" style={{ fontSize: '11px', color: '#374151', fontWeight: '500' }}>
+                        Salary Advance
+                      </td>
+                      <td className="p-4 text-right font-semibold" style={{ fontSize: '11px', color: '#dc2626' }}>
+                        {formatCurrency(employee['SALARY ADVANCE']).replace('₹', '')}
+                      </td>
+                    </tr>
+                  )}
+                  
+                  <tr 
+                    style={{ 
+                      background: 'linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 100%)',
+                      borderTop: '2px solid #1f2937'
+                    }}
+                  >
+                    <td 
+                      className="p-5 font-bold"
+                      style={{ 
+                        fontSize: '13px',
+                        color: '#059669',
+                        letterSpacing: '0.5px'
+                      }}
+                    >
+                      GROSS EARNINGS
+                    </td>
+                    <td 
+                      className="p-5 text-right font-bold"
+                      style={{ 
+                        fontSize: '14px',
+                        color: '#059669'
+                      }}
+                    >
+                      {formatCurrency(employee['GROSS SALARY']).replace('₹', '')}
+                    </td>
+                    <td 
+                      className="p-5 font-bold border-l border-gray-300"
+                      style={{ 
+                        fontSize: '13px',
+                        color: '#dc2626',
+                        letterSpacing: '0.5px'
+                      }}
+                    >
+                      TOTAL DEDUCTIONS
+                    </td>
+                    <td 
+                      className="p-5 text-right font-bold"
+                      style={{ 
+                        fontSize: '14px',
+                        color: '#dc2626'
+                      }}
+                    >
+                      {formatCurrency(employee['TOTAL DEDUCTIONS']).replace('₹', '')}
+                    </td>
                   </tr>
-                )}
-                
-                {employee['SALARY ADVANCE'] > 0 && (
-                  <tr className="bg-gray-50">
-                    <td className="border border-gray-400 p-3"></td>
-                    <td className="border border-gray-400 p-3"></td>
-                    <td className="border border-gray-400 p-3 text-gray-700 font-medium">Salary Advance</td>
-                    <td className="border border-gray-400 p-3 text-right font-bold text-red-700">{formatCurrency(employee['SALARY ADVANCE']).replace('₹', '')}</td>
-                  </tr>
-                )}
-                
-                <tr className="bg-gradient-to-r from-gray-100 to-gray-200 font-bold border-t-4 border-gray-800">
-                  <td className="border border-gray-400 p-4 text-green-800 font-bold uppercase">GROSS EARNINGS</td>
-                  <td className="border border-gray-400 p-4 text-right text-green-800 font-bold text-lg">{formatCurrency(employee['GROSS SALARY']).replace('₹', '')}</td>
-                  <td className="border border-gray-400 p-4 text-red-800 font-bold uppercase">TOTAL DEDUCTIONS</td>
-                  <td className="border border-gray-400 p-4 text-right text-red-800 font-bold text-lg">{formatCurrency(employee['TOTAL DEDUCTIONS']).replace('₹', '')}</td>
-                </tr>
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          {/* Net Pay Professional Box */}
-          <div className="mb-6">
-            <div className="border-4 border-gray-800 bg-gradient-to-r from-blue-50 via-green-50 to-blue-50 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-green-500 to-blue-600"></div>
-              <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-green-500 to-blue-600"></div>
+          {/* Elegant Net Pay Display */}
+          <div className="mb-8">
+            <div 
+              className="relative overflow-hidden rounded-xl p-8 text-center"
+              style={{
+                background: 'linear-gradient(135deg, #1e40af 0%, #059669 50%, #1e40af 100%)',
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+              }}
+            >
+              {/* Decorative Background */}
+              <div className="absolute inset-0 bg-white opacity-5">
+                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-transparent via-white to-transparent opacity-10"></div>
+              </div>
               
-              <div className="p-6 text-center">
-                <div className="text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">NET SALARY PAYABLE</div>
-                <div className="text-4xl font-bold text-gray-800 mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-green-600">
+              <div className="relative">
+                <div 
+                  className="text-white mb-3"
+                  style={{ 
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    letterSpacing: '1px',
+                    opacity: '0.95'
+                  }}
+                >
+                  NET SALARY PAYABLE
+                </div>
+                <div 
+                  className="text-white mb-4"
+                  style={{ 
+                    fontSize: '36px',
+                    fontWeight: '700',
+                    letterSpacing: '1px'
+                  }}
+                >
                   {formatCurrency(employee['NET PAY'])}
                 </div>
-                <div className="text-xs text-gray-600 bg-white rounded-full px-4 py-1 inline-block border border-gray-300">
-                  Gross Earnings - Total Deductions | {formatMonthYear(employee['AS ON'])}
+                <div 
+                  className="bg-white bg-opacity-20 text-white px-6 py-2 rounded-full inline-block"
+                  style={{ 
+                    fontSize: '11px',
+                    fontWeight: '500',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255,255,255,0.3)'
+                  }}
+                >
+                  Gross Earnings - Total Deductions | Pay Period: {formatMonthYear(employee['AS ON'])}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Professional Authorization */}
-          <div className="grid grid-cols-2 gap-12 mb-6">
-            <div className="text-center">
-              <div className="h-16 border-b-2 border-gray-400 mb-2"></div>
-              <div className="bg-gray-100 p-2 rounded">
-                <p className="text-xs font-bold text-gray-700">EMPLOYEE ACKNOWLEDGMENT</p>
-                <p className="text-xs text-gray-600">Signature & Date</p>
+          {/* Professional Authorization Section */}
+          <div className="grid grid-cols-2 gap-8 mb-8">
+            {[
+              { title: 'EMPLOYEE ACKNOWLEDGMENT', subtitle: 'Signature & Date' },
+              { title: 'AUTHORIZED BY HR DEPARTMENT', subtitle: 'Signature & Official Seal' }
+            ].map((item, index) => (
+              <div key={index} className="text-center">
+                <div 
+                  className="h-16 mb-3 border-b-2 border-dashed border-gray-300"
+                  style={{ borderStyle: 'dashed' }}
+                ></div>
+                <div 
+                  className="bg-gray-50 p-3 rounded-lg border"
+                  style={{ borderColor: '#d1d5db' }}
+                >
+                  <p 
+                    className="font-semibold text-gray-800 mb-1"
+                    style={{ fontSize: '10px', letterSpacing: '0.5px' }}
+                  >
+                    {item.title}
+                  </p>
+                  <p 
+                    className="text-gray-600"
+                    style={{ fontSize: '9px' }}
+                  >
+                    {item.subtitle}
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="text-center">
-              <div className="h-16 border-b-2 border-gray-400 mb-2"></div>
-              <div className="bg-gray-100 p-2 rounded">
-                <p className="text-xs font-bold text-gray-700">AUTHORIZED BY HR</p>
-                <p className="text-xs text-gray-600">Signature & Seal</p>
-              </div>
-            </div>
+            ))}
           </div>
 
-          {/* Corporate Footer */}
-          <div className="border-t-2 border-gray-800 pt-4">
-            <div className="bg-gradient-to-r from-gray-800 to-gray-700 text-white p-3 rounded-lg text-center">
-              <div className="flex items-center justify-center space-x-4 mb-2">
+          {/* Premium Footer */}
+          <div 
+            className="border-t border-gray-200 pt-6"
+            style={{ borderTopWidth: '2px' }}
+          >
+            <div 
+              className="text-white p-4 rounded-lg text-center"
+              style={{
+                background: 'linear-gradient(90deg, #1f2937 0%, #374151 100%)',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+              }}
+            >
+              <div className="flex items-center justify-center space-x-3 mb-2">
                 <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                <p className="text-xs font-bold uppercase tracking-wide">Confidential Payroll Document</p>
+                <p 
+                  style={{ 
+                    fontSize: '11px',
+                    fontWeight: '600',
+                    letterSpacing: '0.5px'
+                  }}
+                >
+                  CONFIDENTIAL PAYROLL DOCUMENT
+                </p>
                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
               </div>
-              <div className="text-xs opacity-90">
-                Generated on: {new Date().toLocaleDateString('en-IN')} | System Generated - No Manual Signature Required
+              <div 
+                className="text-white"
+                style={{ 
+                  fontSize: '9px',
+                  opacity: '0.8'
+                }}
+              >
+                Generated on: {new Date().toLocaleDateString('en-IN', { 
+                  day: '2-digit', 
+                  month: 'long', 
+                  year: 'numeric' 
+                })} | System Generated - No Manual Signature Required
               </div>
             </div>
           </div>
