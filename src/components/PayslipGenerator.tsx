@@ -50,6 +50,65 @@ interface EmployeeData {
 
 type TemplateType = 'classic' | 'modern' | 'professional';
 
+// Custom S Logo Component
+const CustomSLogo = ({ size = 56, className = "" }) => {
+  return (
+    <div className={`relative ${className}`} style={{ width: size, height: size }}>
+      {/* Outer glow effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-teal-400 to-green-400 rounded-2xl blur-lg opacity-30 animate-pulse"></div>
+      
+      {/* Main logo container */}
+      <div className="relative w-full h-full bg-gradient-to-br from-blue-600 via-teal-600 to-green-600 rounded-2xl shadow-2xl border-2 border-white/20 backdrop-blur-sm">
+        {/* Inner gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent rounded-2xl"></div>
+        
+        {/* S Letter */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <svg 
+            width={size * 0.6} 
+            height={size * 0.7} 
+            viewBox="0 0 100 120" 
+            className="drop-shadow-lg"
+          >
+            <defs>
+              <linearGradient id="sGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+                <stop offset="50%" stopColor="#f0f9ff" stopOpacity="0.9" />
+                <stop offset="100%" stopColor="#e0f2fe" stopOpacity="0.85" />
+              </linearGradient>
+              <filter id="letterShadow">
+                <feDropShadow dx="2" dy="2" stdDeviation="3" floodColor="#000000" floodOpacity="0.3"/>
+              </filter>
+            </defs>
+            
+            {/* S Letter Path - Custom designed */}
+            <path
+              d="M75 25 C75 15, 65 5, 50 5 L30 5 C20 5, 10 15, 10 25 C10 35, 20 40, 30 40 L60 40 C70 40, 75 45, 75 55 C75 65, 70 70, 60 70 L25 70 C20 70, 15 75, 15 80 C15 85, 20 90, 25 90 L70 90 C80 90, 90 80, 90 70 C90 60, 80 55, 70 55 L40 55 C30 55, 25 50, 25 40 C25 30, 30 25, 40 25 L75 25 Z"
+              fill="url(#sGradient)"
+              filter="url(#letterShadow)"
+              stroke="rgba(255,255,255,0.3)"
+              strokeWidth="1"
+            />
+            
+            {/* Highlight effect */}
+            <path
+              d="M75 25 C75 15, 65 5, 50 5 L30 5 C20 5, 10 15, 10 25 C10 30, 15 35, 25 37"
+              fill="none"
+              stroke="rgba(255,255,255,0.6)"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+        
+        {/* Corner accent dots */}
+        <div className="absolute top-2 right-2 w-2 h-2 bg-white/40 rounded-full"></div>
+        <div className="absolute bottom-2 left-2 w-1.5 h-1.5 bg-white/30 rounded-full"></div>
+      </div>
+    </div>
+  );
+};
+
 const PayslipGenerator = () => {
   const [employees, setEmployees] = useState<EmployeeData[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeData | null>(null);
@@ -63,130 +122,6 @@ const PayslipGenerator = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>('modern');
   const [showPreview, setShowPreview] = useState(false);
   const payslipRef = useRef<HTMLDivElement>(null);
-
-  // Advanced logo processing function
-  const processLogo = async (): Promise<string> => {
-    return new Promise((resolve) => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const img = new Image();
-      
-      img.crossOrigin = 'anonymous';
-      
-      img.onload = () => {
-        const scale = 6;
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
-        
-        if (!ctx) {
-          resolve('');
-          return;
-        }
-        
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-        
-        for (let i = 0; i < data.length; i += 4) {
-          const r = data[i];
-          const g = data[i + 1];
-          const b = data[i + 2];
-          const alpha = data[i + 3];
-          
-          const brightness = (r + g + b) / 3;
-          const max = Math.max(r, g, b);
-          const min = Math.min(r, g, b);
-          const saturation = max === 0 ? 0 : (max - min) / max;
-          
-          const isBlack = brightness < 35 && saturation < 0.3;
-          const isVeryDark = brightness < 50 && saturation < 0.2;
-          
-          if (isBlack) {
-            data[i + 3] = 0;
-          } else if (isVeryDark) {
-            data[i + 3] = Math.max(0, alpha * 0.3);
-          } else {
-            const contrastFactor = 1.15;
-            const brightnessFactor = 1.08;
-            const saturationFactor = 1.12;
-            
-            data[i] = Math.min(255, r * brightnessFactor);
-            data[i + 1] = Math.min(255, g * brightnessFactor);
-            data[i + 2] = Math.min(255, b * brightnessFactor);
-            
-            data[i] = Math.min(255, ((data[i] - 128) * contrastFactor) + 128);
-            data[i + 1] = Math.min(255, ((data[i + 1] - 128) * contrastFactor) + 128);
-            data[i + 2] = Math.min(255, ((data[i + 2] - 128) * contrastFactor) + 128);
-            
-            const gray = (data[i] + data[i + 1] + data[i + 2]) / 3;
-            data[i] = Math.min(255, gray + (data[i] - gray) * saturationFactor);
-            data[i + 1] = Math.min(255, gray + (data[i + 1] - gray) * saturationFactor);
-            data[i + 2] = Math.min(255, gray + (data[i + 2] - gray) * saturationFactor);
-          }
-        }
-        
-        ctx.putImageData(imageData, 0, 0);
-        
-        const sharpenedCanvas = document.createElement('canvas');
-        const sharpenedCtx = sharpenedCanvas.getContext('2d');
-        sharpenedCanvas.width = canvas.width;
-        sharpenedCanvas.height = canvas.height;
-        
-        if (sharpenedCtx) {
-          sharpenedCtx.filter = 'contrast(110%) brightness(105%) saturate(110%)';
-          sharpenedCtx.drawImage(canvas, 0, 0);
-          
-          const processedUrl = sharpenedCanvas.toDataURL('image/png', 1.0);
-          resolve(processedUrl);
-        } else {
-          resolve(canvas.toDataURL('image/png', 1.0));
-        }
-      };
-      
-      img.onerror = () => {
-        console.warn('Logo processing failed, using original');
-        resolve('');
-      };
-      
-      const logoPaths = [
-        '/WhatsApp Image 2025-06-28 at 23.24.54 copy copy copy copy.jpeg',
-        '/public/WhatsApp Image 2025-06-28 at 23.24.54 copy copy copy copy.jpeg',
-        './WhatsApp Image 2025-06-28 at 23.24.54 copy copy copy copy.jpeg'
-      ];
-      
-      let pathIndex = 0;
-      const tryNextPath = () => {
-        if (pathIndex < logoPaths.length) {
-          img.src = logoPaths[pathIndex];
-          pathIndex++;
-        } else {
-          resolve('');
-        }
-      };
-      
-      img.onerror = tryNextPath;
-      tryNextPath();
-    });
-  };
-
-  React.useEffect(() => {
-    const initializeLogo = async () => {
-      try {
-        const processedUrl = await processLogo();
-        if (processedUrl) {
-          setProcessedLogoUrl(processedUrl);
-          console.log('✅ Logo processed successfully with ultra-high quality');
-        }
-      } catch (error) {
-        console.warn('Logo processing error:', error);
-      }
-    };
-    
-    initializeLogo();
-  }, []);
 
   const findBestMatch = (headers: string[], patterns: string[]): string | null => {
     for (const pattern of patterns) {
@@ -328,7 +263,7 @@ const PayslipGenerator = () => {
   };
 
   const renderTemplate = (employee: EmployeeData) => {
-    const templateProps = { employee, processedLogoUrl };
+    const templateProps = { employee, processedLogoUrl: '' }; // Using custom S logo instead
     
     switch (selectedTemplate) {
       case 'classic':
@@ -440,21 +375,14 @@ const PayslipGenerator = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/40 via-teal-50/30 to-green-50/40" style={{ fontFamily: '"Inter", system-ui, -apple-system, sans-serif' }}>
-      {/* Enhanced Header with Light Blue-Green Mix */}
+      {/* Enhanced Header with Custom S Logo */}
       <div className="bg-gradient-to-r from-blue-50/60 via-teal-50/50 to-green-50/60 border-b border-teal-100 shadow-sm backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              {processedLogoUrl && (
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-200 to-green-200 rounded-full blur-md opacity-30"></div>
-                  <img 
-                    src={processedLogoUrl}
-                    alt="Company Logo"
-                    className="relative w-14 h-14 object-contain rounded-full border-2 border-teal-100 shadow-lg"
-                  />
-                </div>
-              )}
+              {/* Custom S Logo */}
+              <CustomSLogo size={56} className="transform hover:scale-110 transition-transform duration-300" />
+              
               <div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-teal-600 to-green-600 bg-clip-text text-transparent">
                   Payslip Generator
