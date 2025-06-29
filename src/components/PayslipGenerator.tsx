@@ -449,7 +449,7 @@ const PayslipGenerator = () => {
       card: 'bg-gradient-to-br from-blue-500/20 to-cyan-500/15 backdrop-blur-2xl border border-blue-400/30 shadow-2xl',
       text: 'text-cyan-50',
       button: 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-xl',
-      font: 'font-sans',
+      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
       accent: 'text-cyan-300',
       glow: 'shadow-cyan-500/30',
       description: 'Inspired by ocean waves with blue-cyan gradients'
@@ -461,7 +461,7 @@ const PayslipGenerator = () => {
       card: 'bg-gradient-to-br from-green-500/20 to-emerald-500/15 backdrop-blur-2xl border border-green-400/30 shadow-2xl',
       text: 'text-green-50',
       button: 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-xl',
-      font: 'font-serif',
+      fontFamily: 'Georgia, "Times New Roman", serif',
       accent: 'text-green-300',
       glow: 'shadow-green-500/30',
       description: 'Natural green tones matching company identity'
@@ -473,7 +473,7 @@ const PayslipGenerator = () => {
       card: 'bg-gradient-to-br from-blue-600/20 to-indigo-600/15 backdrop-blur-2xl border border-blue-500/30 shadow-2xl',
       text: 'text-blue-50',
       button: 'bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-800 hover:to-indigo-800 text-white shadow-xl',
-      font: 'font-mono',
+      fontFamily: '"JetBrains Mono", "Fira Code", monospace',
       accent: 'text-blue-300',
       glow: 'shadow-blue-500/30',
       description: 'Professional blue theme for corporate excellence'
@@ -485,7 +485,7 @@ const PayslipGenerator = () => {
       card: 'bg-gradient-to-br from-cyan-500/20 to-green-500/15 backdrop-blur-2xl border border-cyan-400/30 shadow-2xl',
       text: 'text-cyan-50',
       button: 'bg-gradient-to-r from-cyan-600 to-green-600 hover:from-cyan-700 hover:to-green-700 text-white shadow-xl',
-      font: 'font-sans',
+      fontFamily: '"Roboto", "Helvetica Neue", sans-serif',
       accent: 'text-cyan-300',
       glow: 'shadow-cyan-500/30',
       description: 'Futuristic cyan-green blend for digital innovation'
@@ -497,7 +497,7 @@ const PayslipGenerator = () => {
       card: 'bg-gradient-to-br from-teal-500/20 to-blue-500/15 backdrop-blur-2xl border border-teal-400/30 shadow-2xl',
       text: 'text-teal-50',
       button: 'bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white shadow-xl',
-      font: 'font-serif',
+      fontFamily: '"Playfair Display", Georgia, serif',
       accent: 'text-teal-300',
       glow: 'shadow-teal-500/30',
       description: 'Peaceful teal-blue harmony for balanced design'
@@ -509,7 +509,7 @@ const PayslipGenerator = () => {
       card: 'bg-gradient-to-br from-indigo-500/20 to-green-500/15 backdrop-blur-2xl border border-indigo-400/30 shadow-2xl',
       text: 'text-indigo-50',
       button: 'bg-gradient-to-r from-indigo-600 to-green-600 hover:from-indigo-700 hover:to-green-700 text-white shadow-xl',
-      font: 'font-mono',
+      fontFamily: '"Source Code Pro", "Courier New", monospace',
       accent: 'text-indigo-300',
       glow: 'shadow-indigo-500/30',
       description: 'High-tech indigo-green fusion for innovation'
@@ -519,7 +519,10 @@ const PayslipGenerator = () => {
   const currentTheme = themes[selectedTheme];
 
   return (
-    <div className={`min-h-screen transition-all duration-1000 ${currentTheme.bg} ${currentTheme.font} relative overflow-hidden`}>
+    <div 
+      className={`min-h-screen transition-all duration-1000 ${currentTheme.bg} relative overflow-hidden`}
+      style={{ fontFamily: currentTheme.fontFamily }}
+    >
       {/* Enhanced Animated Background Elements with Logo Colors */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Floating Orbs with Company Colors */}
@@ -594,32 +597,55 @@ const PayslipGenerator = () => {
             </div>
             
             {/* Premium Theme Selector with Company Color Inspiration */}
-            <div className={`inline-flex p-4 rounded-3xl ${currentTheme.card} ${currentTheme.glow} mb-10`}>
-              <div className="grid grid-cols-3 gap-4">
-                {Object.entries(themes).map(([key, theme]) => {
-                  const Icon = theme.icon;
-                  return (
-                    <button
-                      key={key}
-                      onClick={() => setSelectedTheme(key as ThemeType)}
-                      className={`flex flex-col items-center space-y-3 px-8 py-6 rounded-2xl transition-all duration-700 transform ${
-                        selectedTheme === key 
-                          ? `bg-white/30 scale-115 ${theme.glow} shadow-2xl border-2 border-white/40` 
-                          : 'hover:bg-white/15 hover:scale-110 border-2 border-transparent'
-                      }`}
-                    >
-                      <Icon className={`w-8 h-8 ${currentTheme.text}`} />
-                      <div className="text-center">
-                        <span className={`text-sm font-bold ${currentTheme.text} tracking-wide block`}>
-                          {theme.name}
-                        </span>
-                        <span className={`text-xs ${currentTheme.accent} opacity-80 mt-1 block`}>
-                          {theme.description}
-                        </span>
-                      </div>
-                    </button>
-                  );
-                })}
+            <div className={`inline-flex p-6 rounded-3xl ${currentTheme.card} ${currentTheme.glow} mb-10`}>
+              <div className="w-full">
+                <div className={`text-2xl font-bold ${currentTheme.text} mb-6 flex items-center justify-center gap-3`}>
+                  <Palette className="w-8 h-8" />
+                  Choose Your Premium Theme
+                </div>
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl">
+                  {Object.entries(themes).map(([key, theme]) => {
+                    const Icon = theme.icon;
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => setSelectedTheme(key as ThemeType)}
+                        className={`flex flex-col items-center space-y-4 px-8 py-8 rounded-2xl transition-all duration-700 transform ${
+                          selectedTheme === key 
+                            ? `bg-white/30 scale-110 ${theme.glow} shadow-2xl border-2 border-white/50` 
+                            : 'hover:bg-white/15 hover:scale-105 border-2 border-transparent hover:border-white/30'
+                        }`}
+                        style={{ fontFamily: theme.fontFamily }}
+                      >
+                        <Icon className={`w-12 h-12 ${currentTheme.text}`} />
+                        <div className="text-center">
+                          <span className={`text-lg font-bold ${currentTheme.text} tracking-wide block mb-2`}>
+                            {theme.name}
+                          </span>
+                          <span className={`text-sm ${currentTheme.accent} opacity-90 block mb-3`}>
+                            {theme.description}
+                          </span>
+                          <div className={`text-xs ${currentTheme.text} opacity-75 px-3 py-1 rounded-full bg-white/10`}>
+                            Font: {theme.fontFamily.split(',')[0].replace(/"/g, '')}
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+                
+                {/* Current Theme Display */}
+                <div className={`mt-8 p-6 rounded-2xl bg-white/10 border border-white/20`}>
+                  <div className={`text-xl font-bold ${currentTheme.text} mb-3`}>
+                    🎨 Current Theme: {currentTheme.name}
+                  </div>
+                  <div className={`text-lg ${currentTheme.accent} mb-2`}>
+                    📝 Font Family: {currentTheme.fontFamily.split(',')[0].replace(/"/g, '')}
+                  </div>
+                  <div className={`text-base ${currentTheme.text} opacity-80`}>
+                    ✨ {currentTheme.description}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -794,7 +820,7 @@ const PayslipGenerator = () => {
                       <div className="space-y-2">
                         <div>Template: <span className="font-bold">{selectedTemplate}</span></div>
                         <div>Theme: <span className="font-bold">{currentTheme.name}</span></div>
-                        <div>Font: <span className="font-bold">{currentTheme.font.replace('font-', '')}</span></div>
+                        <div>Font: <span className="font-bold">{currentTheme.fontFamily.split(',')[0].replace(/"/g, '')}</span></div>
                         <div>Company Branding: <span className="font-bold text-green-400">✅ Integrated</span></div>
                       </div>
                     </div>
