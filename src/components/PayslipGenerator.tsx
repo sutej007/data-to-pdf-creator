@@ -48,12 +48,13 @@ interface EmployeeData {
 const PayslipGenerator = () => {
   const [employees, setEmployees] = useState<EmployeeData[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeData | null>(null);
-  const [currentPdfEmployee, setCurrentPdfEmployee] = useState<EmployeeData | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [currentProgress, setCurrentProgress] = useState(0);
   const [debugInfo, setDebugInfo] = useState<string>('');
   const [columnMapping, setColumnMapping] = useState<{[key: string]: string}>({});
   const [processedLogoUrl, setProcessedLogoUrl] = useState<string>('');
+  const [showPdfTemplate, setShowPdfTemplate] = useState(false);
+  const [pdfEmployee, setPdfEmployee] = useState<EmployeeData | null>(null);
   const payslipRef = useRef<HTMLDivElement>(null);
 
   // Advanced logo processing function
@@ -360,34 +361,38 @@ const PayslipGenerator = () => {
   };
 
   const generatePDF = async (employee: EmployeeData, showToast: boolean = true) => {
-    if (!payslipRef.current) {
-      console.error('Payslip ref not found');
-      return false;
-    }
-
     try {
-      console.log('Setting employee for PDF generation:', employee['EMPLOYEE NAME'], 'Net Pay:', employee['NET PAY']);
+      console.log('Starting PDF generation for:', employee['EMPLOYEE NAME']);
       
-      // Set the employee data for the template
-      setCurrentPdfEmployee(employee);
-      setSelectedEmployee(employee);
+      // Show the PDF template
+      setPdfEmployee(employee);
+      setShowPdfTemplate(true);
       
-      // Wait for the component to render with new data
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Wait for the template to render
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      if (!payslipRef.current) {
+        throw new Error('PDF template not found');
+      }
 
-      console.log('Generating PDF for:', employee['EMPLOYEE NAME'], 'Net Pay:', employee['NET PAY']);
-
+      console.log('Capturing PDF template...');
+      
+      // Capture the visible template
       const canvas = await html2canvas(payslipRef.current, {
-        scale: 3,
+        scale: 2,
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
+        logging: false,
         width: 794,
         height: 1123,
-        logging: false,
+        windowWidth: 1200,
+        windowHeight: 1600
       });
 
-      const imgData = canvas.toDataURL('image/png');
+      console.log('Canvas captured, creating PDF...');
+
+      const imgData = canvas.toDataURL('image/png', 1.0);
       const pdf = new jsPDF('p', 'mm', 'a4');
       
       const imgWidth = 210; // A4 width in mm
@@ -396,6 +401,10 @@ const PayslipGenerator = () => {
       pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
       pdf.save(`Payslip_${employee['EMPLOYEE NAME']}_${employee['AS ON']}.pdf`);
       
+      // Hide the template
+      setShowPdfTemplate(false);
+      setPdfEmployee(null);
+      
       if (showToast) {
         toast.success(`PDF generated for ${employee['EMPLOYEE NAME']}`);
       }
@@ -403,8 +412,10 @@ const PayslipGenerator = () => {
       return true;
     } catch (error) {
       console.error('PDF generation error:', error);
+      setShowPdfTemplate(false);
+      setPdfEmployee(null);
       if (showToast) {
-        toast.error(`Error generating PDF for ${employee['EMPLOYEE NAME']}`);
+        toast.error(`Error generating PDF for ${employee['EMPLOYEE NAME']}: ${error.message}`);
       }
       return false;
     }
@@ -437,7 +448,7 @@ const PayslipGenerator = () => {
       }
       
       // Small delay between generations to prevent browser freezing
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 2000));
     }
 
     setIsGenerating(false);
@@ -457,9 +468,6 @@ const PayslipGenerator = () => {
       minimumFractionDigits: 2
     }).format(amount || 0);
   };
-
-  // Use currentPdfEmployee for PDF generation, selectedEmployee for preview
-  const templateEmployee = currentPdfEmployee || selectedEmployee;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
@@ -609,244 +617,251 @@ const PayslipGenerator = () => {
           </Card>
         </div>
 
-        {/* Hidden Professional Payslip Template with Ultra-High Quality Logo */}
-        <div
-          ref={payslipRef}
-          data-payslip-template
-          className="fixed top-[-9999px] left-[-9999px] bg-white"
-          style={{ 
-            width: '794px', 
-            height: '1123px',
-            fontSize: '11px', 
-            lineHeight: '1.4', 
-            fontFamily: 'Arial, sans-serif',
-            visibility: 'hidden'
-          }}
-        >
-          {templateEmployee && (
-            <div className="p-8 border-2 border-gray-300 h-full">
-              {/* Company Header with Ultra-High Quality Logo */}
-              <div className="flex items-center justify-between mb-8 pb-4 border-b-2 border-blue-600">
-                {/* Ultra-High Quality Logo */}
-                <div className="flex-shrink-0">
-                  {processedLogoUrl ? (
-                    <img 
-                      src={processedLogoUrl}
-                      alt="Nava Chetana Logo"
-                      className="w-28 h-28 object-contain bg-white rounded-lg shadow-sm border border-gray-200 p-2"
-                      style={{
-                        imageRendering: 'crisp-edges',
-                        imageRendering: '-webkit-optimize-contrast',
-                        imageRendering: 'pixelated',
-                        filter: 'contrast(110%) brightness(105%)'
-                      }}
-                    />
-                  ) : (
-                    <div className="w-28 h-28 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200">
-                      <span className="text-xs text-gray-500">Logo</span>
-                    </div>
-                  )}
-                </div>
-                
-                {/* Company Info */}
-                <div className="text-center flex-1 mx-6">
-                  <div className="text-2xl font-bold text-blue-800 mb-2">PAYSLIP</div>
-                  <div className="text-lg font-semibold text-gray-800 mb-1">NAVA CHETANA</div>
-                  <div className="text-sm text-blue-600 font-medium">SOUHARDA SAHAKARI</div>
-                  <div className="text-sm text-gray-600 mt-2">For the month of {templateEmployee['AS ON']}</div>
-                </div>
-                
-                {/* Right side space for balance */}
-                <div className="w-28"></div>
+        {/* Visible PDF Template - Only shown during PDF generation */}
+        {showPdfTemplate && pdfEmployee && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-4 rounded-lg shadow-xl max-w-4xl max-h-[90vh] overflow-auto">
+              <div className="text-center mb-4">
+                <p className="text-lg font-semibold">Generating PDF for {pdfEmployee['EMPLOYEE NAME']}...</p>
+                <p className="text-sm text-gray-600">Please wait while we capture the payslip</p>
               </div>
+              
+              <div
+                ref={payslipRef}
+                className="bg-white border-2 border-gray-300"
+                style={{ 
+                  width: '794px', 
+                  height: '1123px',
+                  fontSize: '11px', 
+                  lineHeight: '1.4', 
+                  fontFamily: 'Arial, sans-serif'
+                }}
+              >
+                <div className="p-8 h-full">
+                  {/* Company Header with Ultra-High Quality Logo */}
+                  <div className="flex items-center justify-between mb-8 pb-4 border-b-2 border-blue-600">
+                    {/* Ultra-High Quality Logo */}
+                    <div className="flex-shrink-0">
+                      {processedLogoUrl ? (
+                        <img 
+                          src={processedLogoUrl}
+                          alt="Nava Chetana Logo"
+                          className="w-28 h-28 object-contain bg-white rounded-lg shadow-sm border border-gray-200 p-2"
+                          style={{
+                            imageRendering: 'crisp-edges',
+                            imageRendering: '-webkit-optimize-contrast',
+                            imageRendering: 'pixelated',
+                            filter: 'contrast(110%) brightness(105%)'
+                          }}
+                        />
+                      ) : (
+                        <div className="w-28 h-28 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200">
+                          <span className="text-xs text-gray-500">Logo</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Company Info */}
+                    <div className="text-center flex-1 mx-6">
+                      <div className="text-2xl font-bold text-blue-800 mb-2">PAYSLIP</div>
+                      <div className="text-lg font-semibold text-gray-800 mb-1">NAVA CHETANA</div>
+                      <div className="text-sm text-blue-600 font-medium">SOUHARDA SAHAKARI</div>
+                      <div className="text-sm text-gray-600 mt-2">For the month of {pdfEmployee['AS ON']}</div>
+                    </div>
+                    
+                    {/* Right side space for balance */}
+                    <div className="w-28"></div>
+                  </div>
 
-              {/* Employee Information */}
-              <div className="grid grid-cols-2 gap-8 mb-6">
-                <div>
-                  <div className="text-sm font-bold text-blue-700 mb-3 pb-1 border-b border-blue-200">EMPLOYEE DETAILS</div>
-                  <div className="space-y-1.5 text-xs">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 w-32">Name:</span>
-                      <span className="font-medium flex-1">{templateEmployee['EMPLOYEE NAME']}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 w-32">Employee ID:</span>
-                      <span className="font-medium flex-1">{templateEmployee['EMPLOYEE ID']}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 w-32">Designation:</span>
-                      <span className="font-medium flex-1">{templateEmployee['DESIGNATION']}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 w-32">Department:</span>
-                      <span className="font-medium flex-1">{templateEmployee['DEPARTMENT']}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 w-32">Branch:</span>
-                      <span className="font-medium flex-1">{templateEmployee['BRANCH']}</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <div className="text-sm font-bold text-blue-700 mb-3 pb-1 border-b border-blue-200">STATUTORY INFO</div>
-                  <div className="space-y-1.5 text-xs">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 w-32">Date of Joining:</span>
-                      <span className="font-medium flex-1">{templateEmployee['DOJ']}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 w-32">PF Number:</span>
-                      <span className="font-medium flex-1">{templateEmployee['PF NO']}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 w-32">ESI Number:</span>
-                      <span className="font-medium flex-1">{templateEmployee['ESI NO']}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 w-32">UAN:</span>
-                      <span className="font-medium flex-1">{templateEmployee['UAN']}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 w-32">Status:</span>
-                      <span className="font-medium flex-1">{templateEmployee['STATUS']}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Attendance */}
-              <div className="mb-6">
-                <div className="text-sm font-bold text-blue-700 mb-3 pb-1 border-b border-blue-200">ATTENDANCE SUMMARY</div>
-                <div className="grid grid-cols-4 gap-4 text-xs">
-                  <div className="text-center p-2 bg-gray-50 rounded border">
-                    <div className="font-bold text-blue-600 text-sm">{templateEmployee['TOTAL DAYS']}</div>
-                    <div className="text-gray-600 text-xs">Total Days</div>
-                  </div>
-                  <div className="text-center p-2 bg-gray-50 rounded border">
-                    <div className="font-bold text-green-600 text-sm">{templateEmployee['PRESENT DAYS']}</div>
-                    <div className="text-gray-600 text-xs">Present Days</div>
-                  </div>
-                  <div className="text-center p-2 bg-gray-50 rounded border">
-                    <div className="font-bold text-blue-600 text-sm">{templateEmployee['SALARY DAYS']}</div>
-                    <div className="text-gray-600 text-xs">Paid Days</div>
-                  </div>
-                  <div className="text-center p-2 bg-gray-50 rounded border">
-                    <div className="font-bold text-red-600 text-sm">{templateEmployee['LOP']}</div>
-                    <div className="text-gray-600 text-xs">LOP Days</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Salary Details */}
-              <div className="grid grid-cols-2 gap-8 mb-6">
-                {/* Earnings */}
-                <div className="border border-green-200 p-4 rounded">
-                  <div className="text-sm font-bold text-green-700 mb-3 pb-1 border-b border-green-300">EARNINGS</div>
-                  <div className="space-y-1.5 text-xs">
-                    <div className="flex justify-between">
-                      <span>Basic Salary</span>
-                      <span className="font-medium">{formatCurrency(templateEmployee['EARNED BASIC'])}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>House Rent Allowance</span>
-                      <span className="font-medium">{formatCurrency(templateEmployee['HRA'])}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Conveyance Allowance</span>
-                      <span className="font-medium">{formatCurrency(templateEmployee['LOCAN CONVEY'])}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Medical Allowance</span>
-                      <span className="font-medium">{formatCurrency(templateEmployee['MEDICAL ALLOW'])}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>City Compensatory Allow.</span>
-                      <span className="font-medium">{formatCurrency(templateEmployee['CITY COMPENSATORY ALLOWANCE (CCA)'])}</span>
-                    </div>
-                    {templateEmployee['CHILDREN EDUCATION ALLOWANCE (CEA)'] > 0 && (
-                      <div className="flex justify-between">
-                        <span>Children Education Allow.</span>
-                        <span className="font-medium">{formatCurrency(templateEmployee['CHILDREN EDUCATION ALLOWANCE (CEA)'])}</span>
+                  {/* Employee Information */}
+                  <div className="grid grid-cols-2 gap-8 mb-6">
+                    <div>
+                      <div className="text-sm font-bold text-blue-700 mb-3 pb-1 border-b border-blue-200">EMPLOYEE DETAILS</div>
+                      <div className="space-y-1.5 text-xs">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600 w-32">Name:</span>
+                          <span className="font-medium flex-1">{pdfEmployee['EMPLOYEE NAME']}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600 w-32">Employee ID:</span>
+                          <span className="font-medium flex-1">{pdfEmployee['EMPLOYEE ID']}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600 w-32">Designation:</span>
+                          <span className="font-medium flex-1">{pdfEmployee['DESIGNATION']}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600 w-32">Department:</span>
+                          <span className="font-medium flex-1">{pdfEmployee['DEPARTMENT']}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600 w-32">Branch:</span>
+                          <span className="font-medium flex-1">{pdfEmployee['BRANCH']}</span>
+                        </div>
                       </div>
-                    )}
-                    {templateEmployee['OTHER ALLOWANCE'] > 0 && (
-                      <div className="flex justify-between">
-                        <span>Other Allowances</span>
-                        <span className="font-medium">{formatCurrency(templateEmployee['OTHER ALLOWANCE'])}</span>
+                    </div>
+                    
+                    <div>
+                      <div className="text-sm font-bold text-blue-700 mb-3 pb-1 border-b border-blue-200">STATUTORY INFO</div>
+                      <div className="space-y-1.5 text-xs">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600 w-32">Date of Joining:</span>
+                          <span className="font-medium flex-1">{pdfEmployee['DOJ']}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600 w-32">PF Number:</span>
+                          <span className="font-medium flex-1">{pdfEmployee['PF NO']}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600 w-32">ESI Number:</span>
+                          <span className="font-medium flex-1">{pdfEmployee['ESI NO']}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600 w-32">UAN:</span>
+                          <span className="font-medium flex-1">{pdfEmployee['UAN']}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600 w-32">Status:</span>
+                          <span className="font-medium flex-1">{pdfEmployee['STATUS']}</span>
+                        </div>
                       </div>
-                    )}
-                    {templateEmployee['INCENTIVE'] > 0 && (
-                      <div className="flex justify-between">
-                        <span>Incentive</span>
-                        <span className="font-medium">{formatCurrency(templateEmployee['INCENTIVE'])}</span>
-                      </div>
-                    )}
-                    <div className="border-t border-green-300 pt-2 mt-2 flex justify-between font-bold text-green-700">
-                      <span>GROSS SALARY</span>
-                      <span>{formatCurrency(templateEmployee['GROSS SALARY'])}</span>
                     </div>
                   </div>
-                </div>
 
-                {/* Deductions */}
-                <div className="border border-red-200 p-4 rounded">
-                  <div className="text-sm font-bold text-red-700 mb-3 pb-1 border-b border-red-300">DEDUCTIONS</div>
-                  <div className="space-y-1.5 text-xs">
-                    <div className="flex justify-between">
-                      <span>Provident Fund</span>
-                      <span className="font-medium">{formatCurrency(templateEmployee['PF'])}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Employee State Insurance</span>
-                      <span className="font-medium">{formatCurrency(templateEmployee['ESI'])}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Tax Deducted at Source</span>
-                      <span className="font-medium">{formatCurrency(templateEmployee['TDS'])}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Professional Tax</span>
-                      <span className="font-medium">{formatCurrency(templateEmployee['PT'])}</span>
-                    </div>
-                    {templateEmployee['STAFF WELFARE'] > 0 && (
-                      <div className="flex justify-between">
-                        <span>Staff Welfare</span>
-                        <span className="font-medium">{formatCurrency(templateEmployee['STAFF WELFARE'])}</span>
+                  {/* Attendance */}
+                  <div className="mb-6">
+                    <div className="text-sm font-bold text-blue-700 mb-3 pb-1 border-b border-blue-200">ATTENDANCE SUMMARY</div>
+                    <div className="grid grid-cols-4 gap-4 text-xs">
+                      <div className="text-center p-2 bg-gray-50 rounded border">
+                        <div className="font-bold text-blue-600 text-sm">{pdfEmployee['TOTAL DAYS']}</div>
+                        <div className="text-gray-600 text-xs">Total Days</div>
                       </div>
-                    )}
-                    {templateEmployee['SALARY ADVANCE'] > 0 && (
-                      <div className="flex justify-between">
-                        <span>Salary Advance</span>
-                        <span className="font-medium">{formatCurrency(templateEmployee['SALARY ADVANCE'])}</span>
+                      <div className="text-center p-2 bg-gray-50 rounded border">
+                        <div className="font-bold text-green-600 text-sm">{pdfEmployee['PRESENT DAYS']}</div>
+                        <div className="text-gray-600 text-xs">Present Days</div>
                       </div>
-                    )}
-                    <div className="border-t border-red-300 pt-2 mt-2 flex justify-between font-bold text-red-700">
-                      <span>TOTAL DEDUCTIONS</span>
-                      <span>{formatCurrency(templateEmployee['TOTAL DEDUCTIONS'])}</span>
+                      <div className="text-center p-2 bg-gray-50 rounded border">
+                        <div className="font-bold text-blue-600 text-sm">{pdfEmployee['SALARY DAYS']}</div>
+                        <div className="text-gray-600 text-xs">Paid Days</div>
+                      </div>
+                      <div className="text-center p-2 bg-gray-50 rounded border">
+                        <div className="font-bold text-red-600 text-sm">{pdfEmployee['LOP']}</div>
+                        <div className="text-gray-600 text-xs">LOP Days</div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
 
-              {/* Net Pay Section */}
-              <div className="bg-green-50 border-2 border-green-500 p-4 rounded text-center mb-6">
-                <div className="text-lg font-bold text-green-700">
-                  NET PAY: {formatCurrency(templateEmployee['NET PAY'])}
-                </div>
-                <div className="text-xs text-green-600 mt-1">
-                  (Gross Salary - Total Deductions)
-                </div>
-              </div>
+                  {/* Salary Details */}
+                  <div className="grid grid-cols-2 gap-8 mb-6">
+                    {/* Earnings */}
+                    <div className="border border-green-200 p-4 rounded">
+                      <div className="text-sm font-bold text-green-700 mb-3 pb-1 border-b border-green-300">EARNINGS</div>
+                      <div className="space-y-1.5 text-xs">
+                        <div className="flex justify-between">
+                          <span>Basic Salary</span>
+                          <span className="font-medium">{formatCurrency(pdfEmployee['EARNED BASIC'])}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>House Rent Allowance</span>
+                          <span className="font-medium">{formatCurrency(pdfEmployee['HRA'])}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Conveyance Allowance</span>
+                          <span className="font-medium">{formatCurrency(pdfEmployee['LOCAN CONVEY'])}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Medical Allowance</span>
+                          <span className="font-medium">{formatCurrency(pdfEmployee['MEDICAL ALLOW'])}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>City Compensatory Allow.</span>
+                          <span className="font-medium">{formatCurrency(pdfEmployee['CITY COMPENSATORY ALLOWANCE (CCA)'])}</span>
+                        </div>
+                        {pdfEmployee['CHILDREN EDUCATION ALLOWANCE (CEA)'] > 0 && (
+                          <div className="flex justify-between">
+                            <span>Children Education Allow.</span>
+                            <span className="font-medium">{formatCurrency(pdfEmployee['CHILDREN EDUCATION ALLOWANCE (CEA)'])}</span>
+                          </div>
+                        )}
+                        {pdfEmployee['OTHER ALLOWANCE'] > 0 && (
+                          <div className="flex justify-between">
+                            <span>Other Allowances</span>
+                            <span className="font-medium">{formatCurrency(pdfEmployee['OTHER ALLOWANCE'])}</span>
+                          </div>
+                        )}
+                        {pdfEmployee['INCENTIVE'] > 0 && (
+                          <div className="flex justify-between">
+                            <span>Incentive</span>
+                            <span className="font-medium">{formatCurrency(pdfEmployee['INCENTIVE'])}</span>
+                          </div>
+                        )}
+                        <div className="border-t border-green-300 pt-2 mt-2 flex justify-between font-bold text-green-700">
+                          <span>GROSS SALARY</span>
+                          <span>{formatCurrency(pdfEmployee['GROSS SALARY'])}</span>
+                        </div>
+                      </div>
+                    </div>
 
-              {/* Footer */}
-              <div className="text-center text-xs text-gray-600 border-t pt-4">
-                <p className="mb-1">This is a computer generated payslip and does not require signature.</p>
-                <p>Generated on: {new Date().toLocaleDateString('en-IN')}</p>
+                    {/* Deductions */}
+                    <div className="border border-red-200 p-4 rounded">
+                      <div className="text-sm font-bold text-red-700 mb-3 pb-1 border-b border-red-300">DEDUCTIONS</div>
+                      <div className="space-y-1.5 text-xs">
+                        <div className="flex justify-between">
+                          <span>Provident Fund</span>
+                          <span className="font-medium">{formatCurrency(pdfEmployee['PF'])}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Employee State Insurance</span>
+                          <span className="font-medium">{formatCurrency(pdfEmployee['ESI'])}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Tax Deducted at Source</span>
+                          <span className="font-medium">{formatCurrency(pdfEmployee['TDS'])}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Professional Tax</span>
+                          <span className="font-medium">{formatCurrency(pdfEmployee['PT'])}</span>
+                        </div>
+                        {pdfEmployee['STAFF WELFARE'] > 0 && (
+                          <div className="flex justify-between">
+                            <span>Staff Welfare</span>
+                            <span className="font-medium">{formatCurrency(pdfEmployee['STAFF WELFARE'])}</span>
+                          </div>
+                        )}
+                        {pdfEmployee['SALARY ADVANCE'] > 0 && (
+                          <div className="flex justify-between">
+                            <span>Salary Advance</span>
+                            <span className="font-medium">{formatCurrency(pdfEmployee['SALARY ADVANCE'])}</span>
+                          </div>
+                        )}
+                        <div className="border-t border-red-300 pt-2 mt-2 flex justify-between font-bold text-red-700">
+                          <span>TOTAL DEDUCTIONS</span>
+                          <span>{formatCurrency(pdfEmployee['TOTAL DEDUCTIONS'])}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Net Pay Section */}
+                  <div className="bg-green-50 border-2 border-green-500 p-4 rounded text-center mb-6">
+                    <div className="text-lg font-bold text-green-700">
+                      NET PAY: {formatCurrency(pdfEmployee['NET PAY'])}
+                    </div>
+                    <div className="text-xs text-green-600 mt-1">
+                      (Gross Salary - Total Deductions)
+                    </div>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="text-center text-xs text-gray-600 border-t pt-4">
+                    <p className="mb-1">This is a computer generated payslip and does not require signature.</p>
+                    <p>Generated on: {new Date().toLocaleDateString('en-IN')}</p>
+                  </div>
+                </div>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
