@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface EmployeeData {
@@ -73,6 +72,59 @@ const formatMonthYear = (dateString: string) => {
   }
   
   return dateString;
+};
+
+// Helper method to convert number to words (simplified version)
+const convertToWords = (num: number): string => {
+  if (num === 0) return "Zero";
+  
+  const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
+  const teens = ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+  const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+  
+  const convertHundreds = (n: number): string => {
+    let result = "";
+    if (n > 99) {
+      result += ones[Math.floor(n / 100)] + " Hundred ";
+      n %= 100;
+    }
+    if (n > 19) {
+      result += tens[Math.floor(n / 10)] + " ";
+      n %= 10;
+    } else if (n > 9) {
+      result += teens[n - 10] + " ";
+      return result;
+    }
+    if (n > 0) {
+      result += ones[n] + " ";
+    }
+    return result;
+  };
+  
+  let result = "";
+  let crore = Math.floor(num / 10000000);
+  if (crore > 0) {
+    result += convertHundreds(crore) + "Crore ";
+    num %= 10000000;
+  }
+  
+  let lakh = Math.floor(num / 100000);
+  if (lakh > 0) {
+    result += convertHundreds(lakh) + "Lakh ";
+    num %= 100000;
+  }
+  
+  let thousand = Math.floor(num / 1000);
+  if (thousand > 0) {
+    result += convertHundreds(thousand) + "Thousand ";
+    num %= 1000;
+  }
+  
+  if (num > 0) {
+    result += convertHundreds(num);
+  }
+  
+  return result.trim();
 };
 
 const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, ProfessionalPayslipTemplateProps>(
@@ -574,7 +626,7 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
                 border: '1px solid #ccc'
               }}
             >
-              Net Salary : {formatCurrency(employee['NET PAY'])} (Rupees {this.convertToWords(employee['NET PAY'])})
+              Net Salary : {formatCurrency(employee['NET PAY'])} (Rupees {convertToWords(employee['NET PAY'])})
             </div>
           </div>
 
@@ -601,59 +653,6 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
     );
   }
 );
-
-// Helper method to convert number to words (simplified version)
-const convertToWords = (num: number): string => {
-  if (num === 0) return "Zero";
-  
-  const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
-  const teens = ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
-  const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
-  
-  const convertHundreds = (n: number): string => {
-    let result = "";
-    if (n > 99) {
-      result += ones[Math.floor(n / 100)] + " Hundred ";
-      n %= 100;
-    }
-    if (n > 19) {
-      result += tens[Math.floor(n / 10)] + " ";
-      n %= 10;
-    } else if (n > 9) {
-      result += teens[n - 10] + " ";
-      return result;
-    }
-    if (n > 0) {
-      result += ones[n] + " ";
-    }
-    return result;
-  };
-  
-  let result = "";
-  let crore = Math.floor(num / 10000000);
-  if (crore > 0) {
-    result += convertHundreds(crore) + "Crore ";
-    num %= 10000000;
-  }
-  
-  let lakh = Math.floor(num / 100000);
-  if (lakh > 0) {
-    result += convertHundreds(lakh) + "Lakh ";
-    num %= 100000;
-  }
-  
-  let thousand = Math.floor(num / 1000);
-  if (thousand > 0) {
-    result += convertHundreds(thousand) + "Thousand ";
-    num %= 1000;
-  }
-  
-  if (num > 0) {
-    result += convertHundreds(num);
-  }
-  
-  return result.trim();
-};
 
 ProfessionalPayslipTemplate.displayName = 'ProfessionalPayslipTemplate';
 
