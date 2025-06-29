@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, Download, FileText, Users, Loader2, Eye, Palette, Sparkles, Zap, Moon, Sun, Crown, Gem, Star, Rocket, Shield, Heart, Waves, Mountain, Leaf, Flame, Snowflake, TreePine } from "lucide-react";
+import { Upload, Download, FileText, Users, Loader2, Eye, FileSpreadsheet, FileCheck, Settings, Sparkles, CheckCircle, AlertCircle, Info } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
@@ -49,7 +49,6 @@ interface EmployeeData {
 }
 
 type TemplateType = 'classic' | 'modern' | 'professional';
-type ThemeType = 'ocean-breeze' | 'forest-harmony' | 'corporate-elite' | 'digital-wave' | 'nature-zen' | 'tech-fusion';
 
 const PayslipGenerator = () => {
   const [employees, setEmployees] = useState<EmployeeData[]>([]);
@@ -62,7 +61,6 @@ const PayslipGenerator = () => {
   const [showPdfTemplate, setShowPdfTemplate] = useState(false);
   const [pdfEmployee, setPdfEmployee] = useState<EmployeeData | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>('modern');
-  const [selectedTheme, setSelectedTheme] = useState<ThemeType>('ocean-breeze');
   const [showPreview, setShowPreview] = useState(false);
   const payslipRef = useRef<HTMLDivElement>(null);
 
@@ -440,106 +438,22 @@ const PayslipGenerator = () => {
     }).format(amount || 0);
   };
 
-  // 6 NEW Premium Theme configurations inspired by company logo colors (Blue & Green)
-  const themes = {
-    'ocean-breeze': {
-      name: 'Ocean Breeze',
-      icon: Waves,
-      bg: 'bg-gradient-to-br from-blue-900 via-cyan-800 to-teal-900',
-      card: 'bg-gradient-to-br from-blue-500/20 to-cyan-500/15 backdrop-blur-2xl border border-blue-400/30 shadow-2xl',
-      text: 'text-cyan-50',
-      button: 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-xl',
-      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-      accent: 'text-cyan-300',
-      glow: 'shadow-cyan-500/30',
-      description: 'Inspired by ocean waves with blue-cyan gradients'
-    },
-    'forest-harmony': {
-      name: 'Forest Harmony',
-      icon: TreePine,
-      bg: 'bg-gradient-to-br from-green-900 via-emerald-800 to-teal-900',
-      card: 'bg-gradient-to-br from-green-500/20 to-emerald-500/15 backdrop-blur-2xl border border-green-400/30 shadow-2xl',
-      text: 'text-green-50',
-      button: 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-xl',
-      fontFamily: 'Georgia, "Times New Roman", serif',
-      accent: 'text-green-300',
-      glow: 'shadow-green-500/30',
-      description: 'Natural green tones matching company identity'
-    },
-    'corporate-elite': {
-      name: 'Corporate Elite',
-      icon: Shield,
-      bg: 'bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900',
-      card: 'bg-gradient-to-br from-blue-600/20 to-indigo-600/15 backdrop-blur-2xl border border-blue-500/30 shadow-2xl',
-      text: 'text-blue-50',
-      button: 'bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-800 hover:to-indigo-800 text-white shadow-xl',
-      fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-      accent: 'text-blue-300',
-      glow: 'shadow-blue-500/30',
-      description: 'Professional blue theme for corporate excellence'
-    },
-    'digital-wave': {
-      name: 'Digital Wave',
-      icon: Zap,
-      bg: 'bg-gradient-to-br from-cyan-900 via-blue-800 to-green-900',
-      card: 'bg-gradient-to-br from-cyan-500/20 to-green-500/15 backdrop-blur-2xl border border-cyan-400/30 shadow-2xl',
-      text: 'text-cyan-50',
-      button: 'bg-gradient-to-r from-cyan-600 to-green-600 hover:from-cyan-700 hover:to-green-700 text-white shadow-xl',
-      fontFamily: '"Roboto", "Helvetica Neue", sans-serif',
-      accent: 'text-cyan-300',
-      glow: 'shadow-cyan-500/30',
-      description: 'Futuristic cyan-green blend for digital innovation'
-    },
-    'nature-zen': {
-      name: 'Nature Zen',
-      icon: Leaf,
-      bg: 'bg-gradient-to-br from-teal-900 via-green-800 to-blue-900',
-      card: 'bg-gradient-to-br from-teal-500/20 to-blue-500/15 backdrop-blur-2xl border border-teal-400/30 shadow-2xl',
-      text: 'text-teal-50',
-      button: 'bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white shadow-xl',
-      fontFamily: '"Playfair Display", Georgia, serif',
-      accent: 'text-teal-300',
-      glow: 'shadow-teal-500/30',
-      description: 'Peaceful teal-blue harmony for balanced design'
-    },
-    'tech-fusion': {
-      name: 'Tech Fusion',
-      icon: Rocket,
-      bg: 'bg-gradient-to-br from-indigo-900 via-blue-800 to-green-900',
-      card: 'bg-gradient-to-br from-indigo-500/20 to-green-500/15 backdrop-blur-2xl border border-indigo-400/30 shadow-2xl',
-      text: 'text-indigo-50',
-      button: 'bg-gradient-to-r from-indigo-600 to-green-600 hover:from-indigo-700 hover:to-green-700 text-white shadow-xl',
-      fontFamily: '"Source Code Pro", "Courier New", monospace',
-      accent: 'text-indigo-300',
-      glow: 'shadow-indigo-500/30',
-      description: 'High-tech indigo-green fusion for innovation'
-    }
-  };
-
-  const currentTheme = themes[selectedTheme];
-
   return (
     <div 
-      className={`min-h-screen transition-all duration-1000 ${currentTheme.bg} relative overflow-hidden`}
-      style={{ fontFamily: currentTheme.fontFamily }}
+      className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden"
+      style={{ fontFamily: '"Inter", system-ui, -apple-system, sans-serif' }}
     >
-      {/* Enhanced Animated Background Elements with Logo Colors */}
+      {/* Enhanced Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Floating Orbs with Company Colors */}
-        <div className={`absolute top-20 left-20 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl animate-pulse ${currentTheme.glow}`}></div>
-        <div className={`absolute top-40 right-32 w-32 h-32 bg-green-500/15 rounded-full blur-2xl animate-bounce delay-1000 ${currentTheme.glow}`}></div>
-        <div className={`absolute bottom-32 left-40 w-48 h-48 bg-cyan-500/8 rounded-full blur-3xl animate-pulse delay-2000 ${currentTheme.glow}`}></div>
-        <div className={`absolute bottom-20 right-20 w-36 h-36 bg-teal-500/12 rounded-full blur-2xl animate-bounce delay-500 ${currentTheme.glow}`}></div>
+        <div className="absolute top-20 left-20 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl animate-pulse shadow-blue-500/30"></div>
+        <div className="absolute top-40 right-32 w-32 h-32 bg-green-500/15 rounded-full blur-2xl animate-bounce delay-1000 shadow-green-500/30"></div>
+        <div className="absolute bottom-32 left-40 w-48 h-48 bg-cyan-500/8 rounded-full blur-3xl animate-pulse delay-2000 shadow-cyan-500/30"></div>
+        <div className="absolute bottom-20 right-20 w-36 h-36 bg-teal-500/12 rounded-full blur-2xl animate-bounce delay-500 shadow-teal-500/30"></div>
         
-        {/* Geometric Patterns with Logo Colors */}
-        <div className="absolute top-1/4 left-1/4 w-3 h-3 bg-blue-400/30 rotate-45 animate-spin" style={{ animationDuration: '10s' }}></div>
-        <div className="absolute top-3/4 right-1/4 w-4 h-4 bg-green-400/25 rotate-45 animate-spin" style={{ animationDuration: '15s' }}></div>
-        <div className="absolute top-1/2 left-1/3 w-2 h-2 bg-cyan-400/35 rotate-45 animate-spin" style={{ animationDuration: '8s' }}></div>
-        
-        {/* Company Logo Background (Enhanced with Multiple Positions) */}
+        {/* Company Logo Background */}
         {processedLogoUrl && (
           <>
-            {/* Center Watermark */}
             <div 
               className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-5 w-[500px] h-[500px]"
               style={{
@@ -550,28 +464,8 @@ const PayslipGenerator = () => {
                 filter: 'blur(3px)'
               }}
             />
-            {/* Corner Logos */}
             <div 
               className="absolute top-20 right-20 opacity-10 w-24 h-24 animate-pulse"
-              style={{
-                backgroundImage: `url(${processedLogoUrl})`,
-                backgroundSize: 'contain',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center'
-              }}
-            />
-            <div 
-              className="absolute bottom-20 left-20 opacity-10 w-20 h-20 animate-pulse delay-1000"
-              style={{
-                backgroundImage: `url(${processedLogoUrl})`,
-                backgroundSize: 'contain',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center'
-              }}
-            />
-            {/* Floating Logos */}
-            <div 
-              className="absolute top-1/3 right-1/3 opacity-8 w-16 h-16 animate-bounce delay-2000"
               style={{
                 backgroundImage: `url(${processedLogoUrl})`,
                 backgroundSize: 'contain',
@@ -585,106 +479,80 @@ const PayslipGenerator = () => {
 
       <div className="relative z-10 p-8">
         <div className="max-w-7xl mx-auto">
-          {/* Enhanced Header with Theme Selector */}
+          {/* Enhanced Header */}
           <div className="text-center mb-16">
             <div className="mb-8">
-              <h1 className={`text-7xl font-bold mb-6 ${currentTheme.text} drop-shadow-2xl tracking-tight`}>
+              <h1 className="text-7xl font-bold mb-6 text-blue-50 drop-shadow-2xl tracking-tight">
                 Professional Payslip Generator
               </h1>
-              <p className={`text-3xl ${currentTheme.accent} opacity-90 mb-10 tracking-wide`}>
-                Transform Excel data into stunning PDF payslips with company-branded themes
+              <p className="text-3xl text-blue-300 opacity-90 mb-10 tracking-wide">
+                Transform Excel data into stunning PDF payslips with company branding
               </p>
             </div>
             
-            {/* Premium Theme Selector with Company Color Inspiration */}
-            <div className={`inline-flex p-6 rounded-3xl ${currentTheme.card} ${currentTheme.glow} mb-10`}>
-              <div className="w-full">
-                <div className={`text-2xl font-bold ${currentTheme.text} mb-6 flex items-center justify-center gap-3`}>
-                  <Palette className="w-8 h-8" />
-                  Choose Your Premium Theme
-                </div>
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl">
-                  {Object.entries(themes).map(([key, theme]) => {
-                    const Icon = theme.icon;
-                    return (
-                      <button
-                        key={key}
-                        onClick={() => setSelectedTheme(key as ThemeType)}
-                        className={`flex flex-col items-center space-y-4 px-8 py-8 rounded-2xl transition-all duration-700 transform ${
-                          selectedTheme === key 
-                            ? `bg-white/30 scale-110 ${theme.glow} shadow-2xl border-2 border-white/50` 
-                            : 'hover:bg-white/15 hover:scale-105 border-2 border-transparent hover:border-white/30'
-                        }`}
-                        style={{ fontFamily: theme.fontFamily }}
-                      >
-                        <Icon className={`w-12 h-12 ${currentTheme.text}`} />
-                        <div className="text-center">
-                          <span className={`text-lg font-bold ${currentTheme.text} tracking-wide block mb-2`}>
-                            {theme.name}
-                          </span>
-                          <span className={`text-sm ${currentTheme.accent} opacity-90 block mb-3`}>
-                            {theme.description}
-                          </span>
-                          <div className={`text-xs ${currentTheme.text} opacity-75 px-3 py-1 rounded-full bg-white/10`}>
-                            Font: {theme.fontFamily.split(',')[0].replace(/"/g, '')}
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-                
-                {/* Current Theme Display */}
-                <div className={`mt-8 p-6 rounded-2xl bg-white/10 border border-white/20`}>
-                  <div className={`text-xl font-bold ${currentTheme.text} mb-3`}>
-                    🎨 Current Theme: {currentTheme.name}
-                  </div>
-                  <div className={`text-lg ${currentTheme.accent} mb-2`}>
-                    📝 Font Family: {currentTheme.fontFamily.split(',')[0].replace(/"/g, '')}
-                  </div>
-                  <div className={`text-base ${currentTheme.text} opacity-80`}>
-                    ✨ {currentTheme.description}
-                  </div>
+            {/* Company Logo Status */}
+            {processedLogoUrl && (
+              <div className="inline-flex items-center bg-green-500/25 border border-green-400/50 rounded-2xl px-8 py-4 backdrop-blur-sm mb-10">
+                <CheckCircle className="w-8 h-8 text-green-300 mr-4" />
+                <div className="text-xl font-bold text-green-100">
+                  ✅ Company Logo Processing Complete - Ultra High Quality Applied
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Enhanced Upload and Controls */}
-            <Card className={`${currentTheme.card} ${currentTheme.glow} transition-all duration-700 hover:scale-105 transform`}>
+            <Card className="bg-gradient-to-br from-blue-600/20 to-indigo-600/15 backdrop-blur-2xl border border-blue-500/30 shadow-2xl shadow-blue-500/30 transition-all duration-700 hover:scale-105 transform">
               <CardHeader className="pb-8">
-                <CardTitle className={`flex items-center gap-4 ${currentTheme.text} text-3xl font-bold`}>
-                  <Upload className="h-10 w-10" />
+                <CardTitle className="flex items-center gap-4 text-blue-50 text-3xl font-bold">
+                  <div className="p-3 bg-blue-500/30 rounded-2xl">
+                    <FileSpreadsheet className="h-10 w-10" />
+                  </div>
                   Upload Excel File
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-10">
-                <div>
-                  <Label htmlFor="excel-upload" className={`${currentTheme.text} font-semibold text-xl mb-4 block`}>
-                    Select Excel file with employee salary data
-                  </Label>
-                  <Input
-                    id="excel-upload"
-                    type="file"
-                    accept=".xlsx,.xls"
-                    onChange={handleFileUpload}
-                    className={`mt-4 ${currentTheme.card} ${currentTheme.text} border-white/30 text-lg p-5 rounded-xl`}
-                  />
-                  <p className={`text-sm ${currentTheme.accent} opacity-80 mt-3`}>
-                    Excel file should have headers in the first row
-                  </p>
+                {/* File Upload Section */}
+                <div className="bg-white/10 rounded-2xl p-8 border border-white/20">
+                  <div className="flex items-center gap-4 mb-6">
+                    <Upload className="h-8 w-8 text-blue-300" />
+                    <Label htmlFor="excel-upload" className="text-blue-50 font-semibold text-xl">
+                      Select Excel file with employee salary data
+                    </Label>
+                  </div>
+                  <div className="relative">
+                    <Input
+                      id="excel-upload"
+                      type="file"
+                      accept=".xlsx,.xls"
+                      onChange={handleFileUpload}
+                      className="bg-white/20 text-blue-50 border-blue-400/30 text-lg p-6 rounded-xl file:bg-blue-500 file:text-white file:border-0 file:rounded-lg file:px-4 file:py-2 file:mr-4 hover:bg-white/30 transition-all"
+                    />
+                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                      <FileCheck className="h-6 w-6 text-blue-300" />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 mt-4">
+                    <Info className="h-4 w-4 text-blue-300" />
+                    <p className="text-sm text-blue-300 opacity-80">
+                      Excel file should have headers in the first row (supports .xlsx and .xls formats)
+                    </p>
+                  </div>
                 </div>
 
-                {/* Enhanced Template Selection */}
-                <div>
-                  <Label className={`${currentTheme.text} font-semibold text-xl mb-5 block`}>Choose Payslip Template</Label>
+                {/* Template Selection */}
+                <div className="bg-white/10 rounded-2xl p-8 border border-white/20">
+                  <div className="flex items-center gap-4 mb-6">
+                    <Settings className="h-8 w-8 text-blue-300" />
+                    <Label className="text-blue-50 font-semibold text-xl">Choose Payslip Template</Label>
+                  </div>
                   <div className="grid grid-cols-3 gap-5">
                     {[
-                      { key: 'classic', name: 'Classic', emoji: '📋', desc: 'Traditional & Elegant' },
-                      { key: 'modern', name: 'Modern ⭐', emoji: '🚀', desc: 'Futuristic Design' },
-                      { key: 'professional', name: 'Professional', emoji: '💼', desc: 'Corporate Standard' }
-                    ].map(({ key, name, emoji, desc }) => (
+                      { key: 'classic', name: 'Classic', icon: '📋', desc: 'Traditional & Elegant', color: 'from-amber-500 to-orange-500' },
+                      { key: 'modern', name: 'Modern ⭐', icon: '🚀', desc: 'Futuristic Design', color: 'from-blue-500 to-purple-500' },
+                      { key: 'professional', name: 'Professional', icon: '💼', desc: 'Corporate Standard', color: 'from-gray-500 to-slate-600' }
+                    ].map(({ key, name, icon, desc, color }) => (
                       <Button
                         key={key}
                         variant={selectedTemplate === key ? 'default' : 'outline'}
@@ -692,11 +560,11 @@ const PayslipGenerator = () => {
                         onClick={() => setSelectedTemplate(key as TemplateType)}
                         className={`${
                           selectedTemplate === key 
-                            ? currentTheme.button 
-                            : `${currentTheme.card} ${currentTheme.text} border-white/30 hover:bg-white/20`
-                        } transition-all duration-500 hover:scale-115 transform flex flex-col p-8 h-auto`}
+                            ? `bg-gradient-to-r ${color} text-white shadow-xl` 
+                            : 'bg-white/20 text-blue-50 border-white/30 hover:bg-white/30'
+                        } transition-all duration-500 hover:scale-110 transform flex flex-col p-8 h-auto`}
                       >
-                        <span className="text-3xl mb-3">{emoji}</span>
+                        <span className="text-4xl mb-3">{icon}</span>
                         <span className="font-bold text-lg">{name}</span>
                         <span className="text-xs opacity-80 mt-1">{desc}</span>
                       </Button>
@@ -704,25 +572,14 @@ const PayslipGenerator = () => {
                   </div>
                 </div>
 
-                {/* Enhanced Logo Processing Status */}
-                {processedLogoUrl && (
-                  <div className="bg-green-500/25 border border-green-400/50 rounded-2xl p-8 backdrop-blur-sm">
-                    <div className="text-xl font-bold text-green-100 mb-4 flex items-center">
-                      <Sparkles className="w-8 h-8 mr-4" />
-                      ✅ Company Logo Processing Complete
-                    </div>
-                    <div className="text-sm text-green-200">
-                      Ultra-high quality logo with advanced AI processing applied successfully.
-                      Your company branding is now integrated across all themes.
-                    </div>
-                  </div>
-                )}
-
                 {employees.length > 0 && (
                   <div className="space-y-8">
-                    <div className={`flex items-center gap-4 ${currentTheme.text} text-xl`}>
-                      <Users className="h-8 w-8" />
+                    <div className="flex items-center gap-4 text-blue-50 text-xl bg-green-500/20 rounded-2xl p-6 border border-green-400/30">
+                      <div className="p-2 bg-green-500/30 rounded-xl">
+                        <Users className="h-8 w-8" />
+                      </div>
                       <span className="font-bold">{employees.length} employees loaded successfully</span>
+                      <CheckCircle className="h-6 w-6 text-green-300 ml-auto" />
                     </div>
 
                     <div className="grid gap-5">
@@ -730,7 +587,7 @@ const PayslipGenerator = () => {
                         onClick={generateAllPDFs}
                         disabled={isGenerating}
                         size="lg"
-                        className={`w-full ${currentTheme.button} transition-all duration-500 hover:scale-105 transform shadow-2xl text-xl py-8`}
+                        className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-xl transition-all duration-500 hover:scale-105 transform text-xl py-8"
                       >
                         {isGenerating ? (
                           <>
@@ -750,7 +607,7 @@ const PayslipGenerator = () => {
                           onClick={() => setShowPreview(true)}
                           variant="outline"
                           size="lg"
-                          className={`w-full ${currentTheme.card} ${currentTheme.text} border-white/30 hover:bg-white/20 transition-all duration-500 hover:scale-105 transform text-xl py-8`}
+                          className="w-full bg-white/20 text-blue-50 border-white/30 hover:bg-white/30 transition-all duration-500 hover:scale-105 transform text-xl py-8"
                         >
                           <Eye className="h-8 w-8 mr-4" />
                           Preview Template
@@ -758,19 +615,20 @@ const PayslipGenerator = () => {
                       )}
                     </div>
 
-                    <div className={`max-h-80 overflow-y-auto border border-white/30 rounded-2xl ${currentTheme.card} backdrop-blur-sm`}>
+                    {/* Employee List */}
+                    <div className="max-h-80 overflow-y-auto border border-white/30 rounded-2xl bg-white/10 backdrop-blur-sm">
                       <table className="w-full text-sm">
-                        <thead className={`${currentTheme.card} sticky top-0`}>
+                        <thead className="bg-blue-600/30 sticky top-0">
                           <tr>
-                            <th className={`p-5 text-left font-bold ${currentTheme.text} text-lg`}>Employee Name</th>
-                            <th className={`p-5 text-left font-bold ${currentTheme.text} text-lg`}>ID</th>
-                            <th className={`p-5 text-left font-bold ${currentTheme.text} text-lg`}>Net Pay</th>
-                            <th className={`p-5 text-left font-bold ${currentTheme.text} text-lg`}>Action</th>
+                            <th className="p-5 text-left font-bold text-blue-50 text-lg">Employee Name</th>
+                            <th className="p-5 text-left font-bold text-blue-50 text-lg">ID</th>
+                            <th className="p-5 text-left font-bold text-blue-50 text-lg">Net Pay</th>
+                            <th className="p-5 text-left font-bold text-blue-50 text-lg">Action</th>
                           </tr>
                         </thead>
                         <tbody>
                           {employees.map((emp, index) => (
-                            <tr key={index} className={`border-t border-white/10 hover:bg-white/15 transition-colors ${currentTheme.text}`}>
+                            <tr key={index} className="border-t border-white/10 hover:bg-white/15 transition-colors text-blue-50">
                               <td className="p-5 font-semibold text-lg">{emp['EMPLOYEE NAME']}</td>
                               <td className="p-5 opacity-80">{emp['EMPLOYEE ID']}</td>
                               <td className="p-5 text-green-400 font-bold text-lg">{formatCurrency(emp['NET PAY'])}</td>
@@ -797,52 +655,77 @@ const PayslipGenerator = () => {
             </Card>
 
             {/* Enhanced Preview */}
-            <Card className={`${currentTheme.card} ${currentTheme.glow} transition-all duration-700 hover:scale-105 transform`}>
+            <Card className="bg-gradient-to-br from-blue-600/20 to-indigo-600/15 backdrop-blur-2xl border border-blue-500/30 shadow-2xl shadow-blue-500/30 transition-all duration-700 hover:scale-105 transform">
               <CardHeader className="pb-8">
-                <CardTitle className={`${currentTheme.text} text-3xl font-bold`}>Payslip Preview</CardTitle>
+                <CardTitle className="text-blue-50 text-3xl font-bold flex items-center gap-4">
+                  <div className="p-3 bg-blue-500/30 rounded-2xl">
+                    <Eye className="h-10 w-10" />
+                  </div>
+                  Payslip Preview
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 {selectedEmployee ? (
                   <div className="space-y-8">
-                    <div className={`text-3xl font-bold ${currentTheme.text}`}>
-                      {selectedEmployee['EMPLOYEE NAME']}
+                    <div className="bg-white/10 rounded-2xl p-6 border border-white/20">
+                      <div className="text-3xl font-bold text-blue-50 mb-4">
+                        {selectedEmployee['EMPLOYEE NAME']}
+                      </div>
+                      <div className="text-blue-300 space-y-4 text-xl">
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
+                          Employee ID: <span className="font-semibold">{selectedEmployee['EMPLOYEE ID']}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+                          Department: <span className="font-semibold">{selectedEmployee['DEPARTMENT']}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 bg-purple-400 rounded-full"></span>
+                          Period: <span className="font-semibold">{selectedEmployee['AS ON']}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className={`${currentTheme.accent} space-y-4 text-xl`}>
-                      <div>Employee ID: <span className="font-semibold">{selectedEmployee['EMPLOYEE ID']}</span></div>
-                      <div>Department: <span className="font-semibold">{selectedEmployee['DEPARTMENT']}</span></div>
-                      <div>Period: <span className="font-semibold">{selectedEmployee['AS ON']}</span></div>
-                      <div className="text-green-400 font-bold text-3xl mt-6">
+                    
+                    <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-2xl p-6 border border-green-400/30">
+                      <div className="text-green-300 font-bold text-4xl text-center">
                         Net Pay: {formatCurrency(selectedEmployee['NET PAY'])}
                       </div>
                     </div>
-                    <div className={`text-sm ${currentTheme.text} opacity-80 bg-white/15 p-6 rounded-xl backdrop-blur-sm`}>
-                      <div className="font-semibold mb-3 text-lg">Configuration:</div>
-                      <div className="space-y-2">
-                        <div>Template: <span className="font-bold">{selectedTemplate}</span></div>
-                        <div>Theme: <span className="font-bold">{currentTheme.name}</span></div>
-                        <div>Font: <span className="font-bold">{currentTheme.fontFamily.split(',')[0].replace(/"/g, '')}</span></div>
+                    
+                    <div className="bg-white/15 p-6 rounded-xl backdrop-blur-sm border border-white/20">
+                      <div className="font-semibold mb-3 text-lg text-blue-50 flex items-center gap-2">
+                        <Sparkles className="h-5 w-5" />
+                        Configuration:
+                      </div>
+                      <div className="space-y-2 text-blue-200">
+                        <div>Template: <span className="font-bold text-blue-100">{selectedTemplate}</span></div>
+                        <div>Theme: <span className="font-bold text-blue-100">Professional Corporate</span></div>
+                        <div>Font: <span className="font-bold text-blue-100">Inter</span></div>
                         <div>Company Branding: <span className="font-bold text-green-400">✅ Integrated</span></div>
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <div className={`text-center py-20 ${currentTheme.text} opacity-70`}>
-                    <FileText className="h-24 w-24 mx-auto mb-8 opacity-50" />
-                    <p className="text-3xl mb-4 font-bold">Upload Excel file to see employee data</p>
-                    <p className="text-xl">Individual PDFs will be generated for each employee with your company branding</p>
+                  <div className="text-center py-20 text-blue-50 opacity-70">
+                    <div className="p-8 bg-white/10 rounded-3xl border border-white/20">
+                      <FileText className="h-24 w-24 mx-auto mb-8 opacity-50" />
+                      <p className="text-3xl mb-4 font-bold">Upload Excel file to see employee data</p>
+                      <p className="text-xl">Individual PDFs will be generated for each employee with your company branding</p>
+                    </div>
                   </div>
                 )}
               </CardContent>
             </Card>
           </div>
 
-          {/* Enhanced Template Preview Modal */}
+          {/* Template Preview Modal */}
           {showPreview && selectedEmployee && (
             <div className="fixed inset-0 bg-black/95 backdrop-blur-lg flex items-center justify-center z-50 p-6">
               <div className="bg-white rounded-3xl shadow-2xl max-w-6xl max-h-[95vh] overflow-auto">
                 <div className="flex justify-between items-center p-10 border-b border-gray-200">
                   <h3 className="text-4xl font-bold text-gray-900">
-                    Template Preview - {selectedTemplate} ({currentTheme.name})
+                    Template Preview - {selectedTemplate}
                   </h3>
                   <Button 
                     onClick={() => setShowPreview(false)} 
@@ -862,7 +745,7 @@ const PayslipGenerator = () => {
             </div>
           )}
 
-          {/* Enhanced PDF Generation Template - Hidden */}
+          {/* PDF Generation Template - Hidden */}
           {showPdfTemplate && pdfEmployee && (
             <div className="fixed inset-0 bg-black/95 backdrop-blur-lg flex items-center justify-center z-50">
               <div className="bg-white rounded-3xl shadow-2xl max-w-6xl max-h-[95vh] overflow-auto">
@@ -873,7 +756,7 @@ const PayslipGenerator = () => {
                   <p className="text-2xl text-gray-600 mb-8">Please wait while we capture the payslip with premium quality</p>
                   <div className="flex justify-center items-center space-x-4">
                     <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600"></div>
-                    <div className="text-lg text-blue-600 font-semibold">Processing with {currentTheme.name} theme...</div>
+                    <div className="text-lg text-blue-600 font-semibold">Processing with professional theme...</div>
                   </div>
                 </div>
                 
