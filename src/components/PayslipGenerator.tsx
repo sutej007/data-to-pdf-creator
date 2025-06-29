@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, Download, FileText, Users, Loader2, Eye, FileSpreadsheet, Settings, CheckCircle, Info, Play, Folder, FileCheck2, Sparkles } from "lucide-react";
+import { Upload, Download, FileText, Users, Loader2, Eye, FileSpreadsheet, Settings, Info, Play, Folder, FileCheck2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
@@ -439,9 +439,9 @@ const PayslipGenerator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50" style={{ fontFamily: '"Inter", system-ui, -apple-system, sans-serif' }}>
-      {/* Enhanced Header with Warm Color Variation */}
-      <div className="bg-gradient-to-r from-slate-50/95 via-blue-50/90 to-indigo-50/95 border-b border-blue-100 shadow-sm backdrop-blur-sm">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50" style={{ fontFamily: '"Inter", system-ui, -apple-system, sans-serif' }}>
+      {/* Enhanced Header with Light Blue */}
+      <div className="bg-gradient-to-r from-blue-50/95 via-sky-50/90 to-cyan-50/95 border-b border-blue-100 shadow-sm backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -451,7 +451,7 @@ const PayslipGenerator = () => {
                   <img 
                     src={processedLogoUrl}
                     alt="Company Logo"
-                    className="relative w-14 h-14 object-contain rounded-full border-2 border-slate-100 shadow-lg"
+                    className="relative w-14 h-14 object-contain rounded-full border-2 border-blue-100 shadow-lg"
                   />
                 </div>
               )}
@@ -462,13 +462,6 @@ const PayslipGenerator = () => {
                 <p className="text-slate-600">Convert Excel data to professional PDF payslips</p>
               </div>
             </div>
-            {processedLogoUrl && (
-              <div className="flex items-center space-x-2 bg-gradient-to-r from-emerald-50/90 to-green-50/90 px-4 py-2 rounded-xl border border-emerald-200 shadow-sm">
-                <CheckCircle className="w-5 h-5 text-emerald-600" />
-                <span className="text-emerald-700 font-medium">Logo Ready</span>
-                <Sparkles className="w-4 h-4 text-emerald-500" />
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -477,18 +470,18 @@ const PayslipGenerator = () => {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Left Panel - Upload & Controls */}
           <div className="space-y-6">
-            {/* File Upload Card with Warm Color Variation */}
-            <Card className="border border-blue-200 shadow-lg bg-gradient-to-br from-slate-50/95 to-blue-50/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+            {/* File Upload Card with Light Blue */}
+            <Card className="border border-blue-200 shadow-lg bg-gradient-to-br from-blue-50/95 to-sky-50/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center space-x-3 text-xl text-slate-800">
                   <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
-                    <FileSpreadsheet className="w-6 h-6 text-slate-50" />
+                    <FileSpreadsheet className="w-6 h-6 text-blue-50" />
                   </div>
                   <span>1. Upload Excel File</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="border-2 border-dashed border-blue-300 rounded-xl p-6 hover:border-blue-400 hover:bg-blue-50/60 transition-all duration-300 group bg-slate-50/50">
+                <div className="border-2 border-dashed border-blue-300 rounded-xl p-6 hover:border-blue-400 hover:bg-blue-50/60 transition-all duration-300 group bg-blue-50/50">
                   <div className="text-center">
                     <div className="relative mb-4">
                       <Upload className="w-12 h-12 text-blue-400 mx-auto group-hover:text-blue-500 transition-colors" />
@@ -503,7 +496,7 @@ const PayslipGenerator = () => {
                       type="file"
                       accept=".xlsx,.xls"
                       onChange={handleFileUpload}
-                      className="mt-4 file:bg-gradient-to-r file:from-blue-500 file:to-blue-600 file:text-slate-50 file:border-0 file:rounded-lg file:px-4 file:py-2 file:mr-4 file:shadow-md hover:file:shadow-lg file:transition-all bg-slate-50/80"
+                      className="mt-4 file:bg-gradient-to-r file:from-blue-500 file:to-blue-600 file:text-blue-50 file:border-0 file:rounded-lg file:px-4 file:py-2 file:mr-4 file:shadow-md hover:file:shadow-lg file:transition-all bg-blue-50/80"
                     />
                   </div>
                 </div>
@@ -514,12 +507,12 @@ const PayslipGenerator = () => {
               </CardContent>
             </Card>
 
-            {/* Template Selection Card with Warm Color Variation */}
-            <Card className="border border-purple-200 shadow-lg bg-gradient-to-br from-slate-50/95 to-purple-50/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+            {/* Template Selection Card with Light Blue */}
+            <Card className="border border-purple-200 shadow-lg bg-gradient-to-br from-blue-50/95 to-purple-50/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center space-x-3 text-xl text-slate-800">
                   <div className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg">
-                    <Settings className="w-6 h-6 text-slate-50" />
+                    <Settings className="w-6 h-6 text-blue-50" />
                   </div>
                   <span>2. Choose Template</span>
                 </CardTitle>
@@ -527,9 +520,9 @@ const PayslipGenerator = () => {
               <CardContent>
                 <div className="grid grid-cols-3 gap-3">
                   {[
-                    { key: 'classic', name: 'Classic', desc: 'Traditional', gradient: 'from-amber-400 to-orange-500', bg: 'bg-gradient-to-br from-amber-50/90 to-orange-50/80', border: 'border-amber-200' },
+                    { key: 'classic', name: 'Classic', desc: 'Traditional', gradient: 'from-amber-400 to-orange-500', bg: 'bg-gradient-to-br from-blue-50/90 to-orange-50/80', border: 'border-amber-200' },
                     { key: 'modern', name: 'Modern', desc: 'Recommended', gradient: 'from-blue-400 to-indigo-500', bg: 'bg-gradient-to-br from-blue-50/90 to-indigo-50/80', border: 'border-blue-200' },
-                    { key: 'professional', name: 'Professional', desc: 'Corporate', gradient: 'from-slate-400 to-gray-500', bg: 'bg-gradient-to-br from-slate-50/90 to-gray-50/80', border: 'border-slate-200' }
+                    { key: 'professional', name: 'Professional', desc: 'Corporate', gradient: 'from-slate-400 to-gray-500', bg: 'bg-gradient-to-br from-blue-50/90 to-gray-50/80', border: 'border-slate-200' }
                   ].map(({ key, name, desc, gradient, bg, border }) => (
                     <button
                       key={key}
@@ -549,13 +542,13 @@ const PayslipGenerator = () => {
               </CardContent>
             </Card>
 
-            {/* Employee Data Card with Warm Color Variation */}
+            {/* Employee Data Card with Light Blue */}
             {employees.length > 0 && (
-              <Card className="border border-emerald-200 shadow-lg bg-gradient-to-br from-slate-50/95 to-emerald-50/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+              <Card className="border border-emerald-200 shadow-lg bg-gradient-to-br from-blue-50/95 to-emerald-50/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center space-x-3 text-xl text-slate-800">
                     <div className="p-3 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-lg">
-                      <Users className="w-6 h-6 text-slate-50" />
+                      <Users className="w-6 h-6 text-blue-50" />
                     </div>
                     <span>3. Generate PDFs</span>
                     <div className="ml-auto bg-gradient-to-r from-emerald-100/90 to-green-100/80 text-emerald-800 px-4 py-2 rounded-full text-sm font-semibold shadow-sm">
@@ -568,7 +561,7 @@ const PayslipGenerator = () => {
                     <Button
                       onClick={generateAllPDFs}
                       disabled={isGenerating}
-                      className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-slate-50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                      className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-blue-50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                     >
                       {isGenerating ? (
                         <>
@@ -587,7 +580,7 @@ const PayslipGenerator = () => {
                       <Button
                         onClick={() => setShowPreview(true)}
                         variant="outline"
-                        className="border-slate-300 hover:bg-gradient-to-r hover:from-slate-50/90 hover:to-gray-50/80 transition-all duration-300 transform hover:scale-105 bg-slate-50/60"
+                        className="border-slate-300 hover:bg-gradient-to-r hover:from-blue-50/90 hover:to-gray-50/80 transition-all duration-300 transform hover:scale-105 bg-blue-50/60"
                       >
                         <Eye className="w-4 h-4 mr-2" />
                         Preview
@@ -595,10 +588,10 @@ const PayslipGenerator = () => {
                     )}
                   </div>
 
-                  {/* Employee List with Warm Color Variation */}
-                  <div className="max-h-64 overflow-y-auto border border-slate-200 rounded-xl shadow-inner bg-slate-50/70 backdrop-blur-sm">
+                  {/* Employee List with Light Blue */}
+                  <div className="max-h-64 overflow-y-auto border border-slate-200 rounded-xl shadow-inner bg-blue-50/70 backdrop-blur-sm">
                     <table className="w-full text-sm">
-                      <thead className="bg-gradient-to-r from-slate-50/95 to-gray-50/90 sticky top-0 backdrop-blur-sm">
+                      <thead className="bg-gradient-to-r from-blue-50/95 to-sky-50/90 sticky top-0 backdrop-blur-sm">
                         <tr>
                           <th className="px-4 py-3 text-left font-semibold text-slate-700">Name</th>
                           <th className="px-4 py-3 text-left font-semibold text-slate-700">ID</th>
@@ -618,7 +611,7 @@ const PayslipGenerator = () => {
                                 variant="outline"
                                 onClick={() => generatePDF(emp)}
                                 disabled={isGenerating}
-                                className="text-xs border-blue-200 hover:bg-gradient-to-r hover:from-blue-50/80 hover:to-indigo-50/70 hover:border-blue-300 transition-all duration-200 bg-slate-50/60"
+                                className="text-xs border-blue-200 hover:bg-gradient-to-r hover:from-blue-50/80 hover:to-indigo-50/70 hover:border-blue-300 transition-all duration-200 bg-blue-50/60"
                               >
                                 <FileText className="w-3 h-3 mr-1" />
                                 PDF
@@ -634,13 +627,13 @@ const PayslipGenerator = () => {
             )}
           </div>
 
-          {/* Right Panel - Preview with Warm Color Variation */}
+          {/* Right Panel - Preview with Light Blue */}
           <div className="space-y-6">
-            <Card className="border border-indigo-200 shadow-lg bg-gradient-to-br from-slate-50/95 to-indigo-50/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+            <Card className="border border-indigo-200 shadow-lg bg-gradient-to-br from-blue-50/95 to-indigo-50/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center space-x-3 text-xl text-slate-800">
                   <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg">
-                    <Eye className="w-6 h-6 text-slate-50" />
+                    <Eye className="w-6 h-6 text-blue-50" />
                   </div>
                   <span>Preview</span>
                 </CardTitle>
@@ -648,7 +641,7 @@ const PayslipGenerator = () => {
               <CardContent>
                 {selectedEmployee ? (
                   <div className="space-y-4">
-                    <div className="bg-gradient-to-br from-slate-50/95 to-gray-50/90 rounded-xl p-5 border border-slate-200 shadow-sm">
+                    <div className="bg-gradient-to-br from-blue-50/95 to-sky-50/90 rounded-xl p-5 border border-slate-200 shadow-sm">
                       <h3 className="text-lg font-bold text-slate-900 mb-3 flex items-center">
                         <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
                         {selectedEmployee['EMPLOYEE NAME']}
@@ -699,11 +692,11 @@ const PayslipGenerator = () => {
         </div>
       </div>
 
-      {/* Template Preview Modal with Warm Color Variation */}
+      {/* Template Preview Modal with Light Blue */}
       {showPreview && selectedEmployee && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-50/98 rounded-2xl shadow-2xl max-w-4xl max-h-[90vh] overflow-auto border border-slate-200">
-            <div className="flex justify-between items-center p-6 border-b border-slate-200 bg-gradient-to-r from-slate-50/95 to-gray-50/90">
+          <div className="bg-blue-50/98 rounded-2xl shadow-2xl max-w-4xl max-h-[90vh] overflow-auto border border-slate-200">
+            <div className="flex justify-between items-center p-6 border-b border-slate-200 bg-gradient-to-r from-blue-50/95 to-sky-50/90">
               <h3 className="text-2xl font-bold text-slate-900 flex items-center">
                 <Eye className="w-6 h-6 mr-3 text-indigo-600" />
                 Template Preview - {selectedTemplate}
@@ -712,13 +705,13 @@ const PayslipGenerator = () => {
                 onClick={() => setShowPreview(false)} 
                 variant="outline"
                 size="sm"
-                className="hover:bg-slate-100/80 transition-colors bg-slate-50/80"
+                className="hover:bg-blue-100/80 transition-colors bg-blue-50/80"
               >
                 Close
               </Button>
             </div>
-            <div className="p-6 bg-gradient-to-br from-slate-50/95 to-gray-50/90">
-              <div className="transform scale-50 origin-top-left bg-slate-50/95 rounded-lg shadow-lg">
+            <div className="p-6 bg-gradient-to-br from-blue-50/95 to-sky-50/90">
+              <div className="transform scale-50 origin-top-left bg-blue-50/95 rounded-lg shadow-lg">
                 {renderTemplate(selectedEmployee)}
               </div>
             </div>
@@ -726,10 +719,10 @@ const PayslipGenerator = () => {
         </div>
       )}
 
-      {/* PDF Generation Modal with Warm Color Variation */}
+      {/* PDF Generation Modal with Light Blue */}
       {showPdfTemplate && pdfEmployee && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-slate-50/98 rounded-2xl shadow-2xl max-w-4xl max-h-[90vh] overflow-auto border border-slate-200">
+          <div className="bg-blue-50/98 rounded-2xl shadow-2xl max-w-4xl max-h-[90vh] overflow-auto border border-slate-200">
             <div className="text-center p-8 border-b border-slate-200 bg-gradient-to-r from-blue-50/95 to-indigo-50/90">
               <div className="flex items-center justify-center space-x-3 mb-4">
                 <div className="relative">
@@ -743,7 +736,7 @@ const PayslipGenerator = () => {
               <p className="text-slate-600">Please wait while we process your payslip with high quality...</p>
             </div>
             
-            <div ref={payslipRef} className="p-6 bg-gradient-to-br from-slate-50/95 to-gray-50/90">
+            <div ref={payslipRef} className="p-6 bg-gradient-to-br from-blue-50/95 to-sky-50/90">
               {renderTemplate(pdfEmployee)}
             </div>
           </div>
