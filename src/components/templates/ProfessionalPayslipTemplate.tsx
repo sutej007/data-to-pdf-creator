@@ -51,7 +51,6 @@ const formatCurrency = (amount: number) => {
 
 const formatMonthYear = (dateString: string) => {
   if (!dateString) {
-    // Return current month and year if no date provided
     const now = new Date();
     return now.toLocaleDateString('en-IN', { 
       month: 'long', 
@@ -59,15 +58,33 @@ const formatMonthYear = (dateString: string) => {
     });
   }
   
+  // Handle various date formats from Excel
   let date;
+  
+  // Check if it's already in Month Year format
+  if (dateString.match(/^[A-Za-z]+ \d{4}$/)) {
+    return dateString;
+  }
+  
+  // Handle DD/MM/YYYY format
   if (dateString.includes('/')) {
     const parts = dateString.split('/');
     if (parts.length === 3) {
+      // Assuming DD/MM/YYYY format
       date = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
     }
-  } else if (dateString.includes('-')) {
+  } 
+  // Handle YYYY-MM-DD format
+  else if (dateString.includes('-')) {
     date = new Date(dateString);
-  } else {
+  } 
+  // Handle Excel serial date number
+  else if (!isNaN(Number(dateString))) {
+    // Excel date serial number (days since 1900-01-01)
+    const excelEpoch = new Date(1900, 0, 1);
+    date = new Date(excelEpoch.getTime() + (Number(dateString) - 2) * 24 * 60 * 60 * 1000);
+  }
+  else {
     date = new Date(dateString);
   }
   
@@ -90,14 +107,26 @@ const formatDateOfJoining = (dateString: string) => {
   if (!dateString) return '01-Jan-2020';
   
   let date;
+  
+  // Handle DD/MM/YYYY format
   if (dateString.includes('/')) {
     const parts = dateString.split('/');
     if (parts.length === 3) {
+      // Assuming DD/MM/YYYY format
       date = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
     }
-  } else if (dateString.includes('-')) {
+  } 
+  // Handle YYYY-MM-DD format
+  else if (dateString.includes('-')) {
     date = new Date(dateString);
-  } else {
+  } 
+  // Handle Excel serial date number
+  else if (!isNaN(Number(dateString))) {
+    // Excel date serial number (days since 1900-01-01)
+    const excelEpoch = new Date(1900, 0, 1);
+    date = new Date(excelEpoch.getTime() + (Number(dateString) - 2) * 24 * 60 * 60 * 1000);
+  }
+  else {
     date = new Date(dateString);
   }
   
