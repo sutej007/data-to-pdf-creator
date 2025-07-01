@@ -52,6 +52,8 @@ const formatCurrency = (amount: number) => {
 };
 
 const formatMonthYear = (dateString: string) => {
+  console.log('AS ON raw data:', dateString); // Debug log to see the actual data
+  
   if (!dateString) {
     const now = new Date();
     return now.toLocaleDateString('en-IN', { 
@@ -60,48 +62,76 @@ const formatMonthYear = (dateString: string) => {
     });
   }
   
+  // Convert to string and trim whitespace
+  const cleanDateString = String(dateString).trim();
+  console.log('Cleaned AS ON data:', cleanDateString); // Debug log
+  
   // Handle various date formats from Excel
   let date;
   
-  // Check if it's already in Month Year format (e.g., "FEB 2023" or "February 2023")
-  if (dateString.match(/^[A-Za-z]{3,9}\s+\d{4}$/)) {
-    // If it's in short format like "FEB 2023", convert to full month name
-    const parts = dateString.trim().split(/\s+/);
+  // Check if it's already in Month Year format (e.g., "FEB 2023", "February 2023", "Feb 2023")
+  if (cleanDateString.match(/^[A-Za-z]{3,9}\s+\d{4}$/)) {
+    const parts = cleanDateString.split(/\s+/);
     if (parts.length === 2) {
       const monthAbbr = parts[0].toUpperCase();
       const year = parts[1];
       
       const monthMap: {[key: string]: string} = {
-        'JAN': 'January', 'FEB': 'February', 'MAR': 'March', 'APR': 'April',
-        'MAY': 'May', 'JUN': 'June', 'JUL': 'July', 'AUG': 'August',
-        'SEP': 'September', 'OCT': 'October', 'NOV': 'November', 'DEC': 'December'
+        'JAN': 'January', 'JANUARY': 'January',
+        'FEB': 'February', 'FEBRUARY': 'February',
+        'MAR': 'March', 'MARCH': 'March',
+        'APR': 'April', 'APRIL': 'April',
+        'MAY': 'May',
+        'JUN': 'June', 'JUNE': 'June',
+        'JUL': 'July', 'JULY': 'July',
+        'AUG': 'August', 'AUGUST': 'August',
+        'SEP': 'September', 'SEPTEMBER': 'September',
+        'OCT': 'October', 'OCTOBER': 'October',
+        'NOV': 'November', 'NOVEMBER': 'November',
+        'DEC': 'December', 'DECEMBER': 'December'
       };
       
-      return `${monthMap[monthAbbr] || monthAbbr} ${year}`;
+      const fullMonth = monthMap[monthAbbr] || monthAbbr;
+      console.log('Formatted month year:', `${fullMonth} ${year}`); // Debug log
+      return `${fullMonth} ${year}`;
     }
-    return dateString;
+    return cleanDateString;
+  }
+  
+  // Handle MM/YYYY format (e.g., "02/2023")
+  if (cleanDateString.match(/^\d{1,2}\/\d{4}$/)) {
+    const parts = cleanDateString.split('/');
+    const month = parseInt(parts[0]);
+    const year = parts[1];
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    if (month >= 1 && month <= 12) {
+      return `${monthNames[month - 1]} ${year}`;
+    }
   }
   
   // Handle DD/MM/YYYY format
-  if (dateString.includes('/')) {
-    const parts = dateString.split('/');
+  if (cleanDateString.includes('/')) {
+    const parts = cleanDateString.split('/');
     if (parts.length === 3) {
       // Assuming DD/MM/YYYY format
       date = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
     }
   } 
   // Handle YYYY-MM-DD format
-  else if (dateString.includes('-')) {
-    date = new Date(dateString);
+  else if (cleanDateString.includes('-')) {
+    date = new Date(cleanDateString);
   } 
   // Handle Excel serial date number
-  else if (!isNaN(Number(dateString))) {
+  else if (!isNaN(Number(cleanDateString))) {
     // Excel date serial number (days since 1900-01-01)
     const excelEpoch = new Date(1900, 0, 1);
-    date = new Date(excelEpoch.getTime() + (Number(dateString) - 2) * 24 * 60 * 60 * 1000);
+    date = new Date(excelEpoch.getTime() + (Number(cleanDateString) - 2) * 24 * 60 * 60 * 1000);
   }
   else {
-    date = new Date(dateString);
+    date = new Date(cleanDateString);
   }
   
   if (date && !isNaN(date.getTime())) {
@@ -112,6 +142,7 @@ const formatMonthYear = (dateString: string) => {
   }
   
   // Fallback to current month/year
+  console.log('Using fallback date'); // Debug log
   const now = new Date();
   return now.toLocaleDateString('en-IN', { 
     month: 'long', 
