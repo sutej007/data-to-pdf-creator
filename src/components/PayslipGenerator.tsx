@@ -303,6 +303,74 @@ const PayslipGenerator = () => {
     });
   };
 
+  const formatMonthYearForFilename = (dateString: string) => {
+    console.log('Formatting for filename - raw data:', dateString);
+    
+    if (!dateString) {
+      const now = new Date();
+      return now.toLocaleDateString('en-GB', { 
+        month: 'short', 
+        year: 'numeric' 
+      }).replace(' ', '_');
+    }
+    
+    const cleanDateString = String(dateString).trim();
+    console.log('Cleaned data for filename:', cleanDateString);
+    
+    // Handle "FEB 2023" or "February 2023" format directly
+    if (cleanDateString.match(/^[A-Za-z]{3,9}\s+\d{4}$/)) {
+      const parts = cleanDateString.split(/\s+/);
+      if (parts.length === 2) {
+        const monthAbbr = parts[0].toUpperCase();
+        const year = parts[1];
+        
+        const monthMap: {[key: string]: string} = {
+          'JAN': 'Jan', 'JANUARY': 'Jan', 'FEB': 'Feb', 'FEBRUARY': 'Feb',
+          'MAR': 'Mar', 'MARCH': 'Mar', 'APR': 'Apr', 'APRIL': 'Apr',
+          'MAY': 'May', 'JUN': 'Jun', 'JUNE': 'Jun', 'JUL': 'Jul', 'JULY': 'Jul',
+          'AUG': 'Aug', 'AUGUST': 'Aug', 'SEP': 'Sep', 'SEPTEMBER': 'Sep',
+          'OCT': 'Oct', 'OCTOBER': 'Oct', 'NOV': 'Nov', 'NOVEMBER': 'Nov',
+          'DEC': 'Dec', 'DECEMBER': 'Dec'
+        };
+        
+        const shortMonth = monthMap[monthAbbr] || monthAbbr.charAt(0).toUpperCase() + monthAbbr.slice(1).toLowerCase();
+        const result = `${shortMonth}_${year}`;
+        console.log('Final formatted filename period:', result);
+        return result;
+      }
+    }
+    
+    // Handle MM/YYYY format
+    if (cleanDateString.match(/^\d{1,2}\/\d{4}$/)) {
+      const parts = cleanDateString.split('/');
+      const month = parseInt(parts[0]);
+      const year = parts[1];
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      if (month >= 1 && month <= 12) {
+        return `${monthNames[month - 1]}_${year}`;
+      }
+    }
+    
+    // Handle Excel serial number
+    if (!isNaN(Number(cleanDateString))) {
+      const excelEpoch = new Date(1900, 0, 1);
+      const date = new Date(excelEpoch.getTime() + (Number(cleanDateString) - 2) * 24 * 60 * 60 * 1000);
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleDateString('en-GB', { 
+          month: 'short', 
+          year: 'numeric' 
+        }).replace(' ', '_');
+      }
+    }
+    
+    // Fallback
+    const now = new Date();
+    return now.toLocaleDateString('en-GB', { 
+      month: 'short', 
+      year: 'numeric' 
+    }).replace(' ', '_');
+  };
+
   const renderTemplate = (employee: EmployeeData) => {
     const templateProps = { employee, processedLogoUrl };
     return <ProfessionalPayslipTemplate {...templateProps} />;
@@ -339,18 +407,21 @@ const PayslipGenerator = () => {
       
       pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
       
-      // Enhanced filename with employee ID, name, and salary period
-      const salaryPeriod = formatMonthYear(employee['AS ON']).replace(' ', '_');
+      // Enhanced filename with proper salary period from Excel
+      const salaryPeriod = formatMonthYearForFilename(employee['AS ON']);
       const employeeName = employee['EMPLOYEE NAME'].replace(/[^a-zA-Z0-9]/g, '_');
       const employeeId = employee['EMPLOYEE ID'];
       
-      pdf.save(`${employeeId}_${employeeName}_${salaryPeriod}.pdf`);
+      const filename = `${employeeId}_${employeeName}_${salaryPeriod}.pdf`;
+      console.log('Final filename:', filename);
+      
+      pdf.save(filename);
       
       setShowPdfTemplate(false);
       setPdfEmployee(null);
       
       if (showToast) {
-        toast.success(`PDF generated: ${employeeId}_${employeeName}_${salaryPeriod}.pdf`);
+        toast.success(`PDF generated: ${filename}`);
       }
       
       return true;

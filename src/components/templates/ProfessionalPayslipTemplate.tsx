@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface EmployeeData {
@@ -292,7 +291,8 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
           lineHeight: '1.4', 
           fontFamily: '"Segoe UI", "Inter", system-ui, -apple-system, sans-serif',
           padding: '32px',
-          color: '#1f2937'
+          color: '#1f2937',
+          position: 'relative'
         }} 
       >
         {/* Enhanced Header with Modern Design */}
@@ -629,14 +629,23 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
           </div>
         </div>
 
-        {/* Enhanced Page Footer */}
+        {/* Enhanced Page Footer with Timestamp */}
         <div className="absolute bottom-6 left-8 right-8 flex justify-between items-center text-gray-500" style={{ fontSize: '9px' }}>
           <span className="flex items-center">
             <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
             Page 1 of 1
           </span>
           <span className="flex items-center">
-            Generated on {new Date().toLocaleDateString('en-GB')} at {new Date().toLocaleTimeString('en-GB', { hour12: true })}
+            Generated on {new Date().toLocaleDateString('en-GB', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric'
+            })} at {new Date().toLocaleTimeString('en-GB', { 
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit',
+              hour12: true 
+            })}
             <span className="w-2 h-2 bg-green-500 rounded-full ml-2"></span>
           </span>
         </div>
