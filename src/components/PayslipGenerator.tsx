@@ -339,20 +339,18 @@ const PayslipGenerator = () => {
       
       pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
       
-      // Generate filename with current month/year
-      const currentDate = new Date();
-      const monthYear = currentDate.toLocaleDateString('en-IN', { 
-        year: 'numeric', 
-        month: '2-digit' 
-      }).replace('/', '');
+      // Enhanced filename with employee ID, name, and salary period
+      const salaryPeriod = formatMonthYear(employee['AS ON']).replace(' ', '_');
+      const employeeName = employee['EMPLOYEE NAME'].replace(/[^a-zA-Z0-9]/g, '_');
+      const employeeId = employee['EMPLOYEE ID'];
       
-      pdf.save(`Payslip_${employee['EMPLOYEE NAME']}_${monthYear}.pdf`);
+      pdf.save(`${employeeId}_${employeeName}_${salaryPeriod}.pdf`);
       
       setShowPdfTemplate(false);
       setPdfEmployee(null);
       
       if (showToast) {
-        toast.success(`PDF generated for ${employee['EMPLOYEE NAME']}`);
+        toast.success(`PDF generated: ${employeeId}_${employeeName}_${salaryPeriod}.pdf`);
       }
       
       return true;
@@ -410,6 +408,47 @@ const PayslipGenerator = () => {
       currency: 'INR',
       minimumFractionDigits: 2
     }).format(amount || 0);
+  };
+
+  // Helper function to format month/year for filename
+  const formatMonthYear = (dateString: string) => {
+    if (!dateString) {
+      const now = new Date();
+      return now.toLocaleDateString('en-IN', { 
+        month: 'short', 
+        year: 'numeric' 
+      }).replace(' ', '_');
+    }
+    
+    const cleanDateString = String(dateString).trim();
+    
+    // Check if it's already in Month Year format
+    if (cleanDateString.match(/^[A-Za-z]{3,9}\s+\d{4}$/)) {
+      const parts = cleanDateString.split(/\s+/);
+      if (parts.length === 2) {
+        const monthAbbr = parts[0].toUpperCase();
+        const year = parts[1];
+        
+        const monthMap: {[key: string]: string} = {
+          'JAN': 'Jan', 'JANUARY': 'Jan', 'FEB': 'Feb', 'FEBRUARY': 'Feb',
+          'MAR': 'Mar', 'MARCH': 'Mar', 'APR': 'Apr', 'APRIL': 'Apr',
+          'MAY': 'May', 'JUN': 'Jun', 'JUNE': 'Jun', 'JUL': 'Jul', 'JULY': 'Jul',
+          'AUG': 'Aug', 'AUGUST': 'Aug', 'SEP': 'Sep', 'SEPTEMBER': 'Sep',
+          'OCT': 'Oct', 'OCTOBER': 'Oct', 'NOV': 'Nov', 'NOVEMBER': 'Nov',
+          'DEC': 'Dec', 'DECEMBER': 'Dec'
+        };
+        
+        const shortMonth = monthMap[monthAbbr] || monthAbbr;
+        return `${shortMonth}_${year}`;
+      }
+    }
+    
+    // Fallback
+    const now = new Date();
+    return now.toLocaleDateString('en-IN', { 
+      month: 'short', 
+      year: 'numeric' 
+    }).replace(' ', '_');
   };
 
   return (
