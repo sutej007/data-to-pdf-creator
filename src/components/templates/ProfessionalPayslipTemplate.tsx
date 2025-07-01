@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 interface EmployeeData {
@@ -34,6 +35,7 @@ interface EmployeeData {
   'DOJ': string;
   'AS ON': string;
   'STATUS': string;
+  'DOB'?: string;
 }
 
 interface ProfessionalPayslipTemplateProps {
@@ -61,8 +63,22 @@ const formatMonthYear = (dateString: string) => {
   // Handle various date formats from Excel
   let date;
   
-  // Check if it's already in Month Year format
-  if (dateString.match(/^[A-Za-z]+ \d{4}$/)) {
+  // Check if it's already in Month Year format (e.g., "FEB 2023" or "February 2023")
+  if (dateString.match(/^[A-Za-z]{3,9}\s+\d{4}$/)) {
+    // If it's in short format like "FEB 2023", convert to full month name
+    const parts = dateString.trim().split(/\s+/);
+    if (parts.length === 2) {
+      const monthAbbr = parts[0].toUpperCase();
+      const year = parts[1];
+      
+      const monthMap: {[key: string]: string} = {
+        'JAN': 'January', 'FEB': 'February', 'MAR': 'March', 'APR': 'April',
+        'MAY': 'May', 'JUN': 'June', 'JUL': 'July', 'AUG': 'August',
+        'SEP': 'September', 'OCT': 'October', 'NOV': 'November', 'DEC': 'December'
+      };
+      
+      return `${monthMap[monthAbbr] || monthAbbr} ${year}`;
+    }
     return dateString;
   }
   
@@ -139,6 +155,44 @@ const formatDateOfJoining = (dateString: string) => {
   }
   
   return '01-Jan-2020';
+};
+
+const formatDateOfBirth = (dateString: string) => {
+  if (!dateString) return '';
+  
+  let date;
+  
+  // Handle DD/MM/YYYY format
+  if (dateString.includes('/')) {
+    const parts = dateString.split('/');
+    if (parts.length === 3) {
+      // Assuming DD/MM/YYYY format
+      date = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+    }
+  } 
+  // Handle YYYY-MM-DD format
+  else if (dateString.includes('-')) {
+    date = new Date(dateString);
+  } 
+  // Handle Excel serial date number
+  else if (!isNaN(Number(dateString))) {
+    // Excel date serial number (days since 1900-01-01)
+    const excelEpoch = new Date(1900, 0, 1);
+    date = new Date(excelEpoch.getTime() + (Number(dateString) - 2) * 24 * 60 * 60 * 1000);
+  }
+  else {
+    date = new Date(dateString);
+  }
+  
+  if (date && !isNaN(date.getTime())) {
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+  }
+  
+  return '';
 };
 
 // Helper method to convert number to words (simplified version)
@@ -291,7 +345,7 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
               <div className="flex">
                 <span className="font-semibold w-28">Date of Birth</span>
                 <span className="mx-2">:</span>
-                <span>02-Jul-1992</span>
+                <span>{formatDateOfBirth(employee['DOB'])}</span>
               </div>
               <div className="flex">
                 <span className="font-semibold w-28">Date of Joining</span>
