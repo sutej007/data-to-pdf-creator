@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface EmployeeData {
@@ -51,7 +50,14 @@ const formatCurrency = (amount: number) => {
 };
 
 const formatMonthYear = (dateString: string) => {
-  if (!dateString) return 'March 2020';
+  if (!dateString) {
+    // Return current month and year if no date provided
+    const now = new Date();
+    return now.toLocaleDateString('en-IN', { 
+      month: 'long', 
+      year: 'numeric' 
+    });
+  }
   
   let date;
   if (dateString.includes('/')) {
@@ -72,7 +78,38 @@ const formatMonthYear = (dateString: string) => {
     });
   }
   
-  return 'March 2020';
+  // Fallback to current month/year
+  const now = new Date();
+  return now.toLocaleDateString('en-IN', { 
+    month: 'long', 
+    year: 'numeric' 
+  });
+};
+
+const formatDateOfJoining = (dateString: string) => {
+  if (!dateString) return '01-Jan-2020';
+  
+  let date;
+  if (dateString.includes('/')) {
+    const parts = dateString.split('/');
+    if (parts.length === 3) {
+      date = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+    }
+  } else if (dateString.includes('-')) {
+    date = new Date(dateString);
+  } else {
+    date = new Date(dateString);
+  }
+  
+  if (date && !isNaN(date.getTime())) {
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+  }
+  
+  return '01-Jan-2020';
 };
 
 // Helper method to convert number to words (simplified version)
@@ -210,12 +247,12 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
               <div className="flex">
                 <span className="font-semibold w-28">Designation</span>
                 <span className="mx-2">:</span>
-                <span>{employee['DESIGNATION']}</span>
+                <span>{employee['DESIGNATION'] || 'Staff'}</span>
               </div>
               <div className="flex">
                 <span className="font-semibold w-28">Department</span>
                 <span className="mx-2">:</span>
-                <span>{employee['DEPARTMENT']}</span>
+                <span>{employee['DEPARTMENT'] || 'General'}</span>
               </div>
               <div className="flex">
                 <span className="font-semibold w-28">Gender</span>
@@ -230,12 +267,12 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
               <div className="flex">
                 <span className="font-semibold w-28">Date of Joining</span>
                 <span className="mx-2">:</span>
-                <span>{employee['DOJ']}</span>
+                <span>{formatDateOfJoining(employee['DOJ'])}</span>
               </div>
               <div className="flex">
                 <span className="font-semibold w-28">Attendance: Base,Elig</span>
                 <span className="mx-2">:</span>
-                <span>{employee['TOTAL DAYS']}.00, {employee['PRESENT DAYS']}.00</span>
+                <span>{employee['TOTAL DAYS'] || 30}.00, {employee['PRESENT DAYS'] || 30}.00</span>
               </div>
             </div>
 
@@ -254,7 +291,7 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
               <div className="flex">
                 <span className="font-semibold w-32">Location</span>
                 <span className="mx-2">:</span>
-                <span>HAVERI</span>
+                <span>{employee['BRANCH'] || 'HAVERI'}</span>
               </div>
               <div className="flex">
                 <span className="font-semibold w-32">PAN</span>
@@ -264,22 +301,22 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
               <div className="flex">
                 <span className="font-semibold w-32">UAN</span>
                 <span className="mx-2">:</span>
-                <span>{employee['UAN']}</span>
+                <span>{employee['UAN'] || '100123456789'}</span>
               </div>
               <div className="flex">
                 <span className="font-semibold w-32">PF A/C No.</span>
                 <span className="mx-2">:</span>
-                <span>{employee['PF NO']}</span>
+                <span>{employee['PF NO'] || 'KA/HVR/12345/123456'}</span>
               </div>
               <div className="flex">
                 <span className="font-semibold w-32">ESI No.</span>
                 <span className="mx-2">:</span>
-                <span>{employee['ESI NO']}</span>
+                <span>{employee['ESI NO'] || '1234567890'}</span>
               </div>
               <div className="flex">
                 <span className="font-semibold w-32">Previous Period LOP, LOP Reversal Days</span>
                 <span className="mx-2">:</span>
-                <span>{employee['LOP']}.0, 0.0</span>
+                <span>{employee['LOP'] || 0}.0, 0.0</span>
               </div>
             </div>
           </div>
@@ -326,38 +363,38 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
               <tr>
                 <td className="p-2" style={{ border: '1px solid #333' }}>Basic</td>
                 <td className="p-2 text-right" style={{ border: '1px solid #333' }}>
-                  {employee['EARNED BASIC']?.toFixed(2) || '6,500.00'}
+                  {(employee['EARNED BASIC'] || 6500).toFixed(2)}
                 </td>
                 <td className="p-2 text-right" style={{ border: '1px solid #333' }}>
-                  {employee['EARNED BASIC']?.toFixed(2) || '6,500.00'}
+                  {(employee['EARNED BASIC'] || 6500).toFixed(2)}
                 </td>
                 <td className="p-2" style={{ border: '1px solid #333' }}>Employees StateInsurance</td>
                 <td className="p-2 text-right" style={{ border: '1px solid #333' }}>
-                  {employee['ESI']?.toFixed(2) || '105.00'}
+                  {(employee['ESI'] || 105).toFixed(2)}
                 </td>
               </tr>
               
               <tr>
                 <td className="p-2" style={{ border: '1px solid #333' }}>HouseRentAllowance</td>
                 <td className="p-2 text-right" style={{ border: '1px solid #333' }}>
-                  {employee['HRA']?.toFixed(2) || '1,000.00'}
+                  {(employee['HRA'] || 1000).toFixed(2)}
                 </td>
                 <td className="p-2 text-right" style={{ border: '1px solid #333' }}>
-                  {employee['HRA']?.toFixed(2) || '1,000.00'}
+                  {(employee['HRA'] || 1000).toFixed(2)}
                 </td>
                 <td className="p-2" style={{ border: '1px solid #333' }}>Staff Welfare Fund</td>
                 <td className="p-2 text-right" style={{ border: '1px solid #333' }}>
-                  {employee['STAFF WELFARE']?.toFixed(2) || '100.00'}
+                  {(employee['STAFF WELFARE'] || 100).toFixed(2)}
                 </td>
               </tr>
               
               <tr>
                 <td className="p-2" style={{ border: '1px solid #333' }}>Local ConveyanceAllowance</td>
                 <td className="p-2 text-right" style={{ border: '1px solid #333' }}>
-                  {employee['LOCAN CONVEY']?.toFixed(2) || '500.00'}
+                  {(employee['LOCAN CONVEY'] || 500).toFixed(2)}
                 </td>
                 <td className="p-2 text-right" style={{ border: '1px solid #333' }}>
-                  {employee['LOCAN CONVEY']?.toFixed(2) || '500.00'}
+                  {(employee['LOCAN CONVEY'] || 500).toFixed(2)}
                 </td>
                 <td className="p-2" style={{ border: '1px solid #333' }}>Staff Security Deposit</td>
                 <td className="p-2 text-right" style={{ border: '1px solid #333' }}>200.00</td>
@@ -366,14 +403,14 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
               <tr>
                 <td className="p-2" style={{ border: '1px solid #333' }}>MedicalAllowance</td>
                 <td className="p-2 text-right" style={{ border: '1px solid #333' }}>
-                  {employee['MEDICAL ALLOW']?.toFixed(2) || '500.00'}
+                  {(employee['MEDICAL ALLOW'] || 500).toFixed(2)}
                 </td>
                 <td className="p-2 text-right" style={{ border: '1px solid #333' }}>
-                  {employee['MEDICAL ALLOW']?.toFixed(2) || '500.00'}
+                  {(employee['MEDICAL ALLOW'] || 500).toFixed(2)}
                 </td>
                 <td className="p-2" style={{ border: '1px solid #333' }}>ProfessionalTax</td>
                 <td className="p-2 text-right" style={{ border: '1px solid #333' }}>
-                  {employee['PT']?.toFixed(2) || '0.00'}
+                  {(employee['PT'] || 0).toFixed(2)}
                 </td>
               </tr>
               
@@ -381,11 +418,11 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
                 <td className="p-2" style={{ border: '1px solid #333' }}>Incentive Pay</td>
                 <td className="p-2 text-right" style={{ border: '1px solid #333' }}></td>
                 <td className="p-2 text-right" style={{ border: '1px solid #333' }}>
-                  {employee['INCENTIVE']?.toFixed(2) || '5,450.00'}
+                  {(employee['INCENTIVE'] || 5450).toFixed(2)}
                 </td>
                 <td className="p-2" style={{ border: '1px solid #333' }}>ProvidentFund</td>
                 <td className="p-2 text-right" style={{ border: '1px solid #333' }}>
-                  {employee['PF']?.toFixed(2) || '780.00'}
+                  {(employee['PF'] || 780).toFixed(2)}
                 </td>
               </tr>
               
@@ -397,13 +434,13 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
                   {((employee['EARNED BASIC'] || 6500) + (employee['HRA'] || 1000) + (employee['LOCAN CONVEY'] || 500) + (employee['MEDICAL ALLOW'] || 500)).toFixed(2)}
                 </td>
                 <td className="p-2 text-right" style={{ border: '1px solid #333', fontSize: '11px' }}>
-                  {employee['GROSS SALARY']?.toFixed(2) || '13,950.00'}
+                  {(employee['GROSS SALARY'] || 13950).toFixed(2)}
                 </td>
                 <td className="p-2" style={{ border: '1px solid #333', fontSize: '11px' }}>
                   Total Deductions
                 </td>
                 <td className="p-2 text-right" style={{ border: '1px solid #333', fontSize: '11px' }}>
-                  {employee['TOTAL DEDUCTIONS']?.toFixed(2) || '1,185.00'}
+                  {(employee['TOTAL DEDUCTIONS'] || 1185).toFixed(2)}
                 </td>
               </tr>
             </tbody>
