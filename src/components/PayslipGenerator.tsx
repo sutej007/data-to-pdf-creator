@@ -523,83 +523,20 @@ const PayslipGenerator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      {/* Enhanced Header with Rao's Branding */}
-      <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-2xl">
-        <div className="container mx-auto px-6 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50/60 via-teal-50/50 to-green-50/60" style={{ fontFamily: '"Inter", system-ui, -apple-system, sans-serif' }}>
+      {/* Enhanced Header with Custom SR Logo */}
+      <div className="bg-gradient-to-r from-blue-50/80 via-teal-50/70 to-green-50/80 border-b border-teal-100 shadow-sm backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-8 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6">
-              {/* Enhanced Logo Design with Rao's Branding */}
-              <div className="relative">
-                <div 
-                  className="w-20 h-20 rounded-2xl flex items-center justify-center text-3xl font-black shadow-2xl transform hover:scale-105 transition-all duration-300"
-                  style={{
-                    background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-                    color: '#1e40af',
-                    border: '4px solid rgba(255,255,255,0.3)',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                >
-                  <span style={{ 
-                    fontFamily: '"Playfair Display", serif',
-                    textShadow: '0 2px 4px rgba(30, 64, 175, 0.3)',
-                    letterSpacing: '1px'
-                  }}>
-                    R
-                  </span>
-                </div>
-                {/* Decorative Elements */}
-                <div 
-                  className="absolute -top-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
-                  style={{
-                    background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
-                    color: 'white',
-                    boxShadow: '0 2px 8px rgba(251, 191, 36, 0.4)'
-                  }}
-                >
-                  ✨
-                </div>
-              </div>
+            <div className="flex items-center space-x-4">
+              {/* Custom SR Logo */}
+              <CustomSRLogo size={64} className="transform hover:scale-110 transition-transform duration-300" />
               
               <div>
-                <h1 
-                  className="text-4xl font-black mb-2"
-                  style={{
-                    background: 'linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                  }}
-                >
-                  Rao's Payslip Generator
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-teal-600 to-green-600 bg-clip-text text-transparent">
+                  Professional Payslip Generator
                 </h1>
-                <div className="flex items-center space-x-4">
-                  <p className="text-blue-100 font-semibold">Professional • Fast • Secure</p>
-                  <div 
-                    className="px-3 py-1 rounded-full text-xs font-bold"
-                    style={{
-                      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                      color: 'white',
-                      boxShadow: '0 2px 8px rgba(16, 185, 129, 0.3)'
-                    }}
-                  >
-                    ✨ Designed & Powered by Lovable
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Enhanced Action Buttons */}
-            <div className="flex items-center space-x-4">
-              <div 
-                className="px-4 py-2 rounded-xl font-bold text-sm"
-                style={{
-                  background: 'rgba(255,255,255,0.15)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255,255,255,0.2)'
-                }}
-              >
-                💼 Professional Tool
+                <p className="text-slate-600">Convert Excel data to professional PDF payslips</p>
               </div>
             </div>
           </div>
