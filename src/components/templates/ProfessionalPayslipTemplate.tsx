@@ -289,22 +289,24 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
           minHeight: '1123px',
           fontSize: '12px', 
           lineHeight: '1.4', 
-          fontFamily: 'system-ui, -apple-system, "Segoe UI", sans-serif',
+          fontFamily: '"Segoe UI", "Inter", system-ui, -apple-system, sans-serif',
           padding: '30px',
           margin: '0 auto',
           color: '#1f2937',
           position: 'relative',
-          border: '2px solid #374151',
+          border: '3px solid #374151',
+          boxShadow: '0 0 0 1px #9ca3af',
           printColorAdjust: 'exact',
           WebkitPrintColorAdjust: 'exact'
         }} 
       >
-        {/* Header with Clean Borders */}
+        {/* Enhanced Header with Strong Borders */}
         <div 
-          className="pb-4 mb-6"
+          className="pb-6 mb-6"
           style={{
-            borderBottom: '3px solid #2563eb',
-            paddingBottom: '16px'
+            borderBottom: '3px solid #1e40af',
+            borderTop: '2px solid #1e40af',
+            paddingTop: '15px'
           }}
         >
           <div className="flex items-center justify-between mb-4">
@@ -317,9 +319,10 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
                     width: '70px',
                     height: '70px',
                     objectFit: 'contain',
-                    border: '2px solid #d1d5db',
-                    borderRadius: '6px',
-                    padding: '4px'
+                    border: '2px solid #374151',
+                    borderRadius: '8px',
+                    padding: '4px',
+                    backgroundColor: '#f8fafc'
                   }}
                 />
               </div>
@@ -328,143 +331,155 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
             <div className="text-center flex-1 ml-4">
               <h1 
                 style={{ 
-                  fontSize: '18px',
-                  fontWeight: '700',
+                  fontSize: '20px',
+                  fontWeight: '800',
                   color: '#1e40af',
-                  letterSpacing: '0.3px',
-                  lineHeight: '1.3',
-                  marginBottom: '6px'
+                  letterSpacing: '0.5px',
+                  lineHeight: '1.2',
+                  marginBottom: '8px',
+                  textTransform: 'uppercase'
                 }}
               >
                 NAVACHETANA VIVIDODDESHA SOUHARDA SAHAKARI NIYAMIT
               </h1>
-              <div style={{ color: '#4b5563', fontSize: '11px', fontWeight: '500', lineHeight: '1.3' }}>
+              <div style={{ color: '#374151', fontSize: '11px', fontWeight: '600', lineHeight: '1.3' }}>
                 <div>HITAISHI PALACE, SHIRUR GROUP BUILDING P B ROAD, HAVERI</div>
                 <div>HAVERI - 581110, KARNATAKA</div>
               </div>
             </div>
           </div>
           
-          {/* Payslip Title */}
+          {/* Payslip Title with Strong Border */}
           <div 
-            className="text-center py-3 mt-4"
+            className="text-center py-4 mt-4"
             style={{ 
-              fontSize: '15px',
-              fontWeight: '700',
+              fontSize: '16px',
+              fontWeight: '800',
               color: '#1e40af',
-              letterSpacing: '0.5px',
+              letterSpacing: '1px',
               textTransform: 'uppercase',
-              border: '2px solid #2563eb',
-              borderRadius: '6px',
-              backgroundColor: '#eff6ff'
+              border: '3px solid #1e40af',
+              borderRadius: '8px',
+              backgroundColor: '#eff6ff',
+              boxShadow: 'inset 0 1px 3px rgba(59, 130, 246, 0.1)'
             }}
           >
             SALARY SLIP FOR {formatMonthYear(employee['AS ON']).toUpperCase()}
           </div>
         </div>
 
-        {/* Employee Information Section */}
+        {/* Employee Information Section with Clear Borders */}
         <div 
-          className="p-4 mb-6"
+          className="p-5 mb-6"
           style={{
-            border: '2px solid #d1d5db',
-            borderRadius: '6px',
-            backgroundColor: '#f9fafb'
+            border: '2px solid #374151',
+            borderRadius: '8px',
+            backgroundColor: '#f8fafc'
           }}
         >
-          <div className="grid grid-cols-2 gap-6" style={{ fontSize: '11px' }}>
+          <div className="grid grid-cols-2 gap-8" style={{ fontSize: '11px' }}>
             {/* Left Column */}
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="flex" style={{ alignItems: 'flex-start' }}>
-                <span style={{ fontWeight: '600', color: '#374151', width: '130px', display: 'inline-block' }}>Employee Code</span>
-                <span style={{ margin: '0 6px', fontWeight: '600' }}>:</span>
-                <span style={{ fontWeight: '500', color: '#1f2937' }}>{employee['EMPLOYEE ID']}</span>
+                <span style={{ fontWeight: '700', color: '#374151', width: '140px', display: 'inline-block' }}>Employee Code</span>
+                <span style={{ margin: '0 8px', fontWeight: '700' }}>:</span>
+                <span style={{ fontWeight: '600', color: '#1f2937' }}>{employee['EMPLOYEE ID']}</span>
               </div>
               <div className="flex" style={{ alignItems: 'flex-start' }}>
-                <span style={{ fontWeight: '600', color: '#374151', width: '130px', display: 'inline-block' }}>Name</span>
-                <span style={{ margin: '0 6px', fontWeight: '600' }}>:</span>
-                <span style={{ fontWeight: '700', color: '#1e40af' }}>{employee['EMPLOYEE NAME']}</span>
+                <span style={{ fontWeight: '700', color: '#374151', width: '140px', display: 'inline-block' }}>Name</span>
+                <span style={{ margin: '0 8px', fontWeight: '700' }}>:</span>
+                <span style={{ fontWeight: '800', color: '#1e40af' }}>{employee['EMPLOYEE NAME']}</span>
               </div>
               <div className="flex" style={{ alignItems: 'flex-start' }}>
-                <span style={{ fontWeight: '600', color: '#374151', width: '130px', display: 'inline-block' }}>Designation</span>
-                <span style={{ margin: '0 6px', fontWeight: '600' }}>:</span>
-                <span style={{ color: '#1f2937', fontWeight: '500' }}>{employee['DESIGNATION'] || 'Staff'}</span>
+                <span style={{ fontWeight: '700', color: '#374151', width: '140px', display: 'inline-block' }}>Designation</span>
+                <span style={{ margin: '0 8px', fontWeight: '700' }}>:</span>
+                <span style={{ color: '#1f2937', fontWeight: '600' }}>{employee['DESIGNATION'] || 'Staff'}</span>
               </div>
               <div className="flex" style={{ alignItems: 'flex-start' }}>
-                <span style={{ fontWeight: '600', color: '#374151', width: '130px', display: 'inline-block' }}>Department</span>
-                <span style={{ margin: '0 6px', fontWeight: '600' }}>:</span>
-                <span style={{ color: '#1f2937', fontWeight: '500' }}>{employee['DEPARTMENT'] || 'General'}</span>
+                <span style={{ fontWeight: '700', color: '#374151', width: '140px', display: 'inline-block' }}>Department</span>
+                <span style={{ margin: '0 8px', fontWeight: '700' }}>:</span>
+                <span style={{ color: '#1f2937', fontWeight: '600' }}>{employee['DEPARTMENT'] || 'General'}</span>
               </div>
               <div className="flex" style={{ alignItems: 'flex-start' }}>
-                <span style={{ fontWeight: '600', color: '#374151', width: '130px', display: 'inline-block' }}>Date of Birth</span>
-                <span style={{ margin: '0 6px', fontWeight: '600' }}>:</span>
-                <span style={{ color: '#1f2937', fontWeight: '500' }}>{formatDateOfBirth(employee['DOB'])}</span>
+                <span style={{ fontWeight: '700', color: '#374151', width: '140px', display: 'inline-block' }}>Gender</span>
+                <span style={{ margin: '0 8px', fontWeight: '700' }}>:</span>
+                <span style={{ color: '#1f2937', fontWeight: '600' }}>Male</span>
+              </div>
+              <div className="flex" style={{ alignItems: 'flex-start' }}>
+                <span style={{ fontWeight: '700', color: '#374151', width: '140px', display: 'inline-block' }}>Date of Birth</span>
+                <span style={{ margin: '0 8px', fontWeight: '700' }}>:</span>
+                <span style={{ color: '#1f2937', fontWeight: '600' }}>{formatDateOfBirth(employee['DOB'])}</span>
               </div>
             </div>
 
             {/* Right Column */}
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="flex" style={{ alignItems: 'flex-start' }}>
-                <span style={{ fontWeight: '600', color: '#374151', width: '130px', display: 'inline-block' }}>Bank</span>
-                <span style={{ margin: '0 6px', fontWeight: '600' }}>:</span>
-                <span style={{ color: '#1f2937', fontWeight: '500' }}>UJJIVAN SMALL FINANCE BANK</span>
+                <span style={{ fontWeight: '700', color: '#374151', width: '140px', display: 'inline-block' }}>Bank</span>
+                <span style={{ margin: '0 8px', fontWeight: '700' }}>:</span>
+                <span style={{ color: '#1f2937', fontWeight: '600' }}>UJJIVAN SMALL FINANCE BANK</span>
               </div>
               <div className="flex" style={{ alignItems: 'flex-start' }}>
-                <span style={{ fontWeight: '600', color: '#374151', width: '130px', display: 'inline-block' }}>Bank A/C No.</span>
-                <span style={{ margin: '0 6px', fontWeight: '600' }}>:</span>
-                <span style={{ color: '#1f2937', fontWeight: '500' }}>113111008005134</span>
+                <span style={{ fontWeight: '700', color: '#374151', width: '140px', display: 'inline-block' }}>Bank A/C No.</span>
+                <span style={{ margin: '0 8px', fontWeight: '700' }}>:</span>
+                <span style={{ color: '#1f2937', fontWeight: '600' }}>113111008005134</span>
               </div>
               <div className="flex" style={{ alignItems: 'flex-start' }}>
-                <span style={{ fontWeight: '600', color: '#374151', width: '130px', display: 'inline-block' }}>Location</span>
-                <span style={{ margin: '0 6px', fontWeight: '600' }}>:</span>
-                <span style={{ color: '#1f2937', fontWeight: '500' }}>{employee['BRANCH'] || 'HAVERI'}</span>
+                <span style={{ fontWeight: '700', color: '#374151', width: '140px', display: 'inline-block' }}>Location</span>
+                <span style={{ margin: '0 8px', fontWeight: '700' }}>:</span>
+                <span style={{ color: '#1f2937', fontWeight: '600' }}>{employee['BRANCH'] || 'HAVERI'}</span>
               </div>
               <div className="flex" style={{ alignItems: 'flex-start' }}>
-                <span style={{ fontWeight: '600', color: '#374151', width: '130px', display: 'inline-block' }}>UAN</span>
-                <span style={{ margin: '0 6px', fontWeight: '600' }}>:</span>
-                <span style={{ color: '#1f2937', fontWeight: '500' }}>{employee['UAN'] || '100123456789'}</span>
+                <span style={{ fontWeight: '700', color: '#374151', width: '140px', display: 'inline-block' }}>PAN</span>
+                <span style={{ margin: '0 8px', fontWeight: '700' }}>:</span>
+                <span style={{ color: '#1f2937', fontWeight: '600' }}>DZXPM7034M</span>
               </div>
               <div className="flex" style={{ alignItems: 'flex-start' }}>
-                <span style={{ fontWeight: '600', color: '#374151', width: '130px', display: 'inline-block' }}>PF A/C No.</span>
-                <span style={{ margin: '0 6px', fontWeight: '600' }}>:</span>
-                <span style={{ color: '#1f2937', fontWeight: '500' }}>{employee['PF NO'] || 'KA/HVR/12345/123456'}</span>
+                <span style={{ fontWeight: '700', color: '#374151', width: '140px', display: 'inline-block' }}>UAN</span>
+                <span style={{ margin: '0 8px', fontWeight: '700' }}>:</span>
+                <span style={{ color: '#1f2937', fontWeight: '600' }}>{employee['UAN'] || '100123456789'}</span>
+              </div>
+              <div className="flex" style={{ alignItems: 'flex-start' }}>
+                <span style={{ fontWeight: '700', color: '#374151', width: '140px', display: 'inline-block' }}>PF A/C No.</span>
+                <span style={{ margin: '0 8px', fontWeight: '700' }}>:</span>
+                <span style={{ color: '#1f2937', fontWeight: '600' }}>{employee['PF NO'] || 'KA/HVR/12345/123456'}</span>
               </div>
             </div>
           </div>
 
-          {/* Additional Information Row */}
+          {/* Additional Information Row with Border */}
           <div 
-            className="grid grid-cols-4 gap-4 mt-4 pt-3" 
+            className="grid grid-cols-4 gap-6 mt-5 pt-4" 
             style={{ 
               fontSize: '11px',
-              borderTop: '1px solid #d1d5db'
+              borderTop: '2px solid #d1d5db'
             }}
           >
             <div className="flex flex-col">
-              <span style={{ fontWeight: '600', color: '#374151', marginBottom: '2px' }}>Date of Joining</span>
-              <span style={{ color: '#1f2937', fontWeight: '500' }}>{formatDateOfJoining(employee['DOJ'])}</span>
+              <span style={{ fontWeight: '700', color: '#374151', marginBottom: '4px' }}>Date of Joining</span>
+              <span style={{ color: '#1f2937', fontWeight: '600' }}>{formatDateOfJoining(employee['DOJ'])}</span>
             </div>
             <div className="flex flex-col">
-              <span style={{ fontWeight: '600', color: '#374151', marginBottom: '2px' }}>ESI No.</span>
-              <span style={{ color: '#1f2937', fontWeight: '500' }}>{employee['ESI NO'] || '1234567890'}</span>
+              <span style={{ fontWeight: '700', color: '#374151', marginBottom: '4px' }}>ESI No.</span>
+              <span style={{ color: '#1f2937', fontWeight: '600' }}>{employee['ESI NO'] || '1234567890'}</span>
             </div>
             <div className="flex flex-col">
-              <span style={{ fontWeight: '600', color: '#374151', marginBottom: '2px' }}>Attendance</span>
-              <span style={{ color: '#1f2937', fontWeight: '500' }}>{employee['TOTAL DAYS'] || 30}.00, {employee['PRESENT DAYS'] || 30}.00</span>
+              <span style={{ fontWeight: '700', color: '#374151', marginBottom: '4px' }}>Attendance</span>
+              <span style={{ color: '#1f2937', fontWeight: '600' }}>{employee['TOTAL DAYS'] || 30}.00, {employee['PRESENT DAYS'] || 30}.00</span>
             </div>
             <div className="flex flex-col">
-              <span style={{ fontWeight: '600', color: '#374151', marginBottom: '2px' }}>LOP Days</span>
-              <span style={{ color: '#1f2937', fontWeight: '500' }}>{employee['LOP'] || 0}.0, 0.0</span>
+              <span style={{ fontWeight: '700', color: '#374151', marginBottom: '4px' }}>LOP Days</span>
+              <span style={{ color: '#1f2937', fontWeight: '600' }}>{employee['LOP'] || 0}.0, 0.0</span>
             </div>
           </div>
         </div>
 
-        {/* Salary Table with Clean Borders */}
+        {/* Professional Salary Table with Strong Borders */}
         <div 
           className="mb-6"
           style={{
-            border: '2px solid #374151',
-            borderRadius: '6px',
+            border: '3px solid #374151',
+            borderRadius: '8px',
             overflow: 'hidden'
           }}
         >
@@ -475,7 +490,7 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
                   style={{ 
                     padding: '12px', 
                     textAlign: 'left', 
-                    fontWeight: '700', 
+                    fontWeight: '800', 
                     borderRight: '2px solid #3b82f6',
                     fontSize: '12px', 
                     width: '25%' 
@@ -487,7 +502,7 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
                   style={{ 
                     padding: '12px', 
                     textAlign: 'center', 
-                    fontWeight: '700', 
+                    fontWeight: '800', 
                     borderRight: '2px solid #3b82f6',
                     fontSize: '12px', 
                     width: '15%' 
@@ -499,7 +514,7 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
                   style={{ 
                     padding: '12px', 
                     textAlign: 'center', 
-                    fontWeight: '700', 
+                    fontWeight: '800', 
                     borderRight: '2px solid #3b82f6',
                     fontSize: '12px', 
                     width: '15%' 
@@ -511,7 +526,7 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
                   style={{ 
                     padding: '12px', 
                     textAlign: 'left', 
-                    fontWeight: '700', 
+                    fontWeight: '800', 
                     borderRight: '2px solid #3b82f6',
                     fontSize: '12px', 
                     width: '25%' 
@@ -523,7 +538,7 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
                   style={{ 
                     padding: '12px', 
                     textAlign: 'center', 
-                    fontWeight: '700',
+                    fontWeight: '800',
                     fontSize: '12px', 
                     width: '20%' 
                   }}
@@ -533,73 +548,73 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
               </tr>
             </thead>
             <tbody style={{ fontSize: '11px' }}>
-              <tr style={{ borderBottom: '1px solid #e5e7eb', backgroundColor: 'white' }}>
-                <td style={{ padding: '10px', fontWeight: '600', borderRight: '1px solid #e5e7eb' }}>Basic Salary</td>
-                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '500', borderRight: '1px solid #e5e7eb' }}>
+              <tr style={{ borderBottom: '1px solid #d1d5db', backgroundColor: 'white' }}>
+                <td style={{ padding: '10px', fontWeight: '700', borderRight: '1px solid #d1d5db' }}>Basic Salary</td>
+                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '600', borderRight: '1px solid #d1d5db' }}>
                   {(employee['EARNED BASIC'] || 6500).toFixed(2)}
                 </td>
-                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '600', color: '#059669', borderRight: '1px solid #e5e7eb' }}>
+                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '700', color: '#059669', borderRight: '1px solid #d1d5db' }}>
                   {(employee['EARNED BASIC'] || 6500).toFixed(2)}
                 </td>
-                <td style={{ padding: '10px', fontWeight: '600', borderRight: '1px solid #e5e7eb' }}>Employee State Insurance</td>
-                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '600', color: '#dc2626' }}>
+                <td style={{ padding: '10px', fontWeight: '700', borderRight: '1px solid #d1d5db' }}>Employee State Insurance</td>
+                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '700', color: '#dc2626' }}>
                   {(employee['ESI'] || 105).toFixed(2)}
                 </td>
               </tr>
               
-              <tr style={{ borderBottom: '1px solid #e5e7eb', backgroundColor: '#f9fafb' }}>
-                <td style={{ padding: '10px', fontWeight: '600', borderRight: '1px solid #e5e7eb' }}>House Rent Allowance</td>
-                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '500', borderRight: '1px solid #e5e7eb' }}>
+              <tr style={{ borderBottom: '1px solid #d1d5db', backgroundColor: '#f8fafc' }}>
+                <td style={{ padding: '10px', fontWeight: '700', borderRight: '1px solid #d1d5db' }}>House Rent Allowance</td>
+                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '600', borderRight: '1px solid #d1d5db' }}>
                   {(employee['HRA'] || 1000).toFixed(2)}
                 </td>
-                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '600', color: '#059669', borderRight: '1px solid #e5e7eb' }}>
+                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '700', color: '#059669', borderRight: '1px solid #d1d5db' }}>
                   {(employee['HRA'] || 1000).toFixed(2)}
                 </td>
-                <td style={{ padding: '10px', fontWeight: '600', borderRight: '1px solid #e5e7eb' }}>Staff Welfare Fund</td>
-                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '600', color: '#dc2626' }}>
+                <td style={{ padding: '10px', fontWeight: '700', borderRight: '1px solid #d1d5db' }}>Staff Welfare Fund</td>
+                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '700', color: '#dc2626' }}>
                   {(employee['STAFF WELFARE'] || 100).toFixed(2)}
                 </td>
               </tr>
               
-              <tr style={{ borderBottom: '1px solid #e5e7eb', backgroundColor: 'white' }}>
-                <td style={{ padding: '10px', fontWeight: '600', borderRight: '1px solid #e5e7eb' }}>Conveyance Allowance</td>
-                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '500', borderRight: '1px solid #e5e7eb' }}>
+              <tr style={{ borderBottom: '1px solid #d1d5db', backgroundColor: 'white' }}>
+                <td style={{ padding: '10px', fontWeight: '700', borderRight: '1px solid #d1d5db' }}>Conveyance Allowance</td>
+                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '600', borderRight: '1px solid #d1d5db' }}>
                   {(employee['LOCAN CONVEY'] || 500).toFixed(2)}
                 </td>
-                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '600', color: '#059669', borderRight: '1px solid #e5e7eb' }}>
+                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '700', color: '#059669', borderRight: '1px solid #d1d5db' }}>
                   {(employee['LOCAN CONVEY'] || 500).toFixed(2)}
                 </td>
-                <td style={{ padding: '10px', fontWeight: '600', borderRight: '1px solid #e5e7eb' }}>Professional Tax</td>
-                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '600', color: '#dc2626' }}>
+                <td style={{ padding: '10px', fontWeight: '700', borderRight: '1px solid #d1d5db' }}>Staff Security Deposit</td>
+                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '700', color: '#dc2626' }}>200.00</td>
+              </tr>
+              
+              <tr style={{ borderBottom: '1px solid #d1d5db', backgroundColor: '#f8fafc' }}>
+                <td style={{ padding: '10px', fontWeight: '700', borderRight: '1px solid #d1d5db' }}>Medical Allowance</td>
+                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '600', borderRight: '1px solid #d1d5db' }}>
+                  {(employee['MEDICAL ALLOW'] || 500).toFixed(2)}
+                </td>
+                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '700', color: '#059669', borderRight: '1px solid #d1d5db' }}>
+                  {(employee['MEDICAL ALLOW'] || 500).toFixed(2)}
+                </td>
+                <td style={{ padding: '10px', fontWeight: '700', borderRight: '1px solid #d1d5db' }}>Professional Tax</td>
+                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '700', color: '#dc2626' }}>
                   {(employee['PT'] || 0).toFixed(2)}
                 </td>
               </tr>
               
-              <tr style={{ borderBottom: '1px solid #e5e7eb', backgroundColor: '#f9fafb' }}>
-                <td style={{ padding: '10px', fontWeight: '600', borderRight: '1px solid #e5e7eb' }}>Medical Allowance</td>
-                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '500', borderRight: '1px solid #e5e7eb' }}>
-                  {(employee['MEDICAL ALLOW'] || 500).toFixed(2)}
+              <tr style={{ borderBottom: '1px solid #d1d5db', backgroundColor: 'white' }}>
+                <td style={{ padding: '10px', fontWeight: '700', borderRight: '1px solid #d1d5db' }}>Incentive Pay</td>
+                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '600', borderRight: '1px solid #d1d5db' }}></td>
+                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '700', color: '#059669', borderRight: '1px solid #d1d5db' }}>
+                  {(employee['INCENTIVE'] || 5450).toFixed(2)}
                 </td>
-                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '600', color: '#059669', borderRight: '1px solid #e5e7eb' }}>
-                  {(employee['MEDICAL ALLOW'] || 500).toFixed(2)}
-                </td>
-                <td style={{ padding: '10px', fontWeight: '600', borderRight: '1px solid #e5e7eb' }}>Provident Fund</td>
-                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '600', color: '#dc2626' }}>
+                <td style={{ padding: '10px', fontWeight: '700', borderRight: '1px solid #d1d5db' }}>Provident Fund</td>
+                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '700', color: '#dc2626' }}>
                   {(employee['PF'] || 780).toFixed(2)}
                 </td>
               </tr>
               
-              <tr style={{ borderBottom: '1px solid #e5e7eb', backgroundColor: 'white' }}>
-                <td style={{ padding: '10px', fontWeight: '600', borderRight: '1px solid #e5e7eb' }}>Incentive Pay</td>
-                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '500', borderRight: '1px solid #e5e7eb' }}></td>
-                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '600', color: '#059669', borderRight: '1px solid #e5e7eb' }}>
-                  {(employee['INCENTIVE'] || 5450).toFixed(2)}
-                </td>
-                <td style={{ padding: '10px', fontWeight: '600', borderRight: '1px solid #e5e7eb' }}></td>
-                <td style={{ padding: '10px', textAlign: 'right', fontWeight: '600', color: '#dc2626' }}></td>
-              </tr>
-              
-              <tr style={{ backgroundColor: '#1e40af', color: 'white', fontWeight: '700', borderTop: '2px solid #1e40af' }}>
+              <tr style={{ backgroundColor: '#1e40af', color: 'white', fontWeight: '800', borderTop: '3px solid #1e40af' }}>
                 <td style={{ padding: '12px', borderRight: '2px solid #3b82f6', fontSize: '12px' }}>
                   TOTAL EARNINGS
                 </td>
@@ -620,62 +635,64 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
           </table>
         </div>
 
-        {/* Net Salary Section */}
+        {/* Net Salary Section with Strong Border */}
         <div 
-          className="p-4 mb-6"
+          className="p-5 mb-6"
           style={{
-            border: '2px solid #059669',
-            borderRadius: '6px',
+            border: '3px solid #059669',
+            borderRadius: '8px',
             backgroundColor: '#f0fdf4'
           }}
         >
           <div className="text-center">
-            <div className="flex items-center justify-between mb-2">
-              <span style={{ fontSize: '16px', fontWeight: '700', color: '#065f46' }}>NET SALARY:</span>
-              <span style={{ fontSize: '20px', fontWeight: '700', color: '#059669' }}>
+            <div className="flex items-center justify-between mb-3">
+              <span style={{ fontSize: '18px', fontWeight: '800', color: '#065f46' }}>NET SALARY:</span>
+              <span style={{ fontSize: '24px', fontWeight: '800', color: '#059669' }}>
                 {employee['NET PAY'] ? formatCurrency(employee['NET PAY']) : '₹12,765.00'}
               </span>
             </div>
-            <div style={{ fontSize: '12px', color: '#065f46', fontWeight: '600' }}>
+            <div style={{ fontSize: '13px', color: '#065f46', fontWeight: '700' }}>
               (Rupees {convertToWords(employee['NET PAY'] || 12765)} Only)
             </div>
           </div>
         </div>
 
-        {/* Note Section */}
+        {/* Note Section with Border */}
         <div 
-          className="p-3 mb-6"
+          className="p-4 mb-6"
           style={{
-            border: '1px solid #f59e0b',
-            borderRadius: '6px',
+            border: '2px solid #f59e0b',
+            borderRadius: '8px',
             backgroundColor: '#fffbeb'
           }}
         >
-          <div className="flex items-start" style={{ fontSize: '10px' }}>
-            <span style={{ fontWeight: '700', color: '#92400e', marginRight: '6px' }}>NOTE:</span>
-            <span style={{ color: '#92400e', lineHeight: '1.4', fontWeight: '500' }}>
-              This is a system-generated payslip. No signature or company seal is required.
+          <div className="flex items-start" style={{ fontSize: '11px' }}>
+            <span style={{ fontWeight: '800', color: '#92400e', marginRight: '8px' }}>📋 NOTE:</span>
+            <span style={{ color: '#92400e', lineHeight: '1.5', fontWeight: '600' }}>
+              This is a system-generated payslip. No signature or company seal is required. 
+              Your salary information is confidential and should not be shared with colleagues.
             </span>
           </div>
         </div>
 
-        {/* Footer with Download Timestamp */}
+        {/* Footer with Strong Border */}
         <div 
           style={{ 
             position: 'absolute', 
-            bottom: '15px', 
+            bottom: '20px', 
             left: '30px', 
             right: '30px',
-            borderTop: '1px solid #d1d5db',
-            paddingTop: '10px'
+            borderTop: '2px solid #374151',
+            paddingTop: '12px'
           }}
         >
           <div className="flex justify-between items-center" style={{ fontSize: '10px', color: '#6b7280' }}>
-            <div style={{ fontWeight: '600' }}>
-              Page 1 of 1
+            <div className="flex items-center">
+              <div style={{ width: '8px', height: '8px', backgroundColor: '#1e40af', borderRadius: '50%', marginRight: '8px' }}></div>
+              <span style={{ fontWeight: '700' }}>Page 1 of 1</span>
             </div>
-            <div style={{ textAlign: 'center', fontWeight: '600' }}>
-              Downloaded on {new Date().toLocaleDateString('en-GB', {
+            <div style={{ textAlign: 'center', fontWeight: '700' }}>
+              Generated on {new Date().toLocaleDateString('en-GB', {
                 day: '2-digit',
                 month: 'short',
                 year: 'numeric'
@@ -685,8 +702,9 @@ const ProfessionalPayslipTemplate = React.forwardRef<HTMLDivElement, Professiona
                 hour12: true 
               })}
             </div>
-            <div style={{ fontWeight: '600' }}>
-              Professional Payslip
+            <div className="flex items-center">
+              <span style={{ fontWeight: '700', marginRight: '8px' }}>Professional Payslip</span>
+              <div style={{ width: '8px', height: '8px', backgroundColor: '#059669', borderRadius: '50%' }}></div>
             </div>
           </div>
         </div>
